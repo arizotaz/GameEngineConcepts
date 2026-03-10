@@ -14,6 +14,8 @@
 
 #include <game/gameprocessor.h>
 #include <engine/renderobjects.h>
+#include <engine/structs.h>
+#include <math.h>
 
 
 class TileList;
@@ -28,7 +30,7 @@ public:
 
     bool SolidTop() const { return solidTop; }
     bool Solid() const { return solid; }
-    
+    const int ID() const { return id; }
 protected:
     bool solid = false;
     bool solidTop = false;
@@ -56,12 +58,72 @@ public:
         this->solidTop = false;
     }
     void Render(LevelRenderer*, int x, int y) override {
-        GEC::Render::SetColor(100);
-        GEC::Render::Rect(x,y,1,1);
+		
+        int ix = 0;
+        int iy = 0;
+
+        if (fmod(((float)x-1.0f)/2.0f,2.0f) >= 1) ix += 2;
+
+
+		if (((x % 2) != 0)) { ix+=1; }
+		if (((y % 2) == 0)) { iy+=1; }
+
         GEC::Render::SetColor(255);
-        GEC::Render::Rect(x,y,0.9,0.9);
+        GEC::Render::Sprite("game.tiles",x,y,1,1,GEC::Vector2<int,int>(ix,iy),16);
      };
 };
+
+
+
+class WoodPlatform : public Tile {
+public:
+    WoodPlatform()
+        : Tile(2)
+    {
+        this->solid = false;
+        this->solidTop = true;
+    }
+    void Render(LevelRenderer* r, int x, int y) override {
+        Level* level = r->Container()->GetLevelData();
+
+        int iniImgX = 0;
+        int iniImgY = 2;
+
+		int left = 0, right = 0;
+
+        int dir = 1;
+
+        if (level != nullptr) {
+            left = level->GetTile(x - 1, y, 0);
+            right = level->GetTile(x + 1, y, 0);
+        }
+
+        if ((left == 0 && right != 0) || (left == ID() && right != 0))
+            dir = -1;
+
+        int ix = iniImgX;
+        int iy = iniImgY;
+        if (((x % 2) == 0)) {
+            ix += 1;
+        }
+
+        if ((left == ID() && right != ID()) || (right == ID() && left != ID())) {
+            iy = iniImgY + 1;
+            ix = iniImgX;
+        }
+        if ((left == 0 && right == ID()) || (right == 0 && left == ID())) {
+            iy = iniImgY + 1;
+            ix = iniImgX + 1;
+        }
+
+        GEC::Render::SetColor(255);
+        GEC::Render::Sprite("game.tiles",x,y,1*dir,1,GEC::Vector2<int,int>(ix,iy),16);
+     };
+};
+
+
+
+
 
 class TileList {
 public:
@@ -87,6 +149,7 @@ public:
             
             new AirTile();
             new BrickTile();
+            new WoodPlatform();
         }
     }
 

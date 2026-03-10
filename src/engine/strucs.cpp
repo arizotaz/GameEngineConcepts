@@ -7,6 +7,8 @@
 #endif
 
 #include <engine/structs.h>
+#include <engine/tools.h>
+
 
 namespace GEC {
 
@@ -108,7 +110,7 @@ void DeltaTime::Update() {
     dtime = delta / 1000.0f;
 }
 float DeltaTime::Get() {
-    return dtime;
+    return GEC::Tools::ClampVar<float>(dtime,0,.02f);
 }
 
 }
