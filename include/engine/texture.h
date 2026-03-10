@@ -103,6 +103,12 @@ public:
      */
     void RemoveTexture(const char* id);
 
+    /** Returns true if the textures has been added ot hte registry
+     * @param id - Texture ID
+     * @return bool - Is registered
+     */
+    bool Exists(const char* id);
+
 private:
     TextureEngine();
     ~TextureEngine();
