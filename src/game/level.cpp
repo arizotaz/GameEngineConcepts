@@ -32,6 +32,10 @@ void Level::Init(int width, int height, int layers)
     for (int i = 0; i < s; ++i)
         tiles[i] = 0;
     layerData = new Level_Layer*[layers];
+
+    for (int x = 0; x < width; ++x) {
+        SetTile(1,x,0,0);
+    }
 }
 
 int Level::GetTile(int index) const

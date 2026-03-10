@@ -1,9 +1,14 @@
 #include <engine/renderobjects.h>
 #include <game/camera.h>
 #include <game/gameprocessor.h>
+#include <game/tile.h>
+#include <engine/texture.h>
 
 LevelContainer::LevelContainer()
 {
+    // Loads the tile list
+    TileList::GetInstance().LoadTiles();
+
     lp = new LevelProcessor(this);
     lr = new LevelRenderer(this);
     em = new EntityManager(this);
@@ -65,6 +70,10 @@ void LevelProcessor::Update()
 LevelRenderer::LevelRenderer(LevelContainer* lc)
 {
     this->levelContainer = lc;
+
+    if (!GEC::TextureEngine::GetInstance().Exists("game.tiles"))
+        GEC::TextureEngine::GetInstance().LoadTexture("game.tiles", RESOURCES_PATH "tiles.png");
+
 }
 LevelRenderer::~LevelRenderer() { }
 void LevelRenderer::Render()
@@ -88,10 +97,14 @@ void LevelRenderer::Render()
             if ((posX >= 0 && posX < l->Width()) && posY >= 0 && posY < l->Height()) {
                 int tile = l->GetTile(posX, posY, 0);
                 if (tile > -1) {
-                    GEC::Render::SetColor(100);
-                    GEC::Render::Rect(posX, posY, 1, 1);
-                    GEC::Render::SetColor(255);
-                    GEC::Render::Rect(posX, posY, 0.9, 0.9);
+
+                    Tile* t = TileList::GetInstance().GetTile(tile);
+                    if (t == nullptr) {
+                        GEC::Render::SetColor(255);
+                        GEC::Render::Image("engine::err", posX, posY, 1, 1);
+                    } else {
+                        t->Render(this, posX, posY);
+                    }
                 }
             }
         }
