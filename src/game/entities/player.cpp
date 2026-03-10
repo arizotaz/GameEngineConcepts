@@ -12,43 +12,119 @@
 
 #include <engine/input.h>
 #include <engine/structs.h>
-#include <game/deltatime.h>
 #include <iostream>
 #include <math.h>
 
+#include <game/deltatime.h>
 
 #include <game/camera.h>
 
 Player::Player()
-    : Entity(0, 0, 1, 1)
+    : Entity(0, 0, .8f,.8f)
 {
-    this->position_size->X() = 0;
-    this->position_size->Y() = 0;
+    this->mass = 2;
 }
 void Player::Update()
 {
-    GEC::Rect<float, float, float, float>* r = this->position_size;
-
-    float speed = GetMainDeltaTime()*5;
+    float dtime = GetMainDeltaTime() / 1000.0f;
+    float input_x_axis = 0;
+    float input_jump = 0;
     if (GEC::Input::Keyboard::IsSpecialKeyDown(101)) {
-        r->Y() += speed;
-    }
-    if (GEC::Input::Keyboard::IsSpecialKeyDown(103)) {
-        r->Y() -= speed;
+        input_jump = 1;
     }
     if (GEC::Input::Keyboard::IsSpecialKeyDown(100)) {
-        r->X() -= speed;
-        _dir = -1;
+        input_x_axis = -1;
     }
     if (GEC::Input::Keyboard::IsSpecialKeyDown(102)) {
-        r->X() += speed;
+        input_x_axis = 1;
+    }
+
+    this->input_x_axis = input_x_axis;
+    this->input_jump = input_jump;
+}
+
+void Player::Tick()
+{
+    float dtime = GetMainDeltaTime() / 1000.0f;
+
+    bool solidGroud = OnSolidGround();
+
+    {
+        if (solidGroud) {
+            isInAJump = false;
+            if (input_jump > 0 && !jumped) {
+                jumped = true;
+                // forceY = 35; - two tiles
+                force.Second() = 42;
+                isInAJump = true;
+            }
+        } else {
+            jumped = false;
+        }
+        float mForce = 250;
+        float left = input_left;
+        float right = input_right;
+        float x_axis = input_x_axis;
+        float multiplier = (left + right);
+        if (abs(x_axis) > abs(multiplier)) {
+            multiplier = x_axis;
+        }
+        if (abs(multiplier) < .10) {
+            multiplier = 0;
+        }
+
+        mForce = mForce * multiplier;
+        mForce = mForce * dtime;
+        force.First() += mForce;
+    }
+
+    if (isInAJump)
+        if (force.Second() > 0)
+            if (input_jump <= 0)
+                force.Second() -= 100 * dtime;
+
+    ProcessForce();
+    if (force.Second() == 0) {
+        jumped = false;
+    }
+    ProcessGravity();
+
+    _imgX = 0;
+
+    int rx = round(force.First());
+    int ry = round(force.Second());
+    if (rx > 0) {
         _dir = 1;
     }
-    if (abs(r->X() - _lastAniX) > 40) {
-        _lastAniX = r->X();
-        ++_imgX;
-        if (_imgX > 2)
-            _imgX = 1;
+    if (rx < 0) {
+        _dir = -1;
+    }
+    if (rx != 0) {
+        walk_ani += dtime * abs(force.First() / 2.0f);
+        if (walk_ani >= 2) {
+            walk_ani = 0;
+        }
+        _imgX = 8 + 8 * (int)walk_ani;
+    }
+    if (!solidGroud) {
+        _imgX = 24;
+    }
+
+    // int used = attack.Process(this);
+    // if (used != 0) {
+    //     castani = .25f;
+    //     dir = used;
+    // }
+    // if (castani > 0) {
+    //     castani -= dtime;
+    //     castani = Tools.SetSmallest(castani, 0);
+    //     imgX = 32;
+    // }
+
+    walk_time += dtime * abs(force.First() / 2.0f);
+    if (walk_time >= 1 && _imgX != 24) {
+        walk_time = 0;
+        // Play Step Audio
     }
 
     Camera::GetInstance().SetPos(position_size->First());
@@ -57,7 +133,7 @@ void Player::Render()
 {
     GEC::Rect<float, float, float, float>* r = this->position_size;
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r->X(), r->Y(), r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX, _imgY), 16);
+    GEC::Render::Sprite("game.entities", r->X(), r->Y(), r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX/8, _imgY/8), 16);
 }
 Player::~Player()
 {

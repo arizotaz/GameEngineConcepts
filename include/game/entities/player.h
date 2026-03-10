@@ -3,7 +3,7 @@
 // #############################################################################
 // # Written by Colton Staiduhar
 // # Date Created:       02/10/2025
-// # Last Modification:  03/03/2025
+// # Last Modification:  03/10/2025
 // #############################################################################
 // # Player Implementation
 // #############################################################################
@@ -22,6 +22,7 @@ class Player : public Entity {
 
     Player();
     void Update() override;
+    void Tick() override;
     void Render() override;
     ~Player();
 
@@ -30,10 +31,11 @@ class Player : public Entity {
 
     private:
 
-    int _dir = 1;
-    int _imgX = 0, _imgY = 0;
+    	bool jumped = false, isInAJump = false;
+    float input_left, input_right, input_x_axis, input_jump;
 
-    float _lastAniX = 0;
+    int _imgX = 0, _imgY = 0,_dir = 1;
+    float walk_ani = 0, walk_time = 0;
     
 };
 

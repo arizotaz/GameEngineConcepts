@@ -3,7 +3,7 @@
 float GetMainDeltaTime()
 {
     if (MainLoopDeltaTime == nullptr) MainLoopDeltaTime = new GEC::DeltaTime();
-    return MainLoopDeltaTime->Get();
+    return MainLoopDeltaTime->Get()*1000.0f;
 }
 void UpdateMainDeltaTime()
 {

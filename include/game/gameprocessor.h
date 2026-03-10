@@ -28,6 +28,7 @@ class Entity {
 public:
     Entity(float, float, float, float);
     virtual void OnSpawn() = 0;
+    virtual void Tick() = 0;
     virtual void Update() = 0;
     virtual void Render() = 0;
     virtual void OnDeath() = 0;
@@ -43,6 +44,10 @@ public:
 
     unsigned int GetID() const;
 
+    virtual EntityManager* Manager() const final {
+        return manager;
+    }
+
     friend EntityManager;
 
 protected:
@@ -51,17 +56,29 @@ protected:
     bool isDead = false;
     bool spawned = false;
     GEC::Rect<float, float, float, float>* position_size;
+    GEC::Vector2<float,float> force;
+    GEC::Vector2<float,float> friction;
+	float mass = 10;
+
+
+    std::vector<bool> ProcessForceCollision(float x, float y, float nx, float ny, float colliderW, float colliderH, Entity* entity);
+    std::vector<bool> ProcessForce();
+    bool Collides(float rx, float ry, float rw, float rh, Entity* entity);
+    void ProcessGravity();
+	bool OnSolidGround();
 
 private:
     void SetID(unsigned int);
+    EntityManager* manager;
 };
 
 class EntityManager {
 public:
     EntityManager(LevelContainer*);
     void Update();
+    void Tick();
     void Render();
-
+    LevelContainer* Container() const;
     Entity* Get(int id) const;
     void Spawn(Entity*, float, float);
     ~EntityManager();
@@ -77,6 +94,7 @@ public:
     LevelProcessor(LevelContainer*);
     ~LevelProcessor();
     void Update();
+        void Tick();
 
 private:
     LevelContainer* levelContainer;
@@ -97,6 +115,7 @@ public:
     LevelContainer();
 
     void Update();
+    void Tick();
     void Render();
 
     Level* GetLevelData();

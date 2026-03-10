@@ -23,6 +23,11 @@ void LevelContainer::Update()
     lp->Update();
     em->Update();
 }
+void LevelContainer::Tick()
+{
+    lp->Tick();
+    em->Tick();
+}
 void LevelContainer::Render()
 {
     lr->Render();
@@ -61,6 +66,12 @@ LevelProcessor::LevelProcessor(LevelContainer* lc)
 }
 LevelProcessor::~LevelProcessor() { }
 void LevelProcessor::Update()
+{
+    Level* l = this->levelContainer->GetLevelData();
+    if (!l)
+        return;
+}
+void LevelProcessor::Tick()
 {
     Level* l = this->levelContainer->GetLevelData();
     if (!l)

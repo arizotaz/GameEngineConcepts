@@ -26,6 +26,12 @@ public:
 
     virtual ~Tile() { };
 
+    bool SolidTop() const { return solidTop; }
+    bool Solid() const { return solid; }
+    
+protected:
+    bool solid = false;
+    bool solidTop = false;
 private:
     const int id;
 };
@@ -35,6 +41,8 @@ public:
     AirTile()
         : Tile(0)
     {
+        this->solid = false;
+        this->solidTop = false;
     }
     void Render(LevelRenderer*, int x, int y) override { };
 };
@@ -44,6 +52,8 @@ public:
     BrickTile()
         : Tile(1)
     {
+        this->solid = true;
+        this->solidTop = false;
     }
     void Render(LevelRenderer*, int x, int y) override {
         GEC::Render::SetColor(100);
