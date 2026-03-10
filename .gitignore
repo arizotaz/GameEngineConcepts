@@ -1,0 +1,11 @@
+*.DS_Store
+.vscode/
+build/
+thirdparty/
+CMakeFiles/
+CmakeCache.txt
+cmake_install.cmake
+Makefile
+GSM_TEMPLATE
+out/
+.vs/
