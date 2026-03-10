@@ -17,9 +17,7 @@
  * Main Player Obect
  */
 class Player : public Entity {
-    public:
-    
-
+public:
     Player();
     void Update() override;
     void Tick() override;
@@ -29,15 +27,12 @@ class Player : public Entity {
     void OnSpawn() override;
     void OnDeath() override;
 
-    private:
-
-    	bool jumped = false, isInAJump = false;
+private:
+    bool jumped = false, isInAJump = false;
     float input_left, input_right, input_x_axis, input_jump;
 
-    int _imgX = 0, _imgY = 0,_dir = 1;
+    int _imgX = 0, _imgY = 0, _dir = 1;
     float walk_ani = 0, walk_time = 0;
-    
 };
-
 
 #endif

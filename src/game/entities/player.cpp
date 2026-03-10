@@ -24,11 +24,13 @@
 Player::Player()
     : Entity(0, 0, .8f,.8f)
 {
-    this->mass = 2;
+    this->mass = 3;
+    this->friction.Set(10.0f,0);
 }
 void Player::Update()
 {
     float dtime = GetMainDeltaTime() / 1000.0f;
+
     float input_x_axis = 0;
     float input_jump = 0;
     if (GEC::Input::Keyboard::IsSpecialKeyDown(101)) {
@@ -67,13 +69,13 @@ void Player::Tick()
             if (input_jump > 0 && !jumped) {
                 jumped = true;
                 // forceY = 35; - two tiles
-                force.Second() = 42;
+                force.Second() = 50;
                 isInAJump = true;
             }
         } else {
             jumped = false;
         }
-        float mForce = 250;
+        float mForce = 280;
         float left = input_left;
         float right = input_right;
         float x_axis = input_x_axis;
