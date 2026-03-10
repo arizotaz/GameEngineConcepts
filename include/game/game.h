@@ -14,12 +14,12 @@
 #include <engine/structs.h>
 
 /**
- * Assignment1 Process Object
+ * Assignment2 Process Object
  */
-class Assignment1 : public GEC::Process {
+class Assignment2 : public GEC::Process {
 
 public:
-    Assignment1() : Process(1) {}
+    Assignment2() : Process(1) {}
     /** When Process Starts */
     void Start() override;
 

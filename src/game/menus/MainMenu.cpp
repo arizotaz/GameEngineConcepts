@@ -2,8 +2,6 @@
 
 #include <game/menus.h>
 
-#include <game/player.h>
-
 void MainMenu::Open() {
     this->GetManager()->GoTo(1);
 };

@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     std::cout << "Starting";
     fflush(stdout);
 
-    pro = new Assignment1();
+    pro = new Assignment2();
 
     int winW = 1280;
     int winH = 720;

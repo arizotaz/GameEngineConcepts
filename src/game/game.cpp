@@ -14,15 +14,14 @@
 #include <engine/input.h>
 #include <engine/renderobjects.h>
 #include <engine/texture.h>
-#include <iostream>
 #include <game/global_states.h>
+#include <iostream>
 
-bool render = true;
-int clearScreen = 0;
+#include <game/camera.h>
 
 GEC::MenuManager* mm;
 
-void Assignment1::Start()
+void Assignment2::Start()
 {
     glutSetWindowTitle("Colton Staiduhar - 811138106");
 
@@ -33,34 +32,37 @@ void Assignment1::Start()
 
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
+
+    Camera::GetInstance().SetScale(50);
 }
-void Assignment1::Update()
+void Assignment2::Update()
 {
     // ESC
     if (GEC::Input::Keyboard::IsKeyDown(27))
         CloseCallBack();
-    if (GEC::Input::Keyboard::IsKeyPressed('c')) {
-        render = false;
-        clearScreen = 4; // Screen the screen 4 times so we know both buffers are empty
-    }
-    if (GEC::Input::Keyboard::IsKeyPressed('m'))
-        render = true;
-        
+
     mm->Update();
     mm->Events();
 }
-void Assignment1::Render()
+void Assignment2::Render()
 {
-    // This system is to make sure the screen clears both buffers
-    if (clearScreen > 0) {
-        --clearScreen;
-        GEC::Render::ClearScreen();
-    }
-    
-    if (render)
-        mm->Render();
+    Camera::GetInstance().SetScreen(
+        GEC::Vector2<float, float>(
+            glutGet(GLUT_WINDOW_WIDTH),
+            glutGet(GLUT_WINDOW_HEIGHT)));
+    GEC::Vector3<float, float, float>
+        cPos
+        = Camera::GetInstance().Position();
+    float scl = Camera::GetInstance().GetScale();
+    glPushMatrix();
+    glScalef(scl, scl, 0);
+    glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
+
+    mm->Render();
+
+    glPopMatrix();
 }
-void Assignment1::Exit()
+void Assignment2::Exit()
 {
     delete mm;
 }

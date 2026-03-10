@@ -31,6 +31,7 @@
 
 namespace GEC {
 
+template <typename V1, typename V2, typename V3, typename V4> class Rect;
 class MenuManager;
 
 /**
@@ -202,14 +203,14 @@ public:
     /** Return the first value
      * @return _v1 - the first element
      */
-    V1 First() const
+    V1& First()
     {
         return _v1;
     }
     /** Return the second value
      * @return _v2 - the second element
      */
-    V2 Second() const
+    V2& Second()
     {
         return _v2;
     }
@@ -339,10 +340,8 @@ public:
      * @param w - width value
      * @param h - height value
      */
-    Rect(V1 x, V2 y, V3 w, V4 h)
+    Rect(V1 x, V2 y, V3 w, V4 h) : _first(x, y), _second(w,h)
     {
-        _first = Vector2<V1,V2>(x,y);
-        _second = Vector2<V3,V4>(w,h);
     }
 
     /** Initialize Rect with 2 vectors
@@ -394,28 +393,28 @@ public:
     /** Returns the x position
      * @return x
      */
-    V1 X() const
+    V1& X()
     {
         return _first.First();
     }
     /** Returns the y position
      * @return y
      */
-    V2 Y() const
+    V2& Y()
     {
         return _first.Second();
     }
     /** Returns the width of the rect
      * @return width
      */
-    V3 W() const
+    V3& W()
     {
         return _second.First();
     }
     /** Returns the height of the rect
      * @return height
      */
-    V4 H() const
+    V4& H()
     {
         return _second.Second();
     }
