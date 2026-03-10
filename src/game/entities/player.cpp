@@ -19,6 +19,8 @@
 
 #include <game/camera.h>
 
+#include <engine/tools.h>
+
 Player::Player()
     : Entity(0, 0, .8f,.8f)
 {
@@ -41,6 +43,16 @@ void Player::Update()
 
     this->input_x_axis = input_x_axis;
     this->input_jump = input_jump;
+
+
+
+
+    GEC::Vector3<float,float,float> pos = Camera::GetInstance().Position();
+    float dist = GEC::Tools::Distance(position_size->X(), position_size->Y(), pos.First(), pos.Second());
+		float tdis = 2;
+		if (dist > tdis) {
+			Camera::GetInstance().MoveTo(position_size->X(), position_size->Y(), (float)pow((dist - tdis),2) * 20 * (dtime/10.0f));
+		}
 }
 
 void Player::Tick()
@@ -126,8 +138,6 @@ void Player::Tick()
         walk_time = 0;
         // Play Step Audio
     }
-
-    Camera::GetInstance().SetPos(position_size->First());
 }
 void Player::Render()
 {

@@ -3,6 +3,7 @@
 #include <game/gameprocessor.h>
 #include <game/tile.h>
 #include <engine/texture.h>
+#include <engine/tools.h>
 
 LevelContainer::LevelContainer()
 {
@@ -97,7 +98,10 @@ void LevelRenderer::Render()
     int cx = round(camPos.First());
     int cy = round(camPos.Second());
 
-    int renderDistance = 10;
+    Camera& cam = Camera::GetInstance();
+
+
+    int renderDistance = GEC::Tools::ClampVar<float>(cam.ViewPort().First()/cam.GetScale(),2,100);
     for (int yo = -renderDistance; yo <= renderDistance; ++yo)
         for (int xo = -renderDistance; xo <= renderDistance; ++xo) {
             Level* l = this->levelContainer->GetLevelData();
@@ -119,4 +123,7 @@ void LevelRenderer::Render()
                 }
             }
         }
+}
+LevelContainer* LevelRenderer::Container() const {
+    return this->levelContainer;
 }

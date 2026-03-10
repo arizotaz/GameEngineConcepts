@@ -17,8 +17,6 @@
 #include <game/global_states.h>
 #include <iostream>
 
-#include <game/camera.h>
-
 GEC::MenuManager* mm;
 
 void Assignment2::Start()
@@ -32,8 +30,6 @@ void Assignment2::Start()
 
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
-
-    Camera::GetInstance().SetScale(50);
 }
 void Assignment2::Update()
 {
@@ -46,22 +42,7 @@ void Assignment2::Update()
 }
 void Assignment2::Render()
 {
-    Camera& cam = Camera::GetInstance();
-    cam.SetScreen(
-        GEC::Vector2<float, float>(
-            glutGet(GLUT_WINDOW_WIDTH),
-            glutGet(GLUT_WINDOW_HEIGHT)));
-    GEC::Vector3<float, float, float>
-        cPos
-        = cam.Position();
-    float scl = cam.GetScale();
-    glPushMatrix();
-    glScalef(scl, scl, 0);
-    glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
-
     mm->Render();
-
-    glPopMatrix();
 }
 void Assignment2::Exit()
 {

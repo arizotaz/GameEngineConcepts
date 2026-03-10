@@ -17,8 +17,9 @@
 
 #include <game/gameprocessor.h>
 #include <game/entities/player.h>
+#include <game/entities/objects.h>
 #include <engine/texture.h>
-
+#include <game/camera.h>
 
 LevelContainer* lc;
 
@@ -38,8 +39,33 @@ void GameScreen::Update()
 };
 void GameScreen::Render()
 {
+
     GEC::Render::ClearScreen();
+
+
+    Camera& cam = Camera::GetInstance();
+    
+    cam.SetScale(cam.ViewPort().Second()/15.0f);
+
+    cam.SetScreen(
+        GEC::Vector2<float, float>(
+            glutGet(GLUT_WINDOW_WIDTH),
+            glutGet(GLUT_WINDOW_HEIGHT)));
+    GEC::Vector3<float, float, float>
+        cPos
+        = cam.Position();
+    float scl = cam.GetScale();
+    glPushMatrix();
+    
+    GEC::Render::SetColor(173, 245, 255);
+    GEC::Render::Rect(0,0,cam.ViewPort().First(),cam.ViewPort().Second());
+
+    
+    glScalef(scl, scl, 0);
+    glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
     lc->Render();
+    glPopMatrix();
+
 };
 void GameScreen::Events() { };
 

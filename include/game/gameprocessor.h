@@ -105,7 +105,7 @@ public:
     LevelRenderer(LevelContainer*);
     ~LevelRenderer();
     void Render();
-
+    LevelContainer* Container() const;
 private:
     LevelContainer* levelContainer;
 };
