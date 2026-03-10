@@ -82,7 +82,8 @@ bool GameRunning()
 }
 
 /** Implement GameRunning CallBack */
-void CloseCallBack() {
+void CloseCallBack()
+{
     gameRunning = false;
 }
 /**
@@ -95,6 +96,7 @@ void GlutLoopTimer(int);
 
 // Extended Functionality
 void UpdateViewPort();
+void CenterWindowOnScreen();
 
 // Last width and height of the window, used to resize viewport
 int lastWinW = 0, lastWinH = 0;
@@ -163,6 +165,9 @@ int main(int argc, char** argv)
     // Sets up the viewport
     UpdateViewPort();
 
+    // Center Window
+    CenterWindowOnScreen();
+
     // Debug Ifo
     std::cout << "[" << appName << "]" << " Initializing App" << std::endl;
 
@@ -223,7 +228,6 @@ int main(int argc, char** argv)
 
     // Debug Info
     std::cout << "[" << appName << "]" << " Closing" << std::endl;
-
 
     // Run Game exit code
     pro->Exit();
@@ -305,4 +309,20 @@ void MainLoop()
 
     // Swap buffers to display the new frame
     glutSwapBuffers();
+}
+
+/**
+ * Centers the window to the middle of the screen
+ */
+void CenterWindowOnScreen()
+{
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+    int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
+    int screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+    int windowX = (screenWidth - width) / 2;
+    int windowY = (screenHeight - height) / 2;
+
+    glutPositionWindow(windowX,windowY);
+
 }
