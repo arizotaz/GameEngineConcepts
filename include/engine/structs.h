@@ -378,14 +378,14 @@ public:
     /** Return the position vector
      * @return position_vector
      */
-    Vector2<V1, V2> First() const
+    Vector2<V1, V2>& First()
     {
         return _first;
     }
     /** Return the size vector
      * @return size_vector
      */
-    Vector2<V3, V4> Second() const
+    Vector2<V3, V4>& Second()
     {
         return _second;
     }

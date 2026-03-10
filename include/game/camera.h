@@ -32,10 +32,7 @@ public:
     float X();
     float Y();
 
-    GEC::Vector2<float, float> ViewPort()
-    {
-        return this->screenSize;
-    }
+    GEC::Vector2<float, float> ViewPort();
 
     /**
      * Moves the position of the camera
@@ -95,13 +92,12 @@ public:
 
 private:
     Camera()
-        : pos(0, 0), screenSize(0,0)
+        : cameraView(0, 0,0,0)
     {
     }
     ~Camera() { }
     float scale = 1;
-    GEC::Vector2<float, float> pos;
-    GEC::Vector2<float, float> screenSize;
+    GEC::Rect<float,float,float,float> cameraView;
 };
 
 #endif

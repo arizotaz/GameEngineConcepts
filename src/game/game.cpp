@@ -46,14 +46,15 @@ void Assignment2::Update()
 }
 void Assignment2::Render()
 {
-    Camera::GetInstance().SetScreen(
+    Camera& cam = Camera::GetInstance();
+    cam.SetScreen(
         GEC::Vector2<float, float>(
             glutGet(GLUT_WINDOW_WIDTH),
             glutGet(GLUT_WINDOW_HEIGHT)));
     GEC::Vector3<float, float, float>
         cPos
-        = Camera::GetInstance().Position();
-    float scl = Camera::GetInstance().GetScale();
+        = cam.Position();
+    float scl = cam.GetScale();
     glPushMatrix();
     glScalef(scl, scl, 0);
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());

@@ -51,14 +51,12 @@ void Player::Update()
             _imgX = 1;
     }
 
-    Camera::GetInstance().Set(position_size->First());
+    Camera::GetInstance().SetPos(position_size->First());
 }
 void Player::Render()
 {
     GEC::Rect<float, float, float, float>* r = this->position_size;
     GEC::Render::SetColor(255);
-    GEC::Render::Rect(r->X(), r->Y(), r->W(), r->H());
-
     GEC::Render::Sprite("game.entities", r->X(), r->Y(), r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX, _imgY), 16);
 }
 Player::~Player()
