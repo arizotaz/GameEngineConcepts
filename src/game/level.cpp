@@ -27,8 +27,9 @@ void Level::Init(int width, int height, int layers)
     this->height = height;
     this->layers = layers;
 
-    tiles = new int[width * height * layers];
-    for (int i = 0; i < layers; ++i)
+    int s = width * height * layers;
+    tiles = new int[s];
+    for (int i = 0; i < s; ++i)
         tiles[i] = 0;
     layerData = new Level_Layer*[layers];
 }
@@ -41,7 +42,7 @@ int Level::GetTile(int index) const
         return -1;
     return tiles[index];
 }
-int Level::GetTile(int layer, int x, int y) const
+int Level::GetTile(int x, int y, int layer) const
 {
     int i = XYIndex(x, y, layer);
     if (i < 0)
@@ -59,7 +60,7 @@ bool Level::SetTile(int tileID, int index)
     return tiles[index] == tileID;
 }
 
-bool Level::SetTile(int tileID, int layer, int x, int y)
+bool Level::SetTile(int tileID, int x, int y, int layer)
 {
     int i = XYIndex(x, y, layer);
     if (!SetTile(tileID, i))
@@ -72,6 +73,10 @@ int Level::XYIndex(int x, int y, int layer) const
     int w = this->width;
     int h = this->height;
 
+    if (x < 0 || x >= w) return -1;
+    if (y < 0 || y >= h) return -1;
+    
+
     int rowMultiplier = y * w;
 
     int tileIndex = rowMultiplier + x;
@@ -82,4 +87,14 @@ int Level::XYIndex(int x, int y, int layer) const
     if (index >= w * h * layers)
         index = -1;
     return index;
+}
+
+int Level::Width() const {
+    return width;
+}
+int Level::Height() const {
+    return width;
+}
+int Level::Layers() const {
+    return width;
 }

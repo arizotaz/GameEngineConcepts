@@ -26,6 +26,8 @@ void GameScreen::Open()
 {
     lc = new LevelContainer();
 
+    lc->GetEntityManager()->Spawn(new Player(), 0,0);
+
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
     
 };

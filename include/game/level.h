@@ -42,7 +42,7 @@ public:
     /**
      * Returns the tile and the specified (x,y) position
      */
-    int GetTile(int x, int layer, int y) const;
+    int GetTile(int x, int y, int layer) const;
 
     /**
      * Sets the value of a tile at the specified index
@@ -52,7 +52,11 @@ public:
     /**
      * Sets the value of a tile at the specified (x,y) value
      */
-    bool SetTile(int id, int layer, int x, int y);
+    bool SetTile(int id, int x, int y, int layer);
+
+    int Width() const;
+    int Height() const;
+    int Layers() const;
 
     ~Level();
 

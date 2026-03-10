@@ -75,7 +75,7 @@ private:
 class LevelProcessor {
 public:
     LevelProcessor(LevelContainer*);
-
+    ~LevelProcessor();
     void Update();
 
 private:
@@ -85,7 +85,7 @@ private:
 class LevelRenderer {
 public:
     LevelRenderer(LevelContainer*);
-
+    ~LevelRenderer();
     void Render();
 
 private:
