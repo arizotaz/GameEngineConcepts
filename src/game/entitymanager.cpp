@@ -4,7 +4,9 @@
 #include <game/deltatime.h>
 #include <game/tile.h>
 
-Entity::Entity(float x, float y, float width, float height) : friction(10.0f,0), force(0,0)
+Entity::Entity(float x, float y, float width, float height)
+    : friction(10.0f, 0)
+    , force(0, 0)
 {
     position_size = new GEC::Rect<float, float, float, float>(x, y, width, height);
 };
@@ -104,22 +106,27 @@ bool Entity::Collides(float rx, float ry, float rw, float rh, Entity* entity)
     for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
             int tx = px + x, ty = py + y;
-
             if (tx >= 0 && tx < l->Width() && ty >= 0 && ty < l->Height()) {
-                int tileID = l->GetTile(tx, ty, 0);
-                Tile* tile = TileList::GetInstance().GetTile(tileID);
-                if (tile) {
-                    if (tile->SolidTop())
-                        if (entity->force.Second() <= 0 && entity->position_size->Y() - entity->position_size->H() > ty) {
-                            GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
-                            if (tcollider.IsColliding(collider)) {
-                                isColliding = true;
+
+                for (int ll = 0; ll < l->Layers(); ++ll) {
+                    Level_Layer* ld = l->GetLayerData(ll);
+                    if (ld->collidable) {
+                        int tileID = l->GetTile(tx, ty, ll);
+                        Tile* tile = TileList::GetInstance().GetTile(tileID);
+                        if (tile) {
+                            if (tile->SolidTop())
+                                if (entity->force.Second() <= 0 && entity->position_size->Y() - entity->position_size->H() > ty) {
+                                    GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
+                                    if (tcollider.IsColliding(collider)) {
+                                        isColliding = true;
+                                    }
+                                }
+                            if (tile->Solid()) {
+                                GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
+                                if (tcollider.IsColliding(collider))
+                                    isColliding = true;
                             }
                         }
-                    if (tile->Solid()) {
-                        GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
-                        if (tcollider.IsColliding(collider))
-                            isColliding = true;
                     }
                 }
             }
@@ -205,6 +212,7 @@ void EntityManager::Spawn(Entity* e, float x, float y)
 
     entities.push_back(e);
 }
-LevelContainer* EntityManager::Container() const {
+LevelContainer* EntityManager::Container() const
+{
     return this->levelContainer;
 }

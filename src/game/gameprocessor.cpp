@@ -1,9 +1,9 @@
 #include <engine/renderobjects.h>
+#include <engine/texture.h>
+#include <engine/tools.h>
 #include <game/camera.h>
 #include <game/gameprocessor.h>
 #include <game/tile.h>
-#include <engine/texture.h>
-#include <engine/tools.h>
 
 LevelContainer::LevelContainer()
 {
@@ -16,7 +16,7 @@ LevelContainer::LevelContainer()
     currentLevel = nullptr;
 
     currentLevel = new Level("test");
-    currentLevel->Init(100, 100, 1);
+    currentLevel->Init(100, 100, 2);
 }
 
 void LevelContainer::Update()
@@ -85,10 +85,22 @@ LevelRenderer::LevelRenderer(LevelContainer* lc)
 
     if (!GEC::TextureEngine::GetInstance().Exists("game.tiles"))
         GEC::TextureEngine::GetInstance().LoadTexture("game.tiles", RESOURCES_PATH "tiles.png");
-
 }
 LevelRenderer::~LevelRenderer() { }
 void LevelRenderer::Render()
+{
+    Level* l = this->levelContainer->GetLevelData();
+    if (!l)
+        return;
+
+    for (int i = 0; i < l->Layers(); ++i) {
+        Level_Layer* layerData = l->GetLayerData(i);
+        if (layerData->visible)
+            DrawLayer(i,layerData->zDepth);
+    }
+}
+
+void LevelRenderer::DrawLayer(int layer, int z)
 {
     Level* l = this->levelContainer->GetLevelData();
     if (!l)
@@ -100,8 +112,7 @@ void LevelRenderer::Render()
 
     Camera& cam = Camera::GetInstance();
 
-
-    int renderDistance = GEC::Tools::ClampVar<float>(cam.ViewPort().First()/cam.GetScale(),2,100);
+    int renderDistance = GEC::Tools::ClampVar<float>(cam.ViewPort().First() / cam.GetScale(), 2, 100);
     for (int yo = -renderDistance; yo <= renderDistance; ++yo)
         for (int xo = -renderDistance; xo <= renderDistance; ++xo) {
             Level* l = this->levelContainer->GetLevelData();
@@ -110,20 +121,21 @@ void LevelRenderer::Render()
             int posY = cy + yo;
 
             if ((posX >= 0 && posX < l->Width()) && posY >= 0 && posY < l->Height()) {
-                int tile = l->GetTile(posX, posY, 0);
-                if (tile > -1) {
-
+                int tile = l->GetTile(posX, posY, layer);
+                if (tile > 0) {
                     Tile* t = TileList::GetInstance().GetTile(tile);
                     if (t == nullptr) {
                         GEC::Render::SetColor(255);
                         GEC::Render::Image("engine::err", posX, posY, 1, 1);
                     } else {
-                        t->Render(this, posX, posY);
+                        t->Render(this, posX, posY, z);
                     }
                 }
             }
         }
 }
-LevelContainer* LevelRenderer::Container() const {
+
+LevelContainer* LevelRenderer::Container() const
+{
     return this->levelContainer;
 }

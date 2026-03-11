@@ -24,7 +24,7 @@ class Tile {
 public:
     Tile(int id);
 
-    virtual void Render(LevelRenderer*, int x, int y) = 0;
+    virtual void Render(LevelRenderer*, int x, int y, int z) = 0;
 
     virtual ~Tile() { };
 
@@ -46,7 +46,7 @@ public:
         this->solid = false;
         this->solidTop = false;
     }
-    void Render(LevelRenderer*, int x, int y) override { };
+    void Render(LevelRenderer*, int x, int y, int z) override { };
 };
 
 class BrickTile : public Tile {
@@ -57,7 +57,7 @@ public:
         this->solid = true;
         this->solidTop = false;
     }
-    void Render(LevelRenderer*, int x, int y) override {
+    void Render(LevelRenderer*, int x, int y, int z) override {
 		
         int ix = 0;
         int iy = 0;
@@ -69,7 +69,7 @@ public:
 		if (((y % 2) == 0)) { iy+=1; }
 
         GEC::Render::SetColor(255);
-        GEC::Render::Sprite("game.tiles",x,y,1,1,GEC::Vector2<int,int>(ix,iy),16);
+        GEC::Render::Sprite("game.tiles",x,y,z,1,1,GEC::Vector2<int,int>(ix,iy),16);
      };
 };
 
@@ -83,7 +83,7 @@ public:
         this->solid = false;
         this->solidTop = true;
     }
-    void Render(LevelRenderer* r, int x, int y) override {
+    void Render(LevelRenderer* r, int x, int y, int z) override {
         Level* level = r->Container()->GetLevelData();
 
         int iniImgX = 0;
@@ -94,8 +94,8 @@ public:
         int dir = 1;
 
         if (level != nullptr) {
-            left = level->GetTile(x - 1, y, 0);
-            right = level->GetTile(x + 1, y, 0);
+            left = level->GetTile(x - 1, y, z);
+            right = level->GetTile(x + 1, y, z);
         }
 
         if ((left == 0 && right != 0) || (left == ID() && right != 0))
@@ -117,7 +117,32 @@ public:
         }
 
         GEC::Render::SetColor(255);
-        GEC::Render::Sprite("game.tiles",x,y,1*dir,1,GEC::Vector2<int,int>(ix,iy),16);
+        GEC::Render::Sprite("game.tiles",x,y,z,1*dir,1,GEC::Vector2<int,int>(ix,iy),16);
+     };
+};
+
+class BackgroundCastleWall : public Tile {
+public:
+    BackgroundCastleWall()
+        : Tile(3)
+    {
+        this->solid = false;
+        this->solidTop = true;
+    }
+    void Render(LevelRenderer* r, int x, int y, int z) override {
+        Level* level = r->Container()->GetLevelData();
+
+        int ix = 0;
+		int iy = 16-2;
+		int secy = x/2;
+		int secx = y/2;
+		if (((x % 2) == 0)) { ix+=1; }
+		if (((y % 2) == 0)) { iy+=1; }
+		if (((secy % 2) == 0)) { iy+=2; }
+		if (((secx % 2) == 0)) { ix=2; }
+
+        GEC::Render::SetColor(255);
+        GEC::Render::Sprite("game.tiles",x,y,z,1,1,GEC::Vector2<int,int>(ix,iy),16);
      };
 };
 
@@ -150,6 +175,7 @@ public:
             new AirTile();
             new BrickTile();
             new WoodPlatform();
+            new BackgroundCastleWall();
         }
     }
 

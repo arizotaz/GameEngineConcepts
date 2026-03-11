@@ -105,6 +105,7 @@ public:
     LevelRenderer(LevelContainer*);
     ~LevelRenderer();
     void Render();
+    void DrawLayer(int layer, int z);
     LevelContainer* Container() const;
 private:
     LevelContainer* levelContainer;

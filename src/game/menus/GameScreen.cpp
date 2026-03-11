@@ -15,11 +15,11 @@
 #include <iostream>
 #include <vector>
 
-#include <game/gameprocessor.h>
-#include <game/entities/player.h>
-#include <game/entities/objects.h>
 #include <engine/texture.h>
 #include <game/camera.h>
+#include <game/entities/objects.h>
+#include <game/entities/player.h>
+#include <game/gameprocessor.h>
 
 LevelContainer* lc;
 
@@ -27,11 +27,10 @@ void GameScreen::Open()
 {
     lc = new LevelContainer();
 
-    lc->GetEntityManager()->Spawn(new Player(), 5,5);
-    lc->GetEntityManager()->Spawn(new Coin(), 3,3);
+    lc->GetEntityManager()->Spawn(new Player(), 5, 5);
+    lc->GetEntityManager()->Spawn(new Coin(), 3, 3);
 
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
-    
 };
 void GameScreen::Update()
 {
@@ -40,13 +39,9 @@ void GameScreen::Update()
 };
 void GameScreen::Render()
 {
-
-    GEC::Render::ClearScreen();
-
-
     Camera& cam = Camera::GetInstance();
-    
-    cam.SetScale(cam.ViewPort().Second()/15.0f);
+
+    cam.SetScale(cam.ViewPort().Second() / 15.0f);
 
     cam.SetScreen(
         GEC::Vector2<float, float>(
@@ -57,20 +52,18 @@ void GameScreen::Render()
         = cam.Position();
     float scl = cam.GetScale();
     glPushMatrix();
-    
-    GEC::Render::SetColor(173, 245, 255);
-    GEC::Render::Rect(0,0,cam.ViewPort().First(),cam.ViewPort().Second());
 
-    
-    glScalef(scl, scl, 0);
     glScalef(scl, scl, 1);
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
+
+    
+    
     lc->Render();
     glPopMatrix();
-
 };
 void GameScreen::Events() { };
 
-void GameScreen::Leave() {
+void GameScreen::Leave()
+{
     delete lc;
 };
