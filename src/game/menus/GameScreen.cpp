@@ -63,6 +63,7 @@ void GameScreen::Render()
 
     
     glScalef(scl, scl, 0);
+    glScalef(scl, scl, 1);
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
     lc->Render();
     glPopMatrix();

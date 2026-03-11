@@ -17,7 +17,7 @@ void GEC::Render::ClearScreen()
 
 void GEC::Render::ClearScreen(float r, float g, float b)
 {
-    glClearColor(r/255.0f, g/255.0f, b/255.0f, 1.0f);
+    glClearColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
 }
 
 void GEC::Render::SetColor(float r, float g, float b, float a)
@@ -39,12 +39,16 @@ void GEC::Render::SetColor(float l)
 
 void GEC::Render::Rect(float x, float y, float width, float height)
 {
+    Rect(x, y, 0, width, height);
+}
+void GEC::Render::Rect(float x, float y, float z, float width, float height)
+{
 
     glDisable(GL_TEXTURE_2D);
     float rot = 0;
     glPushMatrix();
     {
-        glTranslatef(x, y, 0);
+        glTranslatef(x, y, z);
         glRotatef(rot, 0, 0, 1);
 
         glBegin(GL_QUADS);
@@ -61,24 +65,33 @@ void GEC::Render::Rect(float x, float y, float width, float height)
 
 void GEC::Render::Triangle(float x, float y, Vector2<float, float> first, Vector2<float, float> second, Vector2<float, float> third, float rot)
 {
+    Triangle(x, y, 0, Vector3<float, float, float>(first.First(), first.Second(), 0), Vector3<float, float, float>(second.First(), second.Second(), 0), Vector3<float, float, float>(third.First(), third.Second(), 0), rot);
+}
+void GEC::Render::Triangle(float x, float y, float z, Vector3<float, float, float> first, Vector3<float, float, float> second, Vector3<float, float, float> third, float rot)
+{
 
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
     {
-        glTranslatef(x, y, 0);
+        glTranslatef(x, y, z);
         glRotatef(rot, 0, 0, 1);
         glBegin(GL_TRIANGLES);
         {
-            glVertex2f(first.First(), first.Second());
-            glVertex2f(second.First(), second.Second());
-            glVertex2f(third.First(), third.Second());
+            glVertex3f(first.First(), first.Second(), first.Third());
+            glVertex3f(second.First(), second.Second(), first.Third());
+            glVertex3f(third.First(), third.Second(), first.Third());
         }
         glEnd();
     }
     glPopMatrix();
 }
 
-void GEC::Render::Line(Vector2<float, float> a, Vector2<float, float> b, float width)
+
+void GEC::Render::Line(Vector2<float, float> from, Vector2<float, float> to, float width)
+{
+    Line(Vector3<float, float, float>(from.First(), from.Second(), 0), Vector3<float, float, float>(to.First(), to.Second(), 0), width);
+}
+void GEC::Render::Line(Vector3<float, float, float> a, Vector3<float, float, float> b, float width)
 {
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
@@ -87,8 +100,8 @@ void GEC::Render::Line(Vector2<float, float> a, Vector2<float, float> b, float w
 
         glBegin(GL_LINES);
         {
-            glVertex2f(a.First(), a.Second());
-            glVertex2f(b.First(), b.Second());
+            glVertex3f(a.First(), a.Second(), a.Third());
+            glVertex3f(b.First(), b.Second(), b.Third());
         }
         glEnd();
     }
@@ -97,9 +110,14 @@ void GEC::Render::Line(Vector2<float, float> a, Vector2<float, float> b, float w
 
 void GEC::Render::Arrow(Vector2<float, float> from, Vector2<float, float> to, float lineWidth, float headSize)
 {
+}
+void GEC::Render::Arrow(Vector3<float, float, float> from, Vector3<float, float, float> to, float lineWidth, float headSize)
+{
     Line(from, to, lineWidth);
 
-    float angle = GEC::Tools::AngleBetween(from, to);
+    float angle = GEC::Tools::AngleBetween(
+        Vector2<float, float>(from.First(), from.Second()),
+        Vector2<float, float>(to.First(), to.Second()));
     angle = 90 + GEC::Tools::RadiansToDegress(angle);
 
     glPushMatrix();
@@ -113,6 +131,10 @@ void GEC::Render::Arrow(Vector2<float, float> from, Vector2<float, float> to, fl
 }
 
 void GEC::Render::Image(const char* texid, float x, float y, float width, float height)
+{
+    Image(texid, x, y, 0, width, height);
+}
+void GEC::Render::Image(const char* texid, float x, float y, float z, float width, float height)
 {
 
     Texture* tex = TextureEngine::GetInstance().GetTexture(texid);
@@ -128,7 +150,7 @@ void GEC::Render::Image(const char* texid, float x, float y, float width, float 
     float rot = 0;
     glPushMatrix();
     {
-        glTranslatef(x, y, 0);
+        glTranslatef(x, y, z);
         glRotatef(rot, 0, 0, 1);
 
         glBegin(GL_QUADS);
@@ -153,6 +175,11 @@ void GEC::Render::Image(const char* texid, float x, float y, float width, float 
 
 void GEC::Render::Sprite(const char* texid, float x, float y, float width, float height, GEC::Vector2<int, int> selection, int numOfSpritesInRow)
 {
+    Sprite(texid, x, y, 0, width, height, selection, numOfSpritesInRow);
+}
+
+void GEC::Render::Sprite(const char* texid, float x, float y, float z, float width, float height, GEC::Vector2<int, int> selection, int numOfSpritesInRow)
+{
     Texture* tex = TextureEngine::GetInstance().GetTexture(texid);
     if (tex == nullptr) {
         tex = TextureEngine::GetInstance().GetTexture("engine::err");
@@ -171,7 +198,7 @@ void GEC::Render::Sprite(const char* texid, float x, float y, float width, float
     float rot = 0;
     glPushMatrix();
     {
-        glTranslatef(x, y, 0);
+        glTranslatef(x, y, z);
         glRotatef(rot, 0, 0, 1);
 
         glBegin(GL_QUADS);

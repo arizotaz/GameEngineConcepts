@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 
     // Initialize GLUT
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // RGB mode
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // RGB mode
 
     // Setup then create the window
     glutInitWindowSize(winW, winH); // window size
@@ -271,6 +271,7 @@ void UpdateViewPort()
     glOrtho(-winW / 2, winW / 2, -winH / 2, winH / 2, -1000.0f,
         1000.0f); // Clipping plane is set to 1000 behind camera and 1000
                   // infront, this works because ortho is cool
+
 
     // Set last size to the new size
     lastWinW = winW;

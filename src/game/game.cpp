@@ -23,6 +23,9 @@ void Assignment2::Start()
 {
     glutSetWindowTitle("Colton Staiduhar - 811138106");
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     mm = new GEC::MenuManager();
 
     mm->AddMenu(0, new MainMenu());
@@ -42,7 +45,11 @@ void Assignment2::Update()
 }
 void Assignment2::Render()
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mm->Render();
+
+    
+    
 }
 void Assignment2::Exit()
 {

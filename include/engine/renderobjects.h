@@ -100,6 +100,7 @@ namespace Render {
      * @param height - height of the object
      */
     void Rect(float x, float y, float width, float height);
+    void Rect(float x, float y, float z, float width, float height);
 
     /**
      * Draws a Triangle with the current color
@@ -112,6 +113,7 @@ namespace Render {
      * @param rotation - Rotation in Degrees
      */
     void Triangle(float x, float y, Vector2<float,float> point1, Vector2<float,float> point2, Vector2<float,float> point3, float rotation);
+    void Triangle(float x, float y, float z, Vector3<float,float,float> point1, Vector3<float,float,float> point2, Vector3<float,float,float> point3, float rotation);
 
     /**
      * Draws a simple line in the current color
@@ -121,6 +123,7 @@ namespace Render {
      * @param thickness - Pixel Thickness of the line
      */
     void Line(Vector2<float, float> from, Vector2<float, float> to, float thickness);
+    void Line(Vector3<float, float,float> from, Vector3<float, float,float> to, float thickness);
 
     /**
      * Draws a simple arrow in the current color
@@ -131,6 +134,7 @@ namespace Render {
      * @param head_size - Size of the arrow head
      */
     void Arrow(Vector2<float, float> from, Vector2<float, float> to, float line_thickness, float head_size);
+    void Arrow(Vector3<float, float,float> from, Vector3<float, float,float> to, float line_thickness, float head_size);
 
     /**
      * Draws a textured square with the current color
@@ -145,6 +149,7 @@ namespace Render {
      * @param height - height of the object
      */
     void Image(const char* texID, float x, float y, float width, float height);
+    void Image(const char* texID, float x, float y, float z, float width, float height);
 
     /**
      * Draws a specific cell of a sprite sheet with the current color
@@ -156,12 +161,14 @@ namespace Render {
      * @param id - Texture ID
      * @param x - position on the x axis
      * @param y - position on the y axis
+     * @param z - position on the z axis
      * @param width - width of the object
      * @param height - height of the 
      * @param cell_position - the cell index to draw (ie cell (2,3) )
      * @param num_of_sprites_per_row - The number of sprites in each row of the spritesheet
      */
     void Sprite(const char* texID, float x, float y, float width, float height, GEC::Vector2<int,int> cell_position,int num_of_sprites_per_row);
+    void Sprite(const char* texID, float x, float y, float z, float width, float height, GEC::Vector2<int,int> cell_position,int num_of_sprites_per_row);
 }
 
 }
