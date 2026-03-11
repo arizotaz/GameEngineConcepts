@@ -69,7 +69,7 @@ void Player::Tick()
             if (input_jump > 0 && !jumped) {
                 jumped = true;
                 // forceY = 35; - two tiles
-                force.Second() = 50;
+                force.Second() = 52;
                 isInAJump = true;
             }
         } else {

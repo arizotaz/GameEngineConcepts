@@ -181,11 +181,8 @@ void EntityManager::Render()
 }
 Entity* EntityManager::Get(int id) const
 {
-    int i = 0;
-    while (i < entities.size()) {
-
-        ++i;
-    }
+    throw std::runtime_error("EntityManager::Get(int id) has not been declared");
+    return nullptr;
 }
 EntityManager::~EntityManager()
 {

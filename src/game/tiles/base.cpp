@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <game/tile.h>
 
 Tile::Tile(int id)
