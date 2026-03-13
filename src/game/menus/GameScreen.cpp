@@ -51,13 +51,15 @@ void GameScreen::Render()
         cPos
         = cam.Position();
     float scl = cam.GetScale();
-    glPushMatrix();
 
+    GEC::Render::SetColor(0, 255, 0,80);
+    GEC::Render::Arrow(GEC::Vector3<float, float, float >(0,0,-1), GEC::Vector3<float, float, float >(0, cam.ViewPort().Second()/2-20, -1), 2, 20);
+    GEC::Render::SetColor(255, 0, 0,80);
+    GEC::Render::Arrow(GEC::Vector3<float, float, float >(0, 0, -1), GEC::Vector3<float, float, float >(cam.ViewPort().First()/2 -20, 0, -1), 2, 20);
+
+    glPushMatrix();
     glScalef(scl, scl, 1);
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
-
-    
-    
     lc->Render();
     glPopMatrix();
 };
