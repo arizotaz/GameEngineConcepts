@@ -42,6 +42,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(stb_image)
 
+# Fetch the miniaudio Repository and install it
+FetchContent_Declare(
+  freetype
+  GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+  GIT_TAG "master"
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS ON
+  SYSTEM
+)
+FetchContent_MakeAvailable(freetype)
+
 
 # If using the Windows compiler
 if (MSVC OR USE_FREEGLUT)
@@ -166,6 +177,7 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
   "-lpthread"
   stb_image
   miniaudio
+  freetype
 )
 
 # Native GLUT for Mac
@@ -191,6 +203,7 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
   "-lm"
   stb_image
   miniaudio
+  freetype
 )
 endif()
 
@@ -230,6 +243,7 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
   gdi32
   stb_image
   miniaudio
+  freetype
 )
 
 endif()
