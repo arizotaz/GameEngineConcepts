@@ -220,6 +220,21 @@ public:
         return _v2;
     }
 
+    /** Return the first value
+     * @return _v1 - the first element
+     */
+    const V1& First() const
+    {
+        return _v1;
+    }
+    /** Return the second value
+     * @return _v2 - the second element
+     */
+    const V2& Second() const
+    {
+        return _v2;
+    }
+
     /** Moves the values of the vector by (v1,v2)
      * @param v1 - how much to add to the x value
      * @param v2 - how much to add to the y value
