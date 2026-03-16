@@ -21,6 +21,7 @@ namespace UI {
     }
     void ElementRenderer::ClearCycle()
     {
+        this->list.clear();
     }
 
     void ElementRenderer::AddElement(Element* elm, int layer)

@@ -53,10 +53,10 @@ void GEC::Render::Rect(float x, float y, float z, float width, float height)
 
         glBegin(GL_QUADS);
         {
-            glVertex2f(-width / 2, -height / 2);
-            glVertex2f(-width / 2, height / 2);
-            glVertex2f(width / 2, height / 2);
-            glVertex2f(width / 2, -height / 2);
+            glVertex3f(-width / 2, -height / 2,0);
+            glVertex3f(-width / 2, height / 2,0);
+            glVertex3f(width / 2, height / 2,0);
+            glVertex3f(width / 2, -height / 2,0);
         }
         glEnd();
     }

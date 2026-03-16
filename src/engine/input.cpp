@@ -149,6 +149,12 @@ void GEC::Input::Mouse::Update()
 
 void GEC::Input::Mouse::SetCursor(std::string cursor) {
     this->cursor = cursor;
+    if (cursor == "cursor")
+    glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
+    if (cursor == "pointer")
+    glutSetCursor(GLUT_CURSOR_INFO);
+    
+    
 }
 std::string GEC::Input::Mouse::GetCursor() const {
     return cursor;

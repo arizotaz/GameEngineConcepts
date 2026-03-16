@@ -135,6 +135,16 @@ namespace UI {
                 }
             }
             this->objectIdentifier = this->BaseObjectID() + "_c" + std::to_string(clicked) + "_h" + std::to_string(hover) + "_d" + std::to_string(down);
+
+            if (changeCursor) {
+                if (!last_hover && hover) {
+                    mouse->SetCursor("pointer");
+                }
+                if (last_hover && !hover) {
+                    mouse->SetCursor("cursor");
+                }
+                last_hover = hover;
+            }
         }
         virtual void Render() = 0;
 
@@ -160,6 +170,7 @@ namespace UI {
 
             GEC::Vector2<float, float> pos = mouse->Position();
             pos.Move(-screen/2);
+            pos = pos * GEC::Vector2<float,float>(1,-1);
             std::cout << pos.First() << "-" << pos.Second();
 
             bool value = pos.First() < interactX + width / 2 && pos.First() > interactX - width / 2 && pos.Second() > interactY - height / 2 && pos.Second() < interactY + height / 2;
@@ -167,6 +178,7 @@ namespace UI {
         }
 
         bool down = false, hover = false, clicked = false;
+        bool last_hover = false;
 
         bool changeCursor = true;
         std::string changeToCursor = "pointer";

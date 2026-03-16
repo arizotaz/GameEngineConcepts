@@ -75,6 +75,12 @@ typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int);
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
 
+GEC::TextRender::Font* GetGlobalFont() {
+    if (!globalFont)
+    globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
+    return globalFont;
+}
+
 /** Implement GameRunning Accessor */
 bool GameRunning()
 {
