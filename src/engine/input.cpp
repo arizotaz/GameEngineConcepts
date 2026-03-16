@@ -7,6 +7,7 @@
 #endif
 
 #include <engine/input.h>
+#include <engine/structs.h>
 #include <iostream>
 #include <stdio.h>
 
@@ -97,6 +98,7 @@ void GEC::Input::Mouse_GLUT::MouseWheelInterrupt(int b, int dir, int x, int y)
 
 GEC::Input::Mouse::Mouse() { }
 GEC::Input::Mouse::~Mouse() { }
+GEC::Vector2<float,float> GEC::Input::Mouse::Position() const { return GEC::Vector2<float,float>(x,y); }
 bool GEC::Input::Mouse::LeftDown() const { return buttons[MouseButtons::LEFT]; }
 bool GEC::Input::Mouse::RightDown() const { return buttons[MouseButtons::RIGHT]; }
 bool GEC::Input::Mouse::LeftPressed() const { return pressedButtons[MouseButtons::LEFT] == 2; }
@@ -143,4 +145,11 @@ void GEC::Input::Mouse::Update()
         if (buttons[i] > 0 && pressedButtons[i] == 0)
             pressedButtons[i] = 2;
     }
+}
+
+void GEC::Input::Mouse::SetCursor(std::string cursor) {
+    this->cursor = cursor;
+}
+std::string GEC::Input::Mouse::GetCursor() const {
+    return cursor;
 }

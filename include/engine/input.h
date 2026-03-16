@@ -47,6 +47,8 @@
 #define KeyboardInput_h 1
 
 #include <stdbool.h>
+#include <iostream>
+#include <engine/structs.h>
 
 namespace GEC {
 namespace Input {
@@ -191,6 +193,12 @@ namespace Input {
         void SetScroll(float, float);
 
         /**
+         * Returns the current position of the mouse
+         * @return Vector2 where the first position is the x and second is the y
+         */
+        GEC::Vector2<float,float> Position() const;
+
+        /**
          * @return {bool} - If left mouse button is depressed
          */
         bool LeftDown() const;
@@ -220,6 +228,15 @@ namespace Input {
          * @return {float} - current scroll input on the y axis
          */
         float ScrollY() const;
+
+        /**
+         * @return {float} - current scroll input on the y axis
+         */
+        void SetCursor(std::string);
+        /**
+         * @return {float} - current scroll input on the y axis
+         */
+        std::string GetCursor() const;
     private:
         Mouse();
         ~Mouse();
@@ -229,6 +246,7 @@ namespace Input {
         bool buttons[3];
         int pressedButtons[3];
         float scrollX, scrollY, rawScrollX,rawScrollY;
+        std::string cursor;
     };
 
     namespace Mouse_GLUT {

@@ -1,7 +1,7 @@
 #include <engine/renderobjects.h>
 #include <engine/texture.h>
 #include <engine/tools.h>
-#include <game/camera.h>
+#include <engine/camera.h>
 #include <game/gameprocessor.h>
 #include <game/tile.h>
 

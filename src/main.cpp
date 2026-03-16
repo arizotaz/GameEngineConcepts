@@ -304,6 +304,7 @@ void MainLoop()
     // Execute the Game Loop
     pro->Update();
     pro->Render();
+    pro->Events();
 
     // Flush GL Buffer
     glFlush();

@@ -16,13 +16,14 @@
 #include <vector>
 
 #include <engine/texture.h>
-#include <game/camera.h>
+#include <engine/camera.h>
 #include <game/entities/objects.h>
 #include <game/entities/player.h>
 #include <game/gameprocessor.h>
 
 LevelContainer* lc;
 
+GameScreen::GameScreen(GEC::UI::ElementRenderer* elr) {}
 void GameScreen::Open()
 {
     lc = new LevelContainer();
@@ -42,11 +43,6 @@ void GameScreen::Render()
     Camera& cam = Camera::GetInstance();
 
     cam.SetScale(cam.ViewPort().Second() / 15.0f);
-
-    cam.SetScreen(
-        GEC::Vector2<float, float>(
-            glutGet(GLUT_WINDOW_WIDTH),
-            glutGet(GLUT_WINDOW_HEIGHT)));
     GEC::Vector3<float, float, float>
         cPos
         = cam.Position();
@@ -67,5 +63,8 @@ void GameScreen::Events() { };
 
 void GameScreen::Leave()
 {
+
+    Camera::GetInstance().SetScale(1);
+
     delete lc;
 };

@@ -66,6 +66,11 @@ public:
      */
     void virtual Render() = 0;
 
+     /**
+     * GUI Event Calls
+     */
+    void virtual Events() = 0;
+
 private:
     int _processID;
 };
@@ -224,6 +229,13 @@ public:
         _v1 += v1;
         _v2 += v2;
     }
+
+    void Move(Vector2<V1,V2> val)
+    {
+        _v1 += val._v1;
+        _v2 += val._v2;
+    }
+
     /** Sets the values of the vector to (v1,v2)
      * @param v1 - the new x value
      * @param v2 - the new y value
@@ -232,6 +244,31 @@ public:
     {
         _v1 = v1;
         _v2 = v2;
+    }
+
+
+    Vector2<V1,V2> operator-() const {
+        return Vector2<V1,V2>(-_v1, -_v2);
+    }
+
+    Vector2<V1,V2> operator*(const int val) const {
+        return Vector2<V1,V2>(_v1*val,_v2*val);
+    }
+    Vector2<V1,V2> operator*(const float val) const {
+        return Vector2<V1,V2>(_v1*val,_v2*val);
+    }
+    Vector2<V1,V2> operator*(const Vector2& val) const {
+        return Vector2<V1,V2>(_v1*val._v1,_v2*val._v2);
+    }
+
+    Vector2<V1,V2> operator/(const int val) const {
+        return Vector2<V1,V2>(_v1/val,_v2/val);
+    }
+    Vector2<V1,V2> operator/(const float val) const {
+        return Vector2<V1,V2>(_v1/val,_v2/val);
+    }
+    Vector2<V1,V2> operator/(const Vector2& val) const {
+        return Vector2<V1,V2>(_v1/val._v1,_v2/val._v2);
     }
 
 private:

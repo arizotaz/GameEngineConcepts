@@ -12,25 +12,42 @@
 #define MENUS_H 1
 
 #include <engine/structs.h>
+#include <engine/ui/element.h>
+#include <engine/ui/button.h>
 
 /** Main Menu Declaration */
 class MainMenu : public GEC::Menu {
-    public:
+public:
+    MainMenu(GEC::UI::ElementRenderer*);
     virtual void Open() override;
     virtual void Update() override;
     virtual void Render() override;
     virtual void Events() override;
     virtual void Leave() override;
+
+private:
+    GEC::UI::ElementRenderer* elr;
+
+    GEC::UI::Elements::Button* start;
+    GEC::UI::Elements::Button* settings;
+    GEC::UI::Elements::Button* about;
+    GEC::UI::Elements::Button* quit;
+
+    void CreatePage();
 };
 
 /** GameScreen Menu Declaration */
 class GameScreen : public GEC::Menu {
-    public:
+public:
+    GameScreen(GEC::UI::ElementRenderer*);
     virtual void Open() override;
     virtual void Update() override;
     virtual void Render() override;
     virtual void Events() override;
     virtual void Leave() override;
+
+private:
+    GEC::UI::ElementRenderer* elr;
 };
 
 #endif

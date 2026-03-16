@@ -17,7 +17,7 @@
 
 #include <game/deltatime.h>
 
-#include <game/camera.h>
+#include <engine/camera.h>
 
 #include <engine/tools.h>
 
