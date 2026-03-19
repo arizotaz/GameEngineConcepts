@@ -31,6 +31,10 @@ namespace Tools {
     /**
      * Simple Distance Formula
      */
+    float Distance(Vector2<float, float> a, Vector2<float, float> b);
+    /**
+     * Simple Distance Formula
+     */
     float Distance(float x1, float y1, float x2, float y2);
 
     template <typename T>

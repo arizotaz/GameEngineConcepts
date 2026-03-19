@@ -2,9 +2,12 @@
 
 #include <engine/renderobjects.h>
 #include <math.h>
+#include <engine/tools.h>
+#include <string.h>
+#include <game/entities/player.h>
 
 Coin::Coin()
-    : Entity(0, 0, .3, .3)
+    : Entity("gec.assign2.coin",0, 0, .3, .3)
 {
     mass = 3.0f;
     force.Move(20, 0);
@@ -27,6 +30,19 @@ void Coin::Tick()
         friction.Set(10.0f, 0);
     }
     ProcessGravity();
+
+    EntityManager* em = this->Manager();
+    std::vector<int> list = em->List();
+    for (int i = 0; i < list.size(); ++i) {
+        Entity* entity = em->Get(list[i]);
+        if (strcmp(entity->GetType(),"gec.assign2.player") == 0) {
+            if (GEC::Tools::Distance(entity->Position(), this->Position()) < this->Size().First()+entity->Size().First()) {
+                Player* p = dynamic_cast<Player*>(entity);
+                p->collectedCoins++;
+                this->Kill();
+            }
+        }
+    }
 };
 void Coin::Render()
 {

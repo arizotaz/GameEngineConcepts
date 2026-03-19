@@ -1,5 +1,7 @@
 #include <engine/ui/element.h>
+#include <iostream>
 #include <math.h>
+#include <cstdlib>
 
 namespace GEC {
 namespace UI {
@@ -21,6 +23,9 @@ namespace UI {
     }
     void ElementRenderer::ClearCycle()
     {
+        for (auto& [key, vec] : list) {
+            vec.clear();
+        }
         this->list.clear();
     }
 
@@ -37,7 +42,8 @@ namespace UI {
 
     void ElementRenderer::Update()
     {
-        if (changed > 0) --changed;
+        if (changed > 0)
+            --changed;
         for (auto iter = list.rbegin(); iter != list.rend(); ++iter) {
             std::vector<Element*> elements = iter->second;
             for (Element* element : elements) {
@@ -58,11 +64,10 @@ namespace UI {
                     element->Interact();
                     objectIDList += "-" + element->ObejctIdentifier();
                     if (element->ShouldUpdateScreen()) {
-                        objectIDList += "_FRUP" + std::to_string(round(random() * 10000));
+                        objectIDList += "_FRUP" + std::to_string(round(rand() * 10000));
                     }
                     objectIDList += ";";
                     element->DoNotUpdateScreen();
-
                 }
             }
         }
@@ -82,11 +87,13 @@ namespace UI {
         }
     }
 
-    bool ElementRenderer::HasChanged() const {
+    bool ElementRenderer::HasChanged() const
+    {
         return changed > 0;
     }
 
-    void ElementRenderer::MarkChange() {
+    void ElementRenderer::MarkChange()
+    {
         changed = 1;
     }
 

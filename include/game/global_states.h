@@ -16,4 +16,8 @@ bool GameRunning();
 void CloseCallBack();
 
 
+float FPS();
+float FPS_AVERAGE();
+
+
 #endif

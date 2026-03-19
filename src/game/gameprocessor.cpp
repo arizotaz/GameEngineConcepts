@@ -3,36 +3,43 @@
 #include <engine/tools.h>
 #include <engine/camera.h>
 #include <game/gameprocessor.h>
+#include <game/deltatime.h>
+#include <game/levelcontainer.h>
 #include <game/tile.h>
+
 
 LevelContainer::LevelContainer()
 {
-    // Loads the tile list
-    TileList::GetInstance().LoadTiles();
-
     lp = new LevelProcessor(this);
     lr = new LevelRenderer(this);
     em = new EntityManager(this);
     currentLevel = nullptr;
+    lc_mm = new GEC::MenuManager();
 
     currentLevel = new Level("test");
     currentLevel->Init(100, 100, 2);
+
+    timeRemaining = 255;
 }
 
 void LevelContainer::Update()
 {
     lp->Update();
     em->Update();
+    lc_mm->Update();
+    lc_mm->Events();
 }
 void LevelContainer::Tick()
 {
     lp->Tick();
     em->Tick();
+    if (!GameWon()) timeRemaining -= GetMainDeltaTime()/1000.0f;
 }
 void LevelContainer::Render()
 {
     lr->Render();
     em->Render();
+    lc_mm->Render();
 }
 
 LevelContainer::~LevelContainer()
@@ -40,8 +47,8 @@ LevelContainer::~LevelContainer()
     delete lp;
     delete lr;
     delete em;
-
     delete currentLevel;
+    delete lc_mm;
 }
 
 Level* LevelContainer::GetLevelData()
@@ -59,6 +66,9 @@ LevelRenderer* LevelContainer::GetLevelRenderer()
 EntityManager* LevelContainer::GetEntityManager()
 {
     return this->em;
+}
+GEC::MenuManager* LevelContainer::GetMenuManager() {
+    return this->lc_mm;
 }
 
 LevelProcessor::LevelProcessor(LevelContainer* lc)

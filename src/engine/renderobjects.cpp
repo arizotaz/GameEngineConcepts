@@ -36,6 +36,14 @@ void GEC::Render::SetColor(float l)
 {
     SetColor(l, 255);
 }
+void GEC::Render::SetColor(GEC::Rect<float,float,float,float> c)
+{
+    SetColor(c.X(), c.Y(), c.W(), c.H());
+}
+void GEC::Render::SetColor(GEC::Rect<float,float,float,float>* c)
+{
+    SetColor(c->X(), c->Y(), c->W(), c->H());
+}
 
 void GEC::Render::Rect(float x, float y, float width, float height)
 {

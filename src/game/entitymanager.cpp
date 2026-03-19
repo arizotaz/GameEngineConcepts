@@ -1,12 +1,13 @@
-#include <game/gameprocessor.h>
-
 #include <engine/physics/box_collider.h>
 #include <game/deltatime.h>
+#include <game/gameprocessor.h>
+#include <game/levelcontainer.h>
 #include <game/tile.h>
 
-Entity::Entity(float x, float y, float width, float height)
+Entity::Entity(const char* type, float x, float y, float width, float height)
     : friction(10.0f, 0)
     , force(0, 0)
+    , typeID(type)
 {
     position_size = new GEC::Rect<float, float, float, float>(x, y, width, height);
 };
@@ -47,6 +48,10 @@ unsigned int Entity::GetID() const
 void Entity::SetID(unsigned int id)
 {
     this->id = id;
+}
+const char* Entity::GetType() const
+{
+    return this->typeID;
 }
 
 std::vector<bool> Entity::ProcessForceCollision(float x, float y, float nx, float ny, float colliderW, float colliderH, Entity* entity)
@@ -162,6 +167,7 @@ void EntityManager::Update()
 }
 void EntityManager::Tick()
 {
+    std::vector<int> removeIDs;
     int i = 0;
     while (i < entities.size()) {
         Entity* entity = entities.at(i);
@@ -171,10 +177,26 @@ void EntityManager::Tick()
                 entity->OnSpawn();
             }
             entity->Tick();
+            if (entity->Health() <= 0)
+                entity->Kill();
+        } else {
+            if (!entity->releaseEntity) {
+                entity->DeathLoop();
+            } else {
+                removeIDs.push_back(entity->id);
+            }
         }
-        if (entity->Health() <= 0)
-            entity->Kill();
         ++i;
+    }
+
+    for (int i = 0; i < removeIDs.size(); ++i) {
+        int id = removeIDs[i];
+        Entity* e_obj = this->Get(id);
+        if (e_obj) {
+            auto begin = std::find(entities.begin(), entities.end(), this->Get(id));
+            entities.erase(begin);
+            delete e_obj;
+        }
     }
 }
 void EntityManager::Render()
@@ -188,23 +210,46 @@ void EntityManager::Render()
 }
 Entity* EntityManager::Get(int id) const
 {
-    throw std::runtime_error("EntityManager::Get(int id) has not been declared");
+    int i = 0;
+    while (i < entities.size()) {
+        Entity* entity = entities.at(i);
+        if (entity->GetID() == id) {
+            i = entities.size();
+            return entity;
+        }
+        ++i;
+    }
+
     return nullptr;
+}
+std::vector<int> EntityManager::List() const
+{
+    std::vector<int> v;
+    int i = 0;
+    while (i < entities.size()) {
+        Entity* entity = entities.at(i);
+        v.push_back(entity->GetID());
+        ++i;
+    }
+    return v;
 }
 EntityManager::~EntityManager()
 {
     int i = entities.size() - 1;
     while (i >= 0) {
         Entity* entity = entities.at(i);
-        delete entity;
-        ++i;
+        if (entity != nullptr)
+            delete entity;
+        --i;
     }
     entities.clear();
 }
 void EntityManager::Spawn(Entity* e, float x, float y)
 {
     int id = this->nextID;
-    e->id;
+    ++this->nextID;
+
+    e->id = id;
     e->manager = this;
     ++id;
 

@@ -16,6 +16,7 @@
 #include <engine/renderobjects.h>
 #include <engine/structs.h>
 #include <math.h>
+#include <game/levelcontainer.h>
 
 
 class TileList;

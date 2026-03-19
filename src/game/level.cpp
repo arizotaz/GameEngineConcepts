@@ -62,6 +62,13 @@ void Level::Init(int width, int height, int layers)
     SetTile(2, 14, 4, 1);
     SetTile(2, 15, 4, 1);
     SetTile(1, 16, 4, 1);
+
+
+    for (int i = 2; i < 8; ++i) {
+        SetTile(1, 20, i, 1);
+        SetTile(1, 21, i, 1);
+
+    }
 }
 
 int Level::GetTile(int index) const

@@ -15,28 +15,73 @@
 #include <iostream>
 #include <vector>
 
-#include <engine/texture.h>
 #include <engine/camera.h>
+#include <engine/texture.h>
+#include <game/entities/finish_line.h>
 #include <game/entities/objects.h>
 #include <game/entities/player.h>
 #include <game/gameprocessor.h>
+#include <game/global_states.h>
+#include <game/levelcontainer.h>
+
+bool drawAxis = true;
 
 LevelContainer* lc;
 
-GameScreen::GameScreen(GEC::UI::ElementRenderer* elr) {}
+GameScreen::GameScreen(GEC::UI::ElementRenderer* elr)
+{
+    this->elr = elr;
+}
 void GameScreen::Open()
 {
     lc = new LevelContainer();
 
-    lc->GetEntityManager()->Spawn(new Player(), 5, 5);
-    lc->GetEntityManager()->Spawn(new Coin(), 3, 3);
+    lc->SetPlayer(new Player());
+    lc->GetEntityManager()->Spawn(lc->GetPlayer(), 5, 5);
+    lc->GetEntityManager()->Spawn(new Coin(), 6, 5);
+    lc->GetEntityManager()->Spawn(new Coin(), 7, 8);
+    lc->GetEntityManager()->Spawn(new Coin(), 8, 8);
+    lc->GetEntityManager()->Spawn(new Coin(), 9, 8);
+    lc->GetEntityManager()->Spawn(new Coin(), 10, 8);
+    lc->GetEntityManager()->Spawn(new Coin(), 11, 8);
+    lc->GetEntityManager()->Spawn(new Coin(), 12, 8);
 
-    GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
+    lc->GetEntityManager()->Spawn(new FinishLine(lc), 40, 10);
+
+    GEC::MenuManager* mm = lc->GetMenuManager();
+    mm->AddMenu(0, new GAME_BlankMenu());
+    mm->AddMenu(1, new GAME_PauseMenu(elr, lc));
+
+    GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
 };
 void GameScreen::Update()
 {
+    lc->GetMenuManager()->Update();
     lc->Update();
-    lc->Tick();
+    if (!lc->Paused()) {
+        lc->Tick();
+        if (lc->GameWon() && GEC::AudioEngine::GetInstance().SoundFinished("finish_line")) {
+            GEC::AudioEngine::GetInstance().StopSound("finish_line");
+            GEC::AudioEngine::GetInstance().StopSound("BG_MUSIC");
+            if (this->GetManager()->Exists(2))
+                this->GetManager()->RemoveMenu(2);
+            this->GetManager()->AddMenu(2, new WinScreen(elr, lc->Coins(), lc->TimeRemaining()));
+            this->GetManager()->GoTo(2);
+        }
+    }
+    if (lc->GetPlayer()->Position().Second() <= -10)
+        lc->GetPlayer()->Kill();
+    if (lc->GetPlayer()->IsDead())
+        GetManager()->GoTo(3);
+    if (lc->TimeRemaining() <= 0)
+        GetManager()->GoTo(3);
+
+    if (GEC::Input::Keyboard::IsKeyPressed(97))
+        drawAxis = !drawAxis;
+
+    if (GEC::AudioEngine::GetInstance().SoundFinished("BG_MUSIC")) {
+        GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
+    }
 };
 void GameScreen::Render()
 {
@@ -48,23 +93,116 @@ void GameScreen::Render()
         = cam.Position();
     float scl = cam.GetScale();
 
-    GEC::Render::SetColor(0, 255, 0,80);
-    GEC::Render::Arrow(GEC::Vector3<float, float, float >(0,0,-1), GEC::Vector3<float, float, float >(0, cam.ViewPort().Second()/2-20, -1), 2, 20);
-    GEC::Render::SetColor(255, 0, 0,80);
-    GEC::Render::Arrow(GEC::Vector3<float, float, float >(0, 0, -1), GEC::Vector3<float, float, float >(cam.ViewPort().First()/2 -20, 0, -1), 2, 20);
+    if (drawAxis) {
+        GEC::Render::SetColor(0, 255, 0, 80);
+        GEC::Render::Arrow(GEC::Vector3<float, float, float>(0, 0, -1), GEC::Vector3<float, float, float>(0, cam.ViewPort().Second() / 2 - 20, -1), 2, 20);
+        GEC::Render::SetColor(255, 0, 0, 80);
+        GEC::Render::Arrow(GEC::Vector3<float, float, float>(0, 0, -1), GEC::Vector3<float, float, float>(cam.ViewPort().First() / 2 - 20, 0, -1), 2, 20);
+    }
 
     glPushMatrix();
     glScalef(scl, scl, 1);
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
     lc->Render();
     glPopMatrix();
+
+    GEC::Render::SetColor(255);
+    GEC::TextRender::Text t(GetGlobalFont());
+    t.Align(0, 2);
+
+    glPushMatrix();
+    glTranslatef(-cam.ViewPort().First() / 2, cam.ViewPort().Second() / 2, 0.01);
+
+    t.SetText("FPS: " + std::to_string((int)FPS_AVERAGE()));
+    t.Render(0, -1, 0, 18);
+    t.SetText("Time: " + std::to_string((int)round(lc->TimeRemaining())));
+    t.Render(0, -20, 0, 18);
+    t.SetText("Coins: " + std::to_string(lc->Coins()));
+    t.Render(0, -40, 0, 18);
+    glPopMatrix();
+
+    glDisable(GL_DEPTH_TEST);
+    lc->GetMenuManager()->Render();
+    glEnable(GL_DEPTH_TEST);
 };
-void GameScreen::Events() { };
+void GameScreen::Events()
+{
+    lc->GetMenuManager()->Events();
+};
 
 void GameScreen::Leave()
 {
 
+    GEC::AudioEngine::GetInstance().StopSound("BG_MUSIC");
     Camera::GetInstance().SetScale(1);
-
     delete lc;
 };
+
+GAME_PauseMenu::GAME_PauseMenu(GEC::UI::ElementRenderer* elr, LevelContainer* lc)
+{
+    this->elr = elr;
+    this->lc = lc;
+}
+void GAME_PauseMenu::Open()
+{
+    lc->Pause();
+    CreateElements();
+    CreatePage();
+        GEC::AudioEngine::GetInstance().PauseSound("BG_MUSIC");
+};
+void GAME_PauseMenu::Update() {
+ 
+};
+void GAME_PauseMenu::Render() {
+
+};
+void GAME_PauseMenu::Events()
+{
+    if (GEC::Input::Keyboard::IsKeyPressed(112) || backButton->Clicked())
+        this->GetManager()->GoTo(0);
+};
+void GAME_PauseMenu::Leave()
+{
+    elr->ClearCycle();
+    delete pausedText;
+    delete bgPanel;
+    delete backButton;
+
+    lc->UnPause();
+            GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
+
+};
+void GAME_PauseMenu::CreateElements()
+{
+    bgPanel = new GEC::UI::Elements::Panel(0, 150);
+    pausedText = new GEC::UI::Elements::TextDisplay("Game Paused");
+    backButton = new GEC::UI::Elements::Button();
+}
+void GAME_PauseMenu::CreatePage()
+{
+    elr->ClearCycle();
+    bgPanel->Set(0, 0, Camera::GetInstance().ViewPort().First(), Camera::GetInstance().ViewPort().Second());
+
+    pausedText->Align(1, 1);
+    pausedText->SetFont(GetGlobalFont());
+    pausedText->SetColor(255);
+    pausedText->Set(0, 30, 100, 28);
+
+    backButton->Set("Back to Game", 0, -30, 200, 28);
+    backButton->SetFont(GetGlobalFont());
+
+    elr->AddElement(bgPanel, 0);
+    elr->AddElement(pausedText, 0);
+    elr->AddElement(backButton, 0);
+};
+
+GAME_BlankMenu::GAME_BlankMenu() { };
+void GAME_BlankMenu::Open() { };
+void GAME_BlankMenu::Update() { };
+void GAME_BlankMenu::Render() { };
+void GAME_BlankMenu::Events()
+{
+    if (GEC::Input::Keyboard::IsKeyPressed(112))
+        this->GetManager()->GoTo(1);
+};
+void GAME_BlankMenu::Leave() { };

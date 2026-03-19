@@ -21,11 +21,13 @@
 
 #include <engine/tools.h>
 
+#include <engine/audio.h>
+
 Player::Player()
-    : Entity(0, 0, .8f,.8f)
+    : Entity("gec.assign2.player", 0, 0, .8f, .8f)
 {
     this->mass = 3;
-    this->friction.Set(10.0f,0);
+    this->friction.Set(10.0f, 0);
 }
 void Player::Update()
 {
@@ -33,28 +35,28 @@ void Player::Update()
 
     float input_x_axis = 0;
     float input_jump = 0;
-    if (GEC::Input::Keyboard::IsSpecialKeyDown(101)) {
-        input_jump = 1;
-    }
-    if (GEC::Input::Keyboard::IsSpecialKeyDown(100)) {
-        input_x_axis = -1;
-    }
-    if (GEC::Input::Keyboard::IsSpecialKeyDown(102)) {
-        input_x_axis = 1;
+
+    if (userInput) {
+        if (GEC::Input::Keyboard::IsSpecialKeyDown(101) || GEC::Input::Keyboard::IsKeyDown(32)) {
+            input_jump = 1;
+        }
+        if (GEC::Input::Keyboard::IsSpecialKeyDown(100)) {
+            input_x_axis = -1;
+        }
+        if (GEC::Input::Keyboard::IsSpecialKeyDown(102)) {
+            input_x_axis = 1;
+        }
     }
 
     this->input_x_axis = input_x_axis;
     this->input_jump = input_jump;
 
-
-
-
-    GEC::Vector3<float,float,float> pos = Camera::GetInstance().Position();
+    GEC::Vector3<float, float, float> pos = Camera::GetInstance().Position();
     float dist = GEC::Tools::Distance(position_size->X(), position_size->Y(), pos.First(), pos.Second());
-		float tdis = 2;
-		if (dist > tdis) {
-			Camera::GetInstance().MoveTo(position_size->X(), position_size->Y(), (float)pow((dist - tdis),2) * 20 * (dtime/10.0f));
-		}
+    float tdis = 2;
+    if (dist > tdis) {
+        Camera::GetInstance().MoveTo(position_size->X(), position_size->Y(), (float)pow((dist - tdis), 2) * 20 * (dtime / 10.0f));
+    }
 }
 
 void Player::Tick()
@@ -67,6 +69,7 @@ void Player::Tick()
         if (solidGroud) {
             isInAJump = false;
             if (input_jump > 0 && !jumped) {
+                GEC::AudioEngine::GetInstance().PlaySound("player.jump");
                 jumped = true;
                 // forceY = 35; - two tiles
                 force.Second() = 52;
@@ -138,6 +141,7 @@ void Player::Tick()
     walk_time += dtime * abs(force.First() / 2.0f);
     if (walk_time >= 1 && _imgX != 24) {
         walk_time = 0;
+        GEC::AudioEngine::GetInstance().PlaySound("player.step");
         // Play Step Audio
     }
 }
@@ -145,7 +149,7 @@ void Player::Render()
 {
     GEC::Rect<float, float, float, float>* r = this->position_size;
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r->X(), r->Y(), r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX/8, _imgY/8), 16);
+    GEC::Render::Sprite("game.entities", r->X(), r->Y(), 1.1, r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
 }
 Player::~Player()
 {

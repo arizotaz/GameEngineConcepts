@@ -7,6 +7,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <string>
+
 namespace GEC {
 namespace UI {
 
@@ -81,6 +83,20 @@ namespace UI {
         float interactX, interactY;
         std::string objectIdentifier;
 
+        bool MouseInBounds(GEC::Input::Mouse* mouse, float x, float y, float width, float height)
+        {
+            GEC::Vector2<float, float> screen = Camera::GetInstance().ViewPort();
+            interactX = x;
+            interactY = y;
+
+            GEC::Vector2<float, float> pos = mouse->Position();
+            pos.Move(-screen/2);
+            pos = pos * GEC::Vector2<float,float>(1,-1);
+
+            bool value = pos.First() < interactX + width / 2 && pos.First() > interactX - width / 2 && pos.Second() > interactY - height / 2 && pos.Second() < interactY + height / 2;
+            return value;
+        }
+
     private:
         long WindowID;
         bool shouldUpdateScreen;
@@ -120,7 +136,7 @@ namespace UI {
             down = false;
             clicked = false;
             if (!ElementRegistry::GetInstance().ShouldStopInteract()) {
-                if (MouseInBounds(x, y, width, height)) {
+                if (MouseInBounds(mouse, x, y, width, height)) {
                     hover = true;
                     if (changeCursor) {
                         mouse->SetCursor(changeToCursor);
@@ -162,20 +178,6 @@ namespace UI {
         }
 
     protected:
-        bool MouseInBounds(float x, float y, float width, float height)
-        {
-            GEC::Vector2<float, float> screen = Camera::GetInstance().ViewPort();
-            interactX = x;
-            interactY = y;
-
-            GEC::Vector2<float, float> pos = mouse->Position();
-            pos.Move(-screen/2);
-            pos = pos * GEC::Vector2<float,float>(1,-1);
-            std::cout << pos.First() << "-" << pos.Second();
-
-            bool value = pos.First() < interactX + width / 2 && pos.First() > interactX - width / 2 && pos.Second() > interactY - height / 2 && pos.Second() < interactY + height / 2;
-            return value;
-        }
 
         bool down = false, hover = false, clicked = false;
         bool last_hover = false;

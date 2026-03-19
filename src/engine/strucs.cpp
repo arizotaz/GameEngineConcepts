@@ -12,7 +12,9 @@
 
 namespace GEC {
 
-MenuManager::MenuManager() { }
+MenuManager::MenuManager() { 
+    menuList = new GEC::Menu*[0];
+}
 void MenuManager::Update()
 {
     if (this->nextIndex != this->lastInd) {
@@ -44,12 +46,11 @@ void MenuManager::Events()
     if (this->currMenu != nullptr)
         this->currMenu->Events();
 }
-void MenuManager::AddMenu(int id, Menu* m)
-{
+void MenuManager::AddMenu(int id, Menu* m) {
     // If the list is empty
     if (this->menus < 1) {
         this->menus = id + 1;
-        this->menuList = new Menu*[this->menus];
+        this->menuList = new Menu * [this->menus];
 
         // Fill List with nullptr
         for (int i = 0; i < this->menus; ++i)
@@ -59,14 +60,18 @@ void MenuManager::AddMenu(int id, Menu* m)
     if (id > this->menus - 1) {
         // Resize Menu Index
         int newSize = id + 1;
-        Menu** newList = new Menu*[newSize];
+        Menu** newList = new Menu * [newSize];
 
         // Copy everything over
-        for (int i = 0; i < menus; ++i)
-            newList[i] = menuList[i];
+        for (int i = 0; i < this->menus; ++i)
+            newList[i] = this->menuList[i];
 
-        // Delete old list, but not the data in it
-        delete this->menuList;
+        // Initialize new slots to nullptr (IMPORTANT)
+        for (int i = this->menus; i < newSize; ++i)
+            newList[i] = nullptr;
+
+        // Delete old list (correctly)
+        delete[] this->menuList;
 
         // Set new data
         this->menus = newSize;
@@ -74,14 +79,26 @@ void MenuManager::AddMenu(int id, Menu* m)
     }
 
     // If the menu already exists, then we need to remove the old one
-    if (this->menuList[id] != nullptr)
+    if (this->menuList[id] != nullptr) {
         delete this->menuList[id];
+        this->menuList[id] = nullptr;
+    }
 
     m->SetManager(this);
 
     // Add the new menu
     this->menuList[id] = m;
 }
+void MenuManager::RemoveMenu(int id)
+{
+    delete this->menuList[id];
+    this->menuList[id] = nullptr;
+}
+bool MenuManager::Exists(int id)
+{
+    return GetMenu(id) != nullptr;
+}
+
 
 Menu* MenuManager::GetMenu(int id)
 {

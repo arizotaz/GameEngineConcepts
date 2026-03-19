@@ -68,12 +68,32 @@
 #include <game/deltatime.h>
 #include <game/game.h>
 #include <game/global_states.h>
+#include <vector>
 
 // Expose the VSync Extension on Windows
 #if defined(_WIN32) && defined(use_freeglut)
 typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int);
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
+
+std::vector<float> fpsList;
+
+float FPS() {
+    return 1.0f/(GetMainDeltaTime()/1000.0f);
+}
+float FPS_AVERAGE() {
+    fpsList.push_back(FPS());
+    while (fpsList.size() > 240) 
+        fpsList.erase(fpsList.begin());
+
+    float total = 0;
+    for (int i = 0; i < fpsList.size(); ++i) {
+        total += fpsList[i];
+    }
+
+    total /= (float)fpsList.size();
+    return total;
+}
 
 GEC::TextRender::Font* GetGlobalFont() {
     if (!globalFont)

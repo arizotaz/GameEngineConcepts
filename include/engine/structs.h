@@ -31,7 +31,8 @@
 
 namespace GEC {
 
-template <typename V1, typename V2, typename V3, typename V4> class Rect;
+template <typename V1, typename V2, typename V3, typename V4>
+class Rect;
 class MenuManager;
 
 /**
@@ -66,7 +67,7 @@ public:
      */
     void virtual Render() = 0;
 
-     /**
+    /**
      * GUI Event Calls
      */
     void virtual Events() = 0;
@@ -140,6 +141,10 @@ public:
      * @param menu - The new Menu Pointer
      */
     void AddMenu(int id, Menu* menu);
+
+    bool Exists(int id);
+
+    void RemoveMenu(int id);
 
     /**
      * Returns the menu registered at id
@@ -245,7 +250,7 @@ public:
         _v2 += v2;
     }
 
-    void Move(Vector2<V1,V2> val)
+    void Move(Vector2<V1, V2> val)
     {
         _v1 += val._v1;
         _v2 += val._v2;
@@ -261,29 +266,35 @@ public:
         _v2 = v2;
     }
 
-
-    Vector2<V1,V2> operator-() const {
-        return Vector2<V1,V2>(-_v1, -_v2);
+    Vector2<V1, V2> operator-() const
+    {
+        return Vector2<V1, V2>(-_v1, -_v2);
     }
 
-    Vector2<V1,V2> operator*(const int val) const {
-        return Vector2<V1,V2>(_v1*val,_v2*val);
+    Vector2<V1, V2> operator*(const int val) const
+    {
+        return Vector2<V1, V2>(_v1 * val, _v2 * val);
     }
-    Vector2<V1,V2> operator*(const float val) const {
-        return Vector2<V1,V2>(_v1*val,_v2*val);
+    Vector2<V1, V2> operator*(const float val) const
+    {
+        return Vector2<V1, V2>(_v1 * val, _v2 * val);
     }
-    Vector2<V1,V2> operator*(const Vector2& val) const {
-        return Vector2<V1,V2>(_v1*val._v1,_v2*val._v2);
+    Vector2<V1, V2> operator*(const Vector2& val) const
+    {
+        return Vector2<V1, V2>(_v1 * val._v1, _v2 * val._v2);
     }
 
-    Vector2<V1,V2> operator/(const int val) const {
-        return Vector2<V1,V2>(_v1/val,_v2/val);
+    Vector2<V1, V2> operator/(const int val) const
+    {
+        return Vector2<V1, V2>(_v1 / val, _v2 / val);
     }
-    Vector2<V1,V2> operator/(const float val) const {
-        return Vector2<V1,V2>(_v1/val,_v2/val);
+    Vector2<V1, V2> operator/(const float val) const
+    {
+        return Vector2<V1, V2>(_v1 / val, _v2 / val);
     }
-    Vector2<V1,V2> operator/(const Vector2& val) const {
-        return Vector2<V1,V2>(_v1/val._v1,_v2/val._v2);
+    Vector2<V1, V2> operator/(const Vector2& val) const
+    {
+        return Vector2<V1, V2>(_v1 / val._v1, _v2 / val._v2);
     }
 
 private:
@@ -385,14 +396,15 @@ private:
 template <typename V1, typename V2, typename V3, typename V4>
 class Rect {
 public:
-
     /** Initialize Rect with 4 variables
      * @param x - x value
      * @param y - y value
      * @param w - width value
      * @param h - height value
      */
-    Rect(V1 x, V2 y, V3 w, V4 h) : _first(x, y), _second(w,h)
+    Rect(V1 x, V2 y, V3 w, V4 h)
+        : _first(x, y)
+        , _second(w, h)
     {
     }
 
