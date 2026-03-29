@@ -34,7 +34,7 @@ FetchContent_MakeAvailable(miniaudio)
 # Fetch the STB-Image Repository and install it
 FetchContent_Declare(
   stb_image
-  GIT_REPOSITORY https://github.com/arizotaz/cmake_stb_image.git
+  GIT_REPOSITORY https://git.staiduhar.com/arizotaz/stb_image-CMake.git
   GIT_TAG "master"
   GIT_SHALLOW TRUE
   GIT_PROGRESS ON
