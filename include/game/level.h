@@ -3,7 +3,7 @@
 // #############################################################################
 // # Written by Colton Staiduhar
 // # Date Created:       03/09/2025
-// # Last Modification:  03/09/2025
+// # Last Modification:  03/10/2025
 // #############################################################################
 // # This header file serves as the level data structure.  It also implements
 // # saving, loading, and modification of the level.
@@ -13,9 +13,10 @@
 #define GAME_LEVEL_H 1
 
 struct Level_Layer {
-    bool isSolid = 0;
-    int zDepth = 0;
-    bool parallax = 0;
+    bool collidable = 1;
+    bool visible = 1;
+    float zDepth = 0;
+    int parallax = 0;
 };
 
 class Level {
@@ -57,6 +58,8 @@ public:
     int Width() const;
     int Height() const;
     int Layers() const;
+
+    Level_Layer* GetLayerData(int layer);
 
     ~Level();
 

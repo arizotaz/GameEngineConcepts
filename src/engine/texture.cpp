@@ -132,6 +132,10 @@ Texture* TextureEngine::GetTexture(const char* id)
 {
     return textures[id];
 }
+bool TextureEngine::Exists(const char* id)
+{
+    return textures.find(id) != textures.end();
+}
 void TextureEngine::RemoveTexture(const char* id)
 {
     Texture* t = GetTexture(id);

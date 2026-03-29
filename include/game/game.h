@@ -29,6 +29,9 @@ public:
     /** Render Loop */
     void Render() override;
 
+    /** Process GUI Events */
+    void Events();
+
     /** On Exit */
     void Exit() override;
 };

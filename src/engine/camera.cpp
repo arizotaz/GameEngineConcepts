@@ -1,4 +1,5 @@
-#include <game/camera.h>
+#include <engine/camera.h>
+#include <math.h>
 
 void Camera::SetPos(float x, float y)
 {
@@ -65,3 +66,10 @@ GEC::Vector3<float, float, float> Camera::Position()
 {
     return GEC::Vector3<float, float, float>(cameraView.First().First(), cameraView.First().Second(), 0);
 }
+
+void Camera::MoveTo(float x, float y, float speed) {		
+		double angle = atan2(Position().Second()-y,Position().First()-x);
+		double dx = (cos(angle) * speed);
+		double dy = (sin(angle) * speed);
+		Move(-dx,-dy);
+	}

@@ -3,7 +3,7 @@
 // #############################################################################
 // # Written by Colton Staiduhar
 // # Date Created:       03/03/2025
-// # Last Modification:  03/05/2025
+// # Last Modification:  03/10/2025
 // #############################################################################
 // # World Camera Structure
 // #############################################################################
@@ -89,6 +89,11 @@ public:
      * Where the first two values are (x,y) and the second two are (w,h)
      */
     void SetPosAndSize(GEC::Rect<float, float, float, float>);
+
+    /**
+     * Moves the camera towards a position
+     */
+    void MoveTo(float x, float y, float speed);
 
 private:
     Camera()

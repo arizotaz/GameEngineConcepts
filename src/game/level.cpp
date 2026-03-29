@@ -32,6 +32,43 @@ void Level::Init(int width, int height, int layers)
     for (int i = 0; i < s; ++i)
         tiles[i] = 0;
     layerData = new Level_Layer*[layers];
+
+    for (int i = 0; i < layers; ++i)
+        layerData[i] = new Level_Layer();
+
+    layerData[0]->collidable = false;
+    layerData[0]->zDepth = -4.0f;
+    layerData[1]->zDepth = 1.0f;
+
+    for (int x = 0; x < width; ++x) {
+        SetTile(1, x, 0, 1);
+        SetTile(1, x, 1, 1);
+    }
+
+    for (int x = 6; x < width; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            SetTile(3, x, y, 0);
+        }
+    }
+
+    SetTile(2, 8, 5, 1);
+    SetTile(2, 9, 5, 1);
+    SetTile(1, 10, 4, 1);
+    SetTile(1, 10, 5, 1);
+    SetTile(1, 11, 4, 1);
+    SetTile(1, 11, 5, 1);
+    SetTile(2, 12, 4, 1);
+    SetTile(2, 13, 4, 1);
+    SetTile(2, 14, 4, 1);
+    SetTile(2, 15, 4, 1);
+    SetTile(1, 16, 4, 1);
+
+
+    for (int i = 2; i < 8; ++i) {
+        SetTile(1, 20, i, 1);
+        SetTile(1, 21, i, 1);
+
+    }
 }
 
 int Level::GetTile(int index) const
@@ -73,12 +110,12 @@ int Level::XYIndex(int x, int y, int layer) const
     int w = this->width;
     int h = this->height;
 
-    if (x < 0 || x >= w) return -1;
-    if (y < 0 || y >= h) return -1;
-    
+    if (x < 0 || x >= w)
+        return -1;
+    if (y < 0 || y >= h)
+        return -1;
 
     int rowMultiplier = y * w;
-
     int tileIndex = rowMultiplier + x;
     int layerOffset = w * h * layer;
 
@@ -89,12 +126,20 @@ int Level::XYIndex(int x, int y, int layer) const
     return index;
 }
 
-int Level::Width() const {
+int Level::Width() const
+{
     return width;
 }
-int Level::Height() const {
+int Level::Height() const
+{
     return width;
 }
-int Level::Layers() const {
-    return width;
+int Level::Layers() const
+{
+    return layers;
+}
+
+Level_Layer* Level::GetLayerData(int i)
+{
+    return this->layerData[i];
 }

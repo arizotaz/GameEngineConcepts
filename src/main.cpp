@@ -68,12 +68,38 @@
 #include <game/deltatime.h>
 #include <game/game.h>
 #include <game/global_states.h>
+#include <vector>
 
 // Expose the VSync Extension on Windows
 #if defined(_WIN32) && defined(use_freeglut)
 typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int);
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
+
+std::vector<float> fpsList;
+
+float FPS() {
+    return 1.0f/(GetMainDeltaTime()/1000.0f);
+}
+float FPS_AVERAGE() {
+    fpsList.push_back(FPS());
+    while (fpsList.size() > 240) 
+        fpsList.erase(fpsList.begin());
+
+    float total = 0;
+    for (int i = 0; i < fpsList.size(); ++i) {
+        total += fpsList[i];
+    }
+
+    total /= (float)fpsList.size();
+    return total;
+}
+
+GEC::TextRender::Font* GetGlobalFont() {
+    if (!globalFont)
+    globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
+    return globalFont;
+}
 
 /** Implement GameRunning Accessor */
 bool GameRunning()
@@ -82,7 +108,8 @@ bool GameRunning()
 }
 
 /** Implement GameRunning CallBack */
-void CloseCallBack() {
+void CloseCallBack()
+{
     gameRunning = false;
 }
 /**
@@ -95,6 +122,7 @@ void GlutLoopTimer(int);
 
 // Extended Functionality
 void UpdateViewPort();
+void CenterWindowOnScreen();
 
 // Last width and height of the window, used to resize viewport
 int lastWinW = 0, lastWinH = 0;
@@ -120,7 +148,7 @@ int main(int argc, char** argv)
 
     // Initialize GLUT
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // RGB mode
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // RGB mode
 
     // Setup then create the window
     glutInitWindowSize(winW, winH); // window size
@@ -162,6 +190,9 @@ int main(int argc, char** argv)
 
     // Sets up the viewport
     UpdateViewPort();
+
+    // Center Window
+    CenterWindowOnScreen();
 
     // Debug Ifo
     std::cout << "[" << appName << "]" << " Initializing App" << std::endl;
@@ -224,7 +255,6 @@ int main(int argc, char** argv)
     // Debug Info
     std::cout << "[" << appName << "]" << " Closing" << std::endl;
 
-
     // Run Game exit code
     pro->Exit();
 
@@ -268,6 +298,7 @@ void UpdateViewPort()
         1000.0f); // Clipping plane is set to 1000 behind camera and 1000
                   // infront, this works because ortho is cool
 
+
     // Set last size to the new size
     lastWinW = winW;
     lastWinH = winH;
@@ -299,10 +330,27 @@ void MainLoop()
     // Execute the Game Loop
     pro->Update();
     pro->Render();
+    pro->Events();
 
     // Flush GL Buffer
     glFlush();
 
     // Swap buffers to display the new frame
     glutSwapBuffers();
+}
+
+/**
+ * Centers the window to the middle of the screen
+ */
+void CenterWindowOnScreen()
+{
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+    int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
+    int screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+    int windowX = (screenWidth - width) / 2;
+    int windowY = (screenHeight - height) / 2;
+
+    glutPositionWindow(windowX,windowY);
+
 }
