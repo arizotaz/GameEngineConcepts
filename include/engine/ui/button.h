@@ -27,7 +27,6 @@ namespace UI {
             }
             void Render()
             {
-                glDisable(GL_DEPTH_TEST);
                 if (!hover) GEC::Render::SetColor(buttonColor.X(), buttonColor.Y(), buttonColor.W(),buttonColor.H());
                 else GEC::Render::SetColor(buttonColor.X()-30, buttonColor.Y()-30, buttonColor.W()-30,buttonColor.H());
                 GEC::Render::Rect(x, y, width, height);

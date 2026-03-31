@@ -121,9 +121,7 @@ void GameScreen::Render()
     t.Render(0, -40, 0, 18);
     glPopMatrix();
 
-    glDisable(GL_DEPTH_TEST);
     lc->GetMenuManager()->Render();
-    glEnable(GL_DEPTH_TEST);
 };
 void GameScreen::Events()
 {

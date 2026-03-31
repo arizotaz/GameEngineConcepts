@@ -30,9 +30,6 @@ void Assignment2::Start()
 
     glutSetWindowTitle("Colton Staiduhar - 811138106");
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-
     TileList::GetInstance().LoadTiles();
 
     mm = new GEC::MenuManager();
