@@ -2,8 +2,8 @@
 // # texture.cpp
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       02/05/2025
-// # Last Modification:  02/05/2025
+// # Date Created:       02/05/2026
+// # Last Modification:  02/05/2026
 // #############################################################################
 // # Super simple OpenGL texture loading using the stb_image.h library
 // #############################################################################

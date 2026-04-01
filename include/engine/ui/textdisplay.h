@@ -3,7 +3,7 @@
 // #############################################################################
 // # Written by Colton Staiduhar
 // # Date Created:       03/16/2022
-// # Last Modification:  03/17/2025
+// # Last Modification:  03/17/2026
 // #############################################################################
 // # Defines an element implementation for the text renderer
 // # This is simply just a means of adapting text to be used in the element

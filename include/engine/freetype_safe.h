@@ -2,8 +2,8 @@
 // # freetype_safe.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       03/16/2025
-// # Last Modification:  03/16/2025
+// # Date Created:       03/16/2026
+// # Last Modification:  03/16/2026
 // #############################################################################
 // # A reimplemnetation of a function for the freetype library
 // #############################################################################

@@ -2,8 +2,8 @@
 // # texture.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       02/05/2025
-// # Last Modification:  02/13/2025
+// # Date Created:       02/05/2026
+// # Last Modification:  02/13/2026
 // #############################################################################
 // # This file serves as simple, yet functional example of how to use the
 // # include directory of this project
