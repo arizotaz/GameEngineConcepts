@@ -34,6 +34,7 @@ namespace UI {
                 : buttonColor(255, 255, 255, 255)
                 , textColor(25, 25, 25, 255)
             {
+                this->font = GEC::TextRender::Font::GetDefault();
             }
 
             // Deconstructor
