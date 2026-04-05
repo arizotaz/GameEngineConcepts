@@ -12,14 +12,16 @@
 #include <game/game.h>
 #include <game/menus.h>
 
-#include <engine/input.h>
 #include <engine/audio.h>
+#include <engine/input.h>
 #include <engine/renderobjects.h>
 #include <engine/texture.h>
 #include <engine/ui/element.h>
 #include <game/global_states.h>
 #include <game/tile.h>
 #include <iostream>
+
+#include <game/gameeditor.h>
 
 // MenuManager Pointer
 GEC::MenuManager* mm;
@@ -44,10 +46,8 @@ void Assignment2::Start()
     elr = new GEC::UI::ElementRenderer();
 
     // Create the main menus of the application
-    mm->AddMenu(0, new MainMenu(elr));
-    mm->AddMenu(1, new GameScreen(elr));
-    mm->AddMenu(2, new WinScreen(elr,0,0));
-    mm->AddMenu(3, new LoseScreen(elr));
+    mm->AddMenu(0, new EngineBootScreen(elr));
+    mm->AddMenu(10, new EditorMenu(elr));
 
     // Load Game Textures
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");
@@ -70,10 +70,9 @@ void Assignment2::Update()
     // Reset the Element Click Limit
     GEC::UI::ElementRegistry::GetInstance().Reset();
 
-
     // Update Elements in the ElementRenderer
     elr->Update();
-    
+
     // Update the MenuManager
     mm->Update();
 
@@ -97,7 +96,7 @@ void Assignment2::Render()
     // Clear the screen buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Run the menu manager 
+    // Run the menu manager
     mm->Render();
 
     // Render all elements in the Element Manager

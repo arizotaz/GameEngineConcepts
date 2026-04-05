@@ -18,6 +18,19 @@
 #include <engine/ui/textdisplay.h>
 #include <game/levelcontainer.h>
 
+class EngineBootScreen : public GEC::Menu {
+public:
+    EngineBootScreen(GEC::UI::ElementRenderer* elr){};
+    virtual void Open() override {};
+    virtual void Update() override{
+        this->GetManager()->GoTo(10);
+    };
+    virtual void Render() override{};
+    virtual void Events() override{};
+    virtual void Leave() override{};
+
+};
+
 /** Main Menu Declaration */
 class MainMenu : public GEC::Menu {
 public:
