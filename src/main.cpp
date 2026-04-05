@@ -149,8 +149,8 @@ int main(int argc, char** argv)
 
     pro = new Assignment2();
 
-    int winW = 1280;
-    int winH = 720;
+    int winW = 1600;
+    int winH = 900;
 
     // Initialize GLUT
     glutInit(&argc, argv);
