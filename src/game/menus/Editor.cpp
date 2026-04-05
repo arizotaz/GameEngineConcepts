@@ -57,10 +57,6 @@ void Editor_MenuBar::Update()
     bSize = GEC::Tools::ClampVar<float>(bSize,50,150);
 
     float xIndex = -width/2 + bSize/2+5;
-    for (int i = 0; i < numOfElms; ++i) {
-        elms[i]->Set(x+xIndex+(bSize+10)*i,y,bSize,height-10);
-        elms[i]->Update();
-    }
 }
 void Editor_MenuBar::Interact()
 {
