@@ -246,4 +246,27 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
   freetype
 )
 
+elseif(UNIX AND NOT APPLE)
+
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${glad_SOURCE_DIR}/include")
+
+# Add our include files
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC 
+"${CMAKE_CURRENT_SOURCE_DIR}/include/"
+"${freeglut_SOURCE_DIR}/include"
+"${glad_SOURCE_DIR}/include"
+)
+
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC use_freeglut=TRUE)
+
+target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL
+  freeglut_static
+  stb_image
+  miniaudio
+  freetype
+)
+
 endif()
