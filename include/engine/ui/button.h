@@ -40,10 +40,7 @@ namespace UI {
             ~Button() { }
 
             /** Main Update Loop */
-            void Update()
-            {
-                Clickable::Update();
-            }
+            void Update() {}
 
             /** Interact Event */
             void Interact()
