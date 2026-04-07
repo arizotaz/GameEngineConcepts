@@ -1,8 +1,12 @@
 #include <engine/renderobjects.h>
 #include <engine/tools.h>
 #include <game/gameeditor.h>
+#include <game/global_states.h>
 
-EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr) : lastScreenSize(0,0)
+#include <engine/web.h>
+
+EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
+    : lastScreenSize(0, 0)
 {
     this->elr = elr;
 }
@@ -11,16 +15,17 @@ void EditorMenu::Open()
     CreateElements();
     CreatePage();
 }
-void EditorMenu::Update() {
+void EditorMenu::Update()
+{
 
     Camera* cam = &Camera::GetInstance();
-    GEC::Vector2<float,float> curScreen = cam->ViewPort();
+    GEC::Vector2<float, float> curScreen = cam->ViewPort();
 
-    if (lastScreenSize.First() != curScreen.First() || lastScreenSize.Second() != curScreen.Second() ) {
+    if (lastScreenSize.First() != curScreen.First() || lastScreenSize.Second() != curScreen.Second()) {
         lastScreenSize = curScreen;
         CreatePage();
     }
- }
+}
 void EditorMenu::Render() { }
 void EditorMenu::Events() { }
 void EditorMenu::Leave() { }
@@ -63,31 +68,52 @@ void EditorMenu::CreatePage()
      *  Add Elements to draw
      */
 
-    elr->AddElement(menuBar, 1);
     for (int i = 0; i < editorPanels.size(); ++i)
         elr->AddElement(editorPanels[i], 0);
+    elr->AddElement(menuBar, 0);
 }
 
-Editor_MenuBar::Editor_MenuBar() { }
+Editor_MenuBar::Editor_MenuBar()
+{
+    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> fileOption("File", new GEC::UI::Elements::ButtonOfButtons());
+    fileOption.Second()->AddOption("Exit", CloseCallBack);
+    menuButtons.push_back(fileOption);
+
+    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> helpMenu("Help", new GEC::UI::Elements::ButtonOfButtons());
+    helpMenu.Second()->AddOption("Controls", CloseCallBack);
+    helpMenu.Second()->AddOption("About", CloseCallBack);
+    helpMenu.Second()->AddOption("Support", CloseCallBack);
+    menuButtons.push_back(helpMenu);
+}
 Editor_MenuBar::~Editor_MenuBar() { }
 void Editor_MenuBar::Update()
 {
     GEC::UI::Elements::MouseInteractor::Update();
-    float bSize = width / numOfElms;
+    float bSize = width / menuButtons.size();
 
     bSize = GEC::Tools::ClampVar<float>(bSize, 50, 150);
 
     float xIndex = -width / 2 + bSize / 2 + 5;
+
+    for (int i = 0; i < menuButtons.size(); ++i) {
+        GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> option = menuButtons[i];
+        option.Second()->Set(option.First(), x + xIndex, y, bSize, height - 10);
+        option.Second()->Update();
+        xIndex += bSize;
+    }
 }
 void Editor_MenuBar::Interact()
 {
-
+    for (int i = 0; i < menuButtons.size(); ++i)
+        menuButtons[i].Second()->Interact();
     GEC::UI::Elements::MouseInteractor::Interact();
 }
 void Editor_MenuBar::Render()
 {
     GEC::Render::SetColor(120);
     GEC::Render::Rect(x, y, width, height);
+    for (int i = 0; i < menuButtons.size(); ++i)
+        menuButtons[i].Second()->Render();
 }
 
 Editor_Hierarchy::Editor_Hierarchy()

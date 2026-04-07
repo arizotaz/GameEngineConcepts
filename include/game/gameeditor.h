@@ -39,11 +39,10 @@ public:
 
 private:
     // Last Window Size
-    GEC::Vector2<float,float> lastScreenSize;
+    GEC::Vector2<float, float> lastScreenSize;
 
     // Pointer to the applications ElementRenderer
     GEC::UI::ElementRenderer* elr;
-
 
     Editor_MenuBar* menuBar;
 
@@ -65,8 +64,7 @@ public:
     virtual ~Editor_MenuBar() override;
 
 private:
-    GEC::UI::Element** elms;
-    int numOfElms = 5;
+    std::vector<GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*>> menuButtons;
 };
 
 /**
@@ -86,7 +84,6 @@ private:
     bool visible = true;
     std::vector<EditorPanel*> panels;
 };
-
 
 class EditorPanel : public GEC::UI::Elements::MouseInteractor {
     EditorPanel();
