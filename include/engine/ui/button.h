@@ -21,6 +21,7 @@
 #include <engine/renderobjects.h>
 #include <engine/text.h>
 #include <engine/ui/element.h>
+#include <vector>
 
 namespace GEC {
 namespace UI {
@@ -41,7 +42,7 @@ namespace UI {
             ~Button() { }
 
             /** Main Update Loop */
-            void Update() {}
+            void Update() { }
 
             /** Interact Event */
             void Interact()
@@ -114,6 +115,70 @@ namespace UI {
             GEC::TextRender::Font* font;
         };
 
+        class ButtonOfButtons : public Button {
+        public:
+            ButtonOfButtons() { };
+
+            virtual void Update()
+            {
+                float bobYInd = 0;
+                bobYInd -= height / 2;
+
+                GEC::Vector2<float, float> bobSize(width, height * .70f);
+
+                for (int i = 0; i < buttons.size(); ++i) {
+                    bobYInd -= bobSize.Second() / 2;
+                    buttons[i]->Set(operations[i].First(), x, y + bobYInd, bobSize.First(), bobSize.Second());
+                    bobYInd -= bobSize.Second() / 2;
+                    buttons[i]->Update();
+                }
+
+                GEC::UI::Elements::Button::Update();
+            }
+            virtual void Interact()
+            {
+
+                // Call Interact functions of button if they are visible
+                if (buttonDropped)
+                    for (int i = 0; i < buttons.size(); ++i) {
+                        buttons[i]->Interact();
+                        if (buttons[i]->Clicked())
+                            operations[i].Second()();
+                    }
+
+                // Interact Script of this button, toggle other buttons when clicked
+                GEC::UI::Elements::Button::Interact();
+                if (Clicked())
+                    buttonDropped = !buttonDropped;
+            }
+            virtual void Render()
+            {
+                if (buttonDropped)
+                    for (int i = 0; i < buttons.size(); ++i)
+                        buttons[i]->Render();
+                GEC::UI::Elements::Button::Render();
+            }
+
+            int AddOption(std::string name, void (*operation)())
+            {
+                int index = operations.size();
+                operations.push_back(GEC::Vector2<std::string, void (*)()>(name, operation));
+
+                buttons.push_back(new Button());
+            }
+
+            virtual ~ButtonOfButtons()
+            {
+                for (int i = 0; i < buttons.size(); ++i)
+                    delete buttons[i];
+            }
+
+        private:
+            bool buttonDropped = false;
+            std::vector<Button*> buttons;
+
+            std::vector<GEC::Vector2<std::string, void (*)()>> operations;
+        };
     }
 }
 }
