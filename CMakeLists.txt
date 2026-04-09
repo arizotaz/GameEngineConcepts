@@ -10,6 +10,11 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 # Declare Project where "GSM_TEMPLATE" is the project name
 project(Assignment3 LANGUAGES C CXX)
 
+# Set C++ Standards
+set(CMAKE_CXX_STANDARD 17)   
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) 
+
 # Use FreeGlut on Macos (Requires X11 to be installed, but doesn't use it)
 option(USE_FREEGLUT "Use FreeGLUT on Mac (ignored on Windows)" ON)
 
