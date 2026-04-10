@@ -159,7 +159,7 @@ namespace UI {
                 GEC::UI::Elements::Button::Render();
             }
 
-            int AddOption(std::string name, void (*operation)())
+            void AddOption(std::string name, void (*operation)())
             {
                 int index = operations.size();
                 operations.push_back(GEC::Vector2<std::string, void (*)()>(name, operation));
