@@ -142,14 +142,34 @@ namespace UI {
                 if (buttonDropped)
                     for (int i = 0; i < buttons.size(); ++i) {
                         buttons[i]->Interact();
-                        if (buttons[i]->Clicked())
+                        if (buttons[i]->Clicked()) {
                             operations[i].Second()();
+
+                            // Close the dropdown after an option is pressed
+                            buttonDropped = false;
+                        }
                     }
 
                 // Interact Script of this button, toggle other buttons when clicked
                 GEC::UI::Elements::Button::Interact();
                 if (Clicked())
                     buttonDropped = !buttonDropped;
+
+
+
+                // When the user clicks outside the object, close the dropdown
+                if (GEC::Input::Mouse::GetInstance().LeftPressed()) {
+                    bool objectClicked = false;
+                    for (int i = 0; i < buttons.size(); ++i)
+                        if (buttons[i]->Clicked())
+                            objectClicked = true;
+                    if (Clicked())
+                        objectClicked = true;
+
+                    if (!objectClicked)
+                        buttonDropped = false;
+                        
+                }
             }
             virtual void Render()
             {
@@ -159,7 +179,7 @@ namespace UI {
                 GEC::UI::Elements::Button::Render();
             }
 
-            int AddOption(std::string name, void (*operation)())
+            void AddOption(std::string name, void (*operation)())
             {
                 int index = operations.size();
                 operations.push_back(GEC::Vector2<std::string, void (*)()>(name, operation));

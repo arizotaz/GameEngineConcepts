@@ -82,7 +82,10 @@ Editor_MenuBar::Editor_MenuBar()
     GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> helpMenu("Help", new GEC::UI::Elements::ButtonOfButtons());
     helpMenu.Second()->AddOption("Controls", CloseCallBack);
     helpMenu.Second()->AddOption("About", CloseCallBack);
-    helpMenu.Second()->AddOption("Support", CloseCallBack);
+    helpMenu.Second()->AddOption("Support", []() {
+            OpenWebURL("https://arizotaz.com/contact/kent/gameengineconcepts");
+        }
+    );
     menuButtons.push_back(helpMenu);
 }
 Editor_MenuBar::~Editor_MenuBar() { }
