@@ -11,15 +11,33 @@
 namespace GEC {
 namespace Game {
 
+    class GameObject;
     /**
      * Scene object, used to create different "worlds".  Each scene will store a list of gameobjects and data for each
      */
     class Scene {
     public:
+        // Constructor
         Scene();
+
+        /**
+         * Runs the start function of all objects in the scene
+         */
         void Start();
+
+        /**
+         * Runs the update function of all objects in the scene
+         */
         void Update();
+
+        /**
+         * Draws all objects in the scene
+         */
         void Render();
+
+        void Load();
+
+        // Deconstructor
         ~Scene();
 
     private:
@@ -36,7 +54,7 @@ namespace Game {
         /**
          * Sets the value of the key to an integer
          */
-        void SetInt(std::string key, float value);
+        void SetInt(std::string key, int value);
         /**
          * Sets the value of the key to a boolean
          */
@@ -70,7 +88,7 @@ namespace Game {
         /**
          * Returns the raw value of the object
          */
-        std::variant<bool,int,float,std::string> GetValue();
+        std::variant<bool,int,float,std::string> GetValue(std::string key);
 
 
         /**
@@ -122,36 +140,37 @@ namespace Game {
         virtual void Render() = 0;
 
         /**
+         * Calls the render function with the appropriate transformations
+         */
+        virtual void Draw() final;
+
+        /**
          * Returns the internal type of the object
          */
-        std::string Type() {
-            return typeIdentifier;
-        }
+        std::string Type() const;
 
         /**
          * Pointer to the Position Vector of the object
          */
-        GEC::Vector3<float,float,float>* Position() { return position; }
+        GEC::Vector3<float,float,float>* Position();
         /**
          * Pointer to the Rotation Vector of the object
          */
-        GEC::Vector3<float,float,float>* Rotation() { return rotation; }
+        GEC::Vector3<float,float,float>* Rotation();
         /**
          * Pointer to the Scale Vector of the object
          */
-        GEC::Vector3<float,float,float>* Scale()    { return scale; }
+        GEC::Vector3<float,float,float>* Scale();
 
         /**
          * Returns a pointer to the parent object
          */
-        GameObject* Parent() { return parent; }
+        GameObject* Parent();
 
         /**
          * Returns all children of the object
          */
-        std::vector<GameObject*> Children() const {
-            return children;
-        }
+        std::vector<GameObject*> Children() const;
 
         /**
          * Adds a child to this object
@@ -159,16 +178,24 @@ namespace Game {
         void AddChild(GameObject* obj);
 
         /**
+         * Remove Child from the list
+         */
+        GameObject* RemoveChild(GameObject* obj);
+
+        /**
+         * Remove child at a specific index
+         */
+        GameObject* RemoveChild(int i);
+
+        /**
          * I dont need to explain this
          */
-        virtual ~GameObject() { 
-            delete pList;
-            delete position;
-            delete rotation;
-            delete scale;
-        }
+        virtual ~GameObject();
+
+        friend class Scene;
 
     protected:
+
         const char* typeIdentifier;
         PropertyList* pList = nullptr;
 
@@ -177,6 +204,11 @@ namespace Game {
         GEC::Vector3<float, float, float>* scale;
         GameObject* parent;
         std::vector<GameObject*> children;
+
+        private:
+        void RunChildStart();
+        void RunChildUpdate();
+        void RunChildDraw();
     };
 }
 }
