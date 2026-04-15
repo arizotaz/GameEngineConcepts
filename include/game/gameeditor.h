@@ -9,13 +9,13 @@
 // # interaction and controls
 // #############################################################################
 
+#include <engine/game_structs.h>
 #include <engine/structs.h>
 #include <engine/ui/button.h>
 #include <engine/ui/element.h>
 #include <engine/ui/panels.h>
 #include <engine/ui/textdisplay.h>
 #include <vector>
-
 class Editor_MenuBar;
 class Editor_Hierarchy;
 class EditorPanelSlot;
@@ -37,7 +37,11 @@ public:
     void CreateElements();
     void CreatePage();
 
+    friend class EditorPanelSlot;
+
 private:
+    const float menuBarHeight = 20;
+
     // Last Window Size
     GEC::Vector2<float, float> lastScreenSize;
 
@@ -48,6 +52,9 @@ private:
 
     // List of all available panel locations
     std::vector<EditorPanelSlot*> editorPanels;
+
+    // The actively selected scene
+    GEC::Game::Scene* activeScene = nullptr;
 };
 
 /**
@@ -72,7 +79,7 @@ private:
  */
 class EditorPanelSlot : public GEC::UI::Elements::MouseInteractor {
 public:
-    EditorPanelSlot();
+    EditorPanelSlot(EditorMenu* editor, int slotID);
 
     virtual void Update() override;
     virtual void Interact() override;
@@ -80,25 +87,62 @@ public:
 
     virtual ~EditorPanelSlot() override;
 
+    friend class EditorMenu;
+
 private:
+    float tabHeight = 15;
     bool visible = true;
+    int selectedIndex = 0;
+    std::vector<GEC::UI::Elements::Button*> tabButtons;
+
+    GEC::UI::Elements::Button left, right;
     std::vector<EditorPanel*> panels;
+    EditorMenu* editor = nullptr;
+    int slotID;
 };
 
 class EditorPanel : public GEC::UI::Elements::MouseInteractor {
-    EditorPanel();
-    virtual void Update() override;
-    virtual void Interact() override;
-    virtual void Render() override;
+public:
+    EditorPanel() { };
+    virtual void Update() override = 0;
+    virtual void Interact() override = 0;
+    virtual void Render() override = 0;
 
-    virtual ~EditorPanel() override;
+    virtual ~EditorPanel() override { };
+
+    std::string GetName() const
+    {
+        return panelName;
+    }
+
+protected:
+    std::string panelName;
 };
 
-class Editor_Hierarchy : public GEC::UI::Elements::MouseInteractor {
+class Editor_Hierarchy : public EditorPanel {
 public:
     Editor_Hierarchy();
 
     virtual void Update() override;
     virtual void Interact() override;
     virtual void Render() override;
+    virtual ~Editor_Hierarchy() override;
+};
+class Editor_Assets : public EditorPanel {
+public:
+    Editor_Assets();
+
+    virtual void Update() override;
+    virtual void Interact() override;
+    virtual void Render() override;
+    virtual ~Editor_Assets() override;
+};
+class Editor_Properties : public EditorPanel {
+public:
+    Editor_Properties();
+
+    virtual void Update() override;
+    virtual void Interact() override;
+    virtual void Render() override;
+    virtual ~Editor_Properties() override;
 };
