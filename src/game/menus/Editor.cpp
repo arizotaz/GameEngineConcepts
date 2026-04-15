@@ -39,6 +39,7 @@ void EditorMenu::Leave() {
 void EditorMenu::CreateElements()
 {
     menuBar = new Editor_MenuBar();
+    stateBar = new Editor_StateBar();
     editorPanels.push_back(new EditorPanelSlot(this,0));
     editorPanels.push_back(new EditorPanelSlot(this,1));
     editorPanels.push_back(new EditorPanelSlot(this,2));
@@ -61,9 +62,10 @@ void EditorMenu::CreatePage()
     float calH = 0;
 
     menuBar->Set(0, canvas.Second() / 2 - menuBarHeight / 2, canvas.First(), menuBarHeight);
+    stateBar->Set(0, canvas.Second() / 2 - menuBarHeight - stateBarHeight/2, canvas.First(), stateBarHeight);
 
     calW = 200;
-    calH = canvas.Second() - menuBarHeight;
+    calH = canvas.Second() - menuBarHeight-stateBarHeight;
     editorPanels[0]->Set(-canvas.First() / 2 + calW / 2, -canvas.Second() / 2 + calH / 2, calW, calH);
 
     calW = canvas.First() - editorPanels[0]->Width();
@@ -71,7 +73,7 @@ void EditorMenu::CreatePage()
     editorPanels[1]->Set(-canvas.First() / 2 + editorPanels[0]->Width() + calW / 2, -canvas.Second() / 2 + calH / 2, calW, calH);
 
     calW = 200;
-    calH = canvas.Second() - menuBarHeight - editorPanels[1]->Height();
+    calH = canvas.Second() - menuBarHeight-stateBarHeight - editorPanels[1]->Height();
     editorPanels[2]->Set(canvas.First() / 2 - calW / 2, -canvas.Second() / 2 + editorPanels[1]->Height() + calH / 2, calW, calH);
 
     /**
@@ -80,54 +82,8 @@ void EditorMenu::CreatePage()
 
     for (int i = 0; i < editorPanels.size(); ++i)
         elr->AddElement(editorPanels[i], 0);
+    elr->AddElement(stateBar,0);
     elr->AddElement(menuBar, 0);
-}
-
-Editor_MenuBar::Editor_MenuBar()
-{
-    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> fileOption("File", new GEC::UI::Elements::ButtonOfButtons());
-    fileOption.Second()->AddOption("Exit", CloseCallBack);
-    menuButtons.push_back(fileOption);
-
-    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> helpMenu("Help", new GEC::UI::Elements::ButtonOfButtons());
-    helpMenu.Second()->AddOption("Controls", CloseCallBack);
-    helpMenu.Second()->AddOption("About", CloseCallBack);
-    helpMenu.Second()->AddOption("Support", []() {
-        OpenWebURL("https://arizotaz.com/contact/kent/gameengineconcepts");
-    });
-    menuButtons.push_back(helpMenu);
-}
-Editor_MenuBar::~Editor_MenuBar() { }
-void Editor_MenuBar::Update()
-{
-    GEC::UI::Elements::MouseInteractor::Update();
-    float bSize = width / menuButtons.size();
-
-    bSize = GEC::Tools::ClampVar<float>(bSize, 50, 150);
-
-    float xIndex = -width / 2 + bSize / 2;
-
-    for (int i = 0; i < menuButtons.size(); ++i) {
-        GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> option = menuButtons[i];
-        option.Second()->Set(option.First(), x + xIndex, y, bSize, height);
-        option.Second()->Update();
-        xIndex += bSize;
-    }
-
-
-}
-void Editor_MenuBar::Interact()
-{
-    for (int i = 0; i < menuButtons.size(); ++i)
-        menuButtons[i].Second()->Interact();
-    GEC::UI::Elements::MouseInteractor::Interact();
-}
-void Editor_MenuBar::Render()
-{
-    GEC::Render::SetColor(120);
-    GEC::Render::Rect(x, y, width, height);
-    for (int i = 0; i < menuButtons.size(); ++i)
-        menuButtons[i].Second()->Render();
 }
 
 EditorPanelSlot::EditorPanelSlot(EditorMenu* editor, int slotID) {
@@ -241,7 +197,7 @@ void EditorPanelSlot::Render()
         return;
     GEC::Render::SetColor((float)0);
     GEC::Render::Rect(x, y, width, height);
-    GEC::Render::SetColor(200);
+    GEC::Render::SetColor(120);
     GEC::Render::Rect(x, y, width - 2, height - 2);
 
     if (panels.size() > 0) {
@@ -319,3 +275,71 @@ Editor_Properties::~Editor_Properties()
 {
 }
 
+Editor_MenuBar::Editor_MenuBar()
+{
+    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> fileOption("File", new GEC::UI::Elements::ButtonOfButtons());
+    fileOption.Second()->AddOption("Exit", CloseCallBack);
+    menuButtons.push_back(fileOption);
+
+    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> helpMenu("Help", new GEC::UI::Elements::ButtonOfButtons());
+    helpMenu.Second()->AddOption("Controls", CloseCallBack);
+    helpMenu.Second()->AddOption("About", CloseCallBack);
+    helpMenu.Second()->AddOption("Support", []() {
+        OpenWebURL("https://arizotaz.com/contact/kent/gameengineconcepts");
+    });
+    menuButtons.push_back(helpMenu);
+}
+Editor_MenuBar::~Editor_MenuBar() {
+    for (int i = 0; i < menuButtons.size(); ++i)
+        delete menuButtons[i].Second();
+ }
+void Editor_MenuBar::Update()
+{
+    GEC::UI::Elements::MouseInteractor::Update();
+    float bSize = width / menuButtons.size();
+
+    bSize = GEC::Tools::ClampVar<float>(bSize, 50, 150);
+
+    float xIndex = -width / 2 + bSize / 2;
+
+    for (int i = 0; i < menuButtons.size(); ++i) {
+        GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> option = menuButtons[i];
+        option.Second()->Set(option.First(), x + xIndex, y, bSize, height);
+        option.Second()->Update();
+        xIndex += bSize;
+    }
+
+
+}
+void Editor_MenuBar::Interact()
+{
+    for (int i = 0; i < menuButtons.size(); ++i)
+        menuButtons[i].Second()->Interact();
+    GEC::UI::Elements::MouseInteractor::Interact();
+}
+void Editor_MenuBar::Render()
+{
+    GEC::Render::SetColor(255);
+    GEC::Render::Rect(x, y, width, height);
+    for (int i = 0; i < menuButtons.size(); ++i)
+        menuButtons[i].Second()->Render();
+}
+
+Editor_StateBar::Editor_StateBar()
+{
+    
+}
+Editor_StateBar::~Editor_StateBar() { }
+void Editor_StateBar::Update()
+{
+    GEC::UI::Elements::MouseInteractor::Update();
+}
+void Editor_StateBar::Interact()
+{
+    GEC::UI::Elements::MouseInteractor::Interact();
+}
+void Editor_StateBar::Render()
+{
+    GEC::Render::SetColor(120);
+    GEC::Render::Rect(x, y, width, height);
+}

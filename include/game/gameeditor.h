@@ -17,6 +17,7 @@
 #include <engine/ui/textdisplay.h>
 #include <vector>
 class Editor_MenuBar;
+class Editor_StateBar;
 class Editor_Hierarchy;
 class EditorPanelSlot;
 class EditorPanel;
@@ -41,6 +42,7 @@ public:
 
 private:
     const float menuBarHeight = 20;
+    const float stateBarHeight = 40;
 
     // Last Window Size
     GEC::Vector2<float, float> lastScreenSize;
@@ -49,6 +51,7 @@ private:
     GEC::UI::ElementRenderer* elr;
 
     Editor_MenuBar* menuBar;
+    Editor_StateBar* stateBar;
 
     // List of all available panel locations
     std::vector<EditorPanelSlot*> editorPanels;
@@ -72,6 +75,21 @@ public:
 
 private:
     std::vector<GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*>> menuButtons;
+};
+
+/**
+ * The Menu bar of the application.  Used to provide specific, and global actions
+ */
+class Editor_StateBar : public GEC::UI::Elements::MouseInteractor {
+public:
+    Editor_StateBar();
+
+    virtual void Update() override;
+    virtual void Interact() override;
+    virtual void Render() override;
+
+    virtual ~Editor_StateBar() override;
+
 };
 
 /**
