@@ -210,7 +210,7 @@ void EditorPanelSlot::Interact()
             EditorPanel* panel = panels[i];
             panels.erase(panels.begin() + i);
             nPanel->panels.push_back(panel);
-            
+            nPanel->selectedIndex = nPanel->panels.size()-1;
         }
 
         // Move the selected panel to the right
@@ -228,6 +228,7 @@ void EditorPanelSlot::Interact()
             EditorPanel* panel = panels[i];
             panels.erase(panels.begin() + i);
             nPanel->panels.push_back(panel);
+            nPanel->selectedIndex = nPanel->panels.size()-1;
         }
     }
 
