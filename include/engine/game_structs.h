@@ -37,6 +37,33 @@ namespace Game {
 
         void Load();
 
+
+
+        /**
+         * List of all objects in the top level of the scene
+         */
+        std::vector<GameObject*> Objects() const;
+
+        /**
+         * Add object to the scene
+         */
+        void AddObject(GameObject* obj);
+
+        /**
+         * Remove Object from the top level of the scene
+         * Destroys all children
+         */
+        GameObject* RemoveObject(GameObject* obj);
+
+        /**
+         * Remove Object at an index from the top level of the scene
+         * Destroys all children
+         */
+        GameObject* RemoveObject(int i);
+
+        
+        std::vector<GameObject*> ListObjects() const;
+
         // Deconstructor
         ~Scene();
 

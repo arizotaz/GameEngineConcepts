@@ -14,10 +14,10 @@ namespace Game {
 
     Scene::Scene()
     {
-        
     }
     void Scene::Start()
     {
+        std::cout << "size: " << objects.size() << std::endl;
         for (auto child : objects) {
             child->RunChildStart();
         }
@@ -34,8 +34,30 @@ namespace Game {
             child->RunChildDraw();
         }
     }
-    void Scene::Load() {}
-
+    void Scene::Load() { }
+    std::vector<GameObject*> Scene::Objects() const
+    {
+        return objects;
+    }
+    void Scene::AddObject(GameObject* obj) { this->objects.push_back(obj); }
+    GameObject* Scene::RemoveObject(GameObject* obj)
+    {
+        int index = 0;
+        for (int i = 0; i < objects.size(); ++i) {
+            if (objects[i] == obj) {
+                index = i;
+                break;
+            }
+        }
+        return RemoveObject(index);
+    }
+    GameObject* Scene::RemoveObject(int i)
+    {
+        GameObject* obj = objects[i];
+        auto it = objects.begin() + i;
+        this->objects.erase(it);
+        return obj;
+    }
     Scene::~Scene()
     {
         for (auto child : objects) {
