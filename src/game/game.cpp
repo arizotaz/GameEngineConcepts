@@ -66,10 +66,6 @@ void Assignment2::Start()
 /** Main Processing loop of the process */
 void Assignment2::Update()
 {
-
-    // Reset the Element Click Limit
-    GEC::UI::ElementRegistry::GetInstance().Reset();
-
     // Update Elements in the ElementRenderer
     elr->Update();
 
@@ -108,6 +104,9 @@ void Assignment2::Events()
 {
     // Run the event loop of the Menu Manager
     mm->Events();
+
+    // Reset the Element Click Limit
+    GEC::UI::ElementRegistry::GetInstance().Reset();
 }
 /** Called when the process exits */
 void Assignment2::Exit()
