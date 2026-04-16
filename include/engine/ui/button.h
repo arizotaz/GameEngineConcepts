@@ -76,6 +76,17 @@ namespace UI {
             void Set(std::string text, float x, float y, float width, float height)
             {
                 this->text = text;
+                Set(x, y, width, height);
+            }
+
+            /** Sets the values of the button
+             * @param x - the x position of the button
+             * @param y - the y position of the button
+             * @param width - the width of the button
+             * @param height - the height of the button
+             */
+            void Set(float x, float y, float width, float height)
+            {
                 Clickable::Set(x, y, width, height);
             }
 
