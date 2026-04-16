@@ -13,6 +13,7 @@
 #include <engine/structs.h>
 #include <engine/ui/button.h>
 #include <engine/ui/element.h>
+#include <engine/ui/ui_input.h>
 #include <engine/ui/panels.h>
 #include <engine/ui/textdisplay.h>
 #include <vector>
@@ -38,6 +39,17 @@ public:
     void CreateElements();
     void CreatePage();
 
+    GEC::Game::Scene* Scene() const;
+
+    void SetSelectedObj(GEC::Game::GameObject* obj)
+    {
+        this->selectedGameObject = obj;
+    }
+    GEC::Game::GameObject* GetSelectedObj() const
+    {
+        return selectedGameObject;
+    }
+
     friend class EditorPanelSlot;
 
 private:
@@ -58,6 +70,9 @@ private:
 
     // The actively selected scene
     GEC::Game::Scene* activeScene = nullptr;
+
+    // The selected game obj
+    GEC::Game::GameObject* selectedGameObject = nullptr;
 };
 
 /**
@@ -89,7 +104,6 @@ public:
     virtual void Render() override;
 
     virtual ~Editor_StateBar() override;
-
 };
 
 /**
@@ -106,6 +120,7 @@ public:
     virtual ~EditorPanelSlot() override;
 
     friend class EditorMenu;
+    friend class EditorPanel;
 
 private:
     float tabHeight = 15;
@@ -115,6 +130,7 @@ private:
 
     GEC::UI::Elements::Button left, right;
     std::vector<EditorPanel*> panels;
+
     EditorMenu* editor = nullptr;
     int slotID;
 };
@@ -133,8 +149,21 @@ public:
         return panelName;
     }
 
+    void SetCurrectSlot(EditorPanelSlot* slot)
+    {
+        this->currentEditorSlot = slot;
+    }
+
 protected:
+    int SlotID() const { return currentEditorSlot->slotID; }
+    EditorMenu* EditorObject() const
+    {
+        return currentEditorSlot->editor;
+    }
+
     std::string panelName;
+
+    EditorPanelSlot* currentEditorSlot;
 };
 
 class Editor_Hierarchy : public EditorPanel {
@@ -145,6 +174,9 @@ public:
     virtual void Interact() override;
     virtual void Render() override;
     virtual ~Editor_Hierarchy() override;
+
+private:
+    std::vector<GEC::UI::Elements::Button*> objectList;
 };
 class Editor_Assets : public EditorPanel {
 public:
@@ -163,4 +195,16 @@ public:
     virtual void Interact() override;
     virtual void Render() override;
     virtual ~Editor_Properties() override;
+
+    void CleanUp();
+private:
+    const float axis = 2;
+    GEC::Game::GameObject* lastGOBJ = nullptr;
+    std::vector<GEC::UI::Elements::TextDisplay*> labels;
+
+    GEC::UI::Elements::InputField* name;
+
+    std::vector<GEC::UI::Elements::InputField*> positionInputs;
+    std::vector<GEC::UI::Elements::InputField*> rotationInputs;
+    std::vector<GEC::UI::Elements::InputField*> scaleInputs;
 };
