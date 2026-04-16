@@ -83,6 +83,11 @@ public:
             labels.push_back(new GEC::UI::Elements::TextDisplay("Brush Layer"));
         }
 
+        if (layerCollidable_input == nullptr) {
+            labels.push_back(new GEC::UI::Elements::TextDisplay("Layer Data"));
+            layerCollidable_input = new GEC::UI::Elements::Checkbox();
+        }
+
         float bSize = 15;
         GEC::Vector2<float, float> iInd(x, y + height / 2 - bSize / 2);
 
@@ -120,6 +125,14 @@ public:
         bSize = 20;
         brushLayerInput->Set(iInd.First(), iInd.Second(), width, bSize);
         brushLayerInput->Update();
+        iInd.Move(0, -bSize * 1.5f);
+
+        labels[2]->Set(x - width / 2, iInd.Second(), width, 15);
+        iInd.Move(0, -15);
+        bSize = 20;
+        layerCollidable_input->Set("Layer is Collidable", x - width / 2, iInd.Second(), width, bSize);
+        layerCollidable_input->Update();
+        iInd.Move(0, -bSize * 1.5f);
 
         for (auto l : labels) {
             l->Update();
@@ -138,19 +151,25 @@ public:
             if (layerSelect[i]->Clicked()) {
                 drawLayer = i - 1;
                 if (drawLayer > -1) {
-                    brushLayer = drawLayer;
-                    brushLayerInput->SetValue(std::to_string(brushLayer));
+                    brushLayerInput->SetValueAsUser(std::to_string(i-1));
                 }
             }
         }
 
         if (brushLayerInput != nullptr) {
             brushLayerInput->Interact();
-            if (brushLayerInput->Changed())
+            if (brushLayerInput->Changed()) {
                 this->brushLayer = std::stoi(brushLayerInput->GetValue());
+                layerCollidable_input->SetValue(levelData->GetLayerData(drawLayer)->collidable);
+            }
         }
+        
         for (auto l : labels) {
             l->Interact();
+        }
+        layerCollidable_input->Interact();
+        if (layerCollidable_input->Changed()) {
+            levelData->GetLayerData(brushLayer)->collidable = layerCollidable_input->GetValue();
         }
     }
     void RenderPropertiesPanel(float x, float y, float width, float height)
@@ -186,6 +205,9 @@ public:
 
         if (brushLayerInput != nullptr)
             brushLayerInput->Render();
+
+        if (layerCollidable_input != nullptr)
+            layerCollidable_input->Render();
     }
 
 protected:
@@ -203,6 +225,8 @@ protected:
     GEC::UI::Elements::InputField* brushLayerInput = nullptr;
     int selectedDrawTile = 0;
     int drawLayer = -1, brushLayer = 0;
+
+    GEC::UI::Elements::Checkbox* layerCollidable_input = nullptr;
 };
 
 #endif
