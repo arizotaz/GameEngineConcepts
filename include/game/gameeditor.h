@@ -201,10 +201,10 @@ private:
     const float axis = 2;
     GEC::Game::GameObject* lastGOBJ = nullptr;
     std::vector<GEC::UI::Elements::TextDisplay*> labels;
-
     GEC::UI::Elements::InputField* name;
-
     std::vector<GEC::UI::Elements::InputField*> positionInputs;
     std::vector<GEC::UI::Elements::InputField*> rotationInputs;
     std::vector<GEC::UI::Elements::InputField*> scaleInputs;
+
+    GEC::Rect<float,float,float,float> objPropBounds;
 };

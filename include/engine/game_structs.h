@@ -7,6 +7,8 @@
 #include <map>
 #include <variant>
 
+// Remove this later
+#include <engine/renderobjects.h>
 
 namespace GEC {
 namespace Game {
@@ -225,6 +227,10 @@ namespace Game {
          * I dont need to explain this
          */
         virtual ~GameObject();
+
+        virtual void UpdatePropertiesPanel(float x, float y, float width, float height) {}
+        virtual void InteractPropertiesPanel(float x, float y, float width, float height) {}
+        virtual void RenderPropertiesPanel(float x, float y, float width, float height) {}
 
         friend class Scene;
 

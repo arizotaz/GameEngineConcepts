@@ -336,6 +336,7 @@ Editor_Assets::~Editor_Assets()
 }
 
 Editor_Properties::Editor_Properties()
+    : objPropBounds(0, 0, 0, 0)
 {
     panelName = "Properties";
     for (int i = 0; i < axis; ++i)
@@ -406,7 +407,13 @@ void Editor_Properties::Update()
     size = (width - 4) / scaleInputs.size();
     for (int i = 0; i < scaleInputs.size(); ++i)
         scaleInputs[i]->Set(x - width / 2 + 2 + size / 2 + size * i, y + yIndex, size, iheight);
-    yIndex -= iheight * 2;
+    yIndex -= iheight;
+
+    float propH = (yIndex+height/2) - 2;
+    this->objPropBounds.X() = x;
+    this->objPropBounds.Y() = y - height / 2 + propH / 2 + 4;
+    this->objPropBounds.W() = width - 4;
+    this->objPropBounds.H() = propH;
 
     name->Update();
     for (auto i : positionInputs)
@@ -417,12 +424,18 @@ void Editor_Properties::Update()
         i->Update();
     for (auto i : labels)
         i->Update();
+
+    if (EditorObject()->GetSelectedObj() != nullptr)
+        EditorObject()->GetSelectedObj()->UpdatePropertiesPanel(objPropBounds.X(), objPropBounds.Y(), objPropBounds.W(), objPropBounds.H());
 }
 void Editor_Properties::Interact()
 {
 
     bool reload = false;
     bool changed;
+
+    if (EditorObject()->GetSelectedObj() == nullptr)
+        return;
 
     try {
         name->Interact();
@@ -467,6 +480,8 @@ void Editor_Properties::Interact()
         reload = true;
     }
 
+    EditorObject()->GetSelectedObj()->InteractPropertiesPanel(objPropBounds.X(), objPropBounds.Y(), objPropBounds.W(), objPropBounds.H());
+
     if (reload)
         this->lastGOBJ = nullptr;
 
@@ -488,6 +503,9 @@ void Editor_Properties::Render()
         i->Render();
     for (auto i : labels)
         i->Render();
+
+    if (EditorObject()->GetSelectedObj() != nullptr)
+        EditorObject()->GetSelectedObj()->RenderPropertiesPanel(objPropBounds.X(), objPropBounds.Y(), objPropBounds.W(), objPropBounds.H());
 }
 Editor_Properties::~Editor_Properties()
 {
