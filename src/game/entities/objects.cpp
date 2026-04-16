@@ -1,16 +1,17 @@
 #include <game/entities/objects.h>
 
 #include <engine/renderobjects.h>
-#include <math.h>
 #include <engine/tools.h>
-#include <string.h>
 #include <game/entities/player.h>
+#include <math.h>
+#include <string.h>
 
 Coin::Coin()
-    : Entity("gec.assign2.coin",0, 0, .3, .3)
+    : Entity("gec.assign2.coin", 0, 0, .3, .3)
 {
     mass = 3.0f;
     force.Move(20, 0);
+    this->name = "Coin";
 }
 void Coin::Update() {
 
@@ -35,8 +36,8 @@ void Coin::Tick()
     std::vector<int> list = em->List();
     for (int i = 0; i < list.size(); ++i) {
         Entity* entity = em->Get(list[i]);
-        if (strcmp(entity->GetType(),"gec.assign2.player") == 0) {
-            if (GEC::Tools::Distance(entity->Position(), this->Position()) < this->Size().First()+entity->Size().First()) {
+        if (strcmp(entity->GetType(), "gec.assign2.player") == 0) {
+            if (GEC::Tools::Distance(*(entity->Position()), *(this->Position())) < this->Size().First() + entity->Size().First()) {
                 Player* p = dynamic_cast<Player*>(entity);
                 p->collectedCoins++;
                 this->Kill();
@@ -46,9 +47,9 @@ void Coin::Tick()
 };
 void Coin::Render()
 {
-    GEC::Rect<float, float, float, float>* r = this->position_size;
+    GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r->X(), r->Y(), r->W(), r->H(), GEC::Vector2<int, int>(1, 13), 16);
+    GEC::Render::Sprite("game.entities", r.X(), r.Y(), r.W(), r.H(), GEC::Vector2<int, int>(1, 13), 16);
 };
 Coin::~Coin() { };
 void Coin::OnSpawn() { };

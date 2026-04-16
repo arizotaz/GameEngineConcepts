@@ -18,16 +18,18 @@
 #include <vector>
 
 #include <engine/structs.h>
+#include <engine/game_structs.h>
 
 #include <game/level.h>
 
 class LevelContainer;
 class EntityManager;
 
-class Entity {
+class Entity : public GEC::Game::GameObject {
 public:
     Entity(const char* id, float, float, float, float);
     virtual void OnSpawn() { }
+    virtual void Start() {}
     virtual void Tick() = 0;
     virtual void Update() = 0;
     virtual void Render() = 0;
@@ -36,7 +38,7 @@ public:
     virtual void OnRemove() { }
 
     virtual ~Entity();
-    GEC::Vector2<float, float> Position() const;
+    GEC::Vector2<float, float>* Position() const;
     GEC::Vector2<float, float> Size() const;
 
     void Kill();
@@ -58,10 +60,10 @@ protected:
     unsigned int id;
     const char* typeID;
 
+        GEC::Vector2<float, float> size;
     float health = 1;
     bool isDead = false, releaseEntity = false;
     bool spawned = false;
-    GEC::Rect<float, float, float, float>* position_size;
     GEC::Vector2<float, float> force;
     GEC::Vector2<float, float> friction;
     float mass = 10;

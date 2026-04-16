@@ -40,6 +40,7 @@ namespace Game {
         return objects;
     }
     void Scene::AddObject(GameObject* obj) { this->objects.push_back(obj); }
+    void Scene::AddObject(GameObject* obj, float x, float y) { this->objects.push_back(obj);obj->position->Set(x,y); }
     GameObject* Scene::RemoveObject(GameObject* obj)
     {
         int index = 0;
@@ -139,9 +140,9 @@ namespace Game {
     void GameObject::Draw()
     {
         glPushMatrix();
-        glTranslatef(position->First(), position->Second(), position->Third());
-        glRotatef(rotation->First(), rotation->Second(), rotation->Third(), 1);
-        glScalef(scale->First(), scale->Second(), scale->Third());
+        glTranslatef(position->First(), position->Second(), 0);
+        glRotatef(rotation->First(), rotation->Second(), 0, 1);
+        glScalef(scale->First(), scale->Second(), 1);
         Render();
         glPopMatrix();
     }
@@ -149,9 +150,9 @@ namespace Game {
     {
         return typeIdentifier;
     }
-    GEC::Vector3<float, float, float>* GameObject::Position() { return position; }
-    GEC::Vector3<float, float, float>* GameObject::Rotation() { return rotation; }
-    GEC::Vector3<float, float, float>* GameObject::Scale() { return scale; }
+    GEC::Vector2<float, float>* GameObject::Position() { return position; }
+    GEC::Vector2<float, float>* GameObject::Rotation() { return rotation; }
+    GEC::Vector2<float, float>* GameObject::Scale() { return scale; }
     GameObject* GameObject::Parent() { return parent; }
     std::vector<GameObject*> GameObject::Children() const
     {

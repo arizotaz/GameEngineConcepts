@@ -5,6 +5,8 @@
 #include <game/gameeditor.h>
 #include <game/global_states.h>
 #include <game/objects.h>
+#include <game/entities/objects.h>
+
 
 EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     : lastScreenSize(0, 0)
@@ -13,6 +15,16 @@ EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     activeScene = new GEC::Game::Scene();
 
     activeScene->AddObject(new TileRenderer());
+    activeScene->AddObject(new Player(), 1, 2);
+    activeScene->AddObject(new Coin(), 6, 5);
+    activeScene->AddObject(new Coin(), 7, 8);
+    activeScene->AddObject(new Coin(), 8, 8);
+    activeScene->AddObject(new Coin(), 9, 8);
+    activeScene->AddObject(new Coin(), 10, 8);
+    activeScene->AddObject(new Coin(), 11, 8);
+    activeScene->AddObject(new Coin(), 12, 8);
+
+    //activeScene->AddObject(new FinishLine(lc), 40, 10);
 }
 void EditorMenu::Open()
 {
@@ -452,7 +464,7 @@ void Editor_Properties::Interact()
         }
         if (changed) {
             reload = true;
-            EditorObject()->GetSelectedObj()->Position()->Set(std::stof(positionInputs[0]->GetValue()), std::stof(positionInputs[1]->GetValue()), 0);
+            EditorObject()->GetSelectedObj()->Position()->Set(std::stof(positionInputs[0]->GetValue()), std::stof(positionInputs[1]->GetValue()));
         }
 
         changed = false;
@@ -463,7 +475,7 @@ void Editor_Properties::Interact()
         }
         if (changed) {
             reload = true;
-            EditorObject()->GetSelectedObj()->Rotation()->Set(std::stof(rotationInputs[0]->GetValue()), std::stof(rotationInputs[1]->GetValue()), 0);
+            EditorObject()->GetSelectedObj()->Rotation()->Set(std::stof(rotationInputs[0]->GetValue()), std::stof(rotationInputs[1]->GetValue()));
         }
 
         changed = false;
@@ -474,7 +486,7 @@ void Editor_Properties::Interact()
         }
         if (changed) {
             reload = true;
-            EditorObject()->GetSelectedObj()->Scale()->Set(std::stof(scaleInputs[0]->GetValue()), std::stof(scaleInputs[1]->GetValue()), 0);
+            EditorObject()->GetSelectedObj()->Scale()->Set(std::stof(scaleInputs[0]->GetValue()), std::stof(scaleInputs[1]->GetValue()));
         }
     } catch (std::exception e) {
         reload = true;

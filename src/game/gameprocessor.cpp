@@ -106,7 +106,7 @@ LevelRenderer::~LevelRenderer() { }
 void LevelRenderer::Render()
 {
     if (this->levelContainer != nullptr)
-        this->levelContainer->GetLevelData();
+        level = this->levelContainer->GetLevelData();
     Level* l = level;
     if (!l)
         return;
@@ -121,7 +121,7 @@ void LevelRenderer::Render()
 void LevelRenderer::DrawLayer(int layer, int z)
 {
     if (this->levelContainer != nullptr)
-        this->levelContainer->GetLevelData();
+        level = this->levelContainer->GetLevelData();
     Level* l = level;
     if (!l)
         return;

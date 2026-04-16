@@ -28,9 +28,11 @@ Player::Player()
 {
     this->mass = 3;
     this->friction.Set(10.0f, 0);
+    this->name = "Player";
 }
 void Player::Update()
 {
+    
     float dtime = GetMainDeltaTime() / 1000.0f;
 
     float input_x_axis = 0;
@@ -50,13 +52,6 @@ void Player::Update()
 
     this->input_x_axis = input_x_axis;
     this->input_jump = input_jump;
-
-    GEC::Vector3<float, float, float> pos = Camera::GetInstance().Position();
-    float dist = GEC::Tools::Distance(position_size->X(), position_size->Y(), pos.First(), pos.Second());
-    float tdis = 2;
-    if (dist > tdis) {
-        Camera::GetInstance().MoveTo(position_size->X(), position_size->Y(), (float)pow((dist - tdis), 2) * 20 * (dtime / 10.0f));
-    }
 }
 
 void Player::Tick()
@@ -144,12 +139,19 @@ void Player::Tick()
         GEC::AudioEngine::GetInstance().PlaySound("player.step");
         // Play Step Audio
     }
+
+    GEC::Vector3<float, float, float> pos = Camera::GetInstance().Position();
+    float dist = GEC::Tools::Distance(position->First(), position->Second(), pos.First(), pos.Second());
+    float tdis = 2;
+    if (dist > tdis) {
+        Camera::GetInstance().MoveTo(position->First(), position->Second(), (float)pow((dist - tdis), 2) * 20 * (dtime / 10.0f));
+    }
 }
 void Player::Render()
 {
-    GEC::Rect<float, float, float, float>* r = this->position_size;
+            GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r->X(), r->Y(), 1.1, r->W() * _dir, r->H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
+    GEC::Render::Sprite("game.entities", r.X(), r.Y(), 1.1, r.W() * _dir, r.H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
 }
 Player::~Player()
 {

@@ -69,7 +69,7 @@ void GameScreen::Update()
             this->GetManager()->GoTo(2);
         }
     }
-    if (lc->GetPlayer()->Position().Second() <= -10)
+    if (lc->GetPlayer()->Position()->Second() <= -10)
         lc->GetPlayer()->Kill();
     if (lc->GetPlayer()->IsDead())
         GetManager()->GoTo(3);

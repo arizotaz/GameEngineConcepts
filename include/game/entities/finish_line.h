@@ -11,7 +11,6 @@
 // # interacts with the player and LevelContainer
 // #############################################################################
 
-
 #ifndef FINISH_LINE_H
 #define FINISH_LINE_H 1
 
@@ -44,11 +43,11 @@ public:
         ProcessGravity();
 
         Player* p = lc->GetPlayer();
-        GEC::Vector2<float, float> pos = p->Position();
+        GEC::Vector2<float, float>* pos = p->Position();
         GEC::Vector2<float, float> size = p->Size();
 
-        GEC::Physics::BoxCollider2D player_collider(pos.First(),pos.Second(),size.First(),size.Second());
-        GEC::Physics::BoxCollider2D my_collider(Position().First(),Position().Second(),Size().First()-1,Size().Second());
+        GEC::Physics::BoxCollider2D player_collider(pos->First(), pos->Second(), size.First(), size.Second());
+        GEC::Physics::BoxCollider2D my_collider(Position()->First(), Position()->Second(), Size().First() - 1, Size().Second());
 
         if (my_collider.IsColliding(player_collider)) {
             if (!lc->GameWon()) {
@@ -59,10 +58,10 @@ public:
     };
     void Render() override
     {
-        GEC::Rect<float, float, float, float>* r = this->position_size;
+        GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
         GEC::Render::SetColor(255);
-        GEC::Render::Image("game.finish.base", r->X(), r->Y() - r->H(), 1.1, r->W(), r->H());
-        GEC::Render::Image("game.finish.flag", r->X() - r->W() / 2 + (r->W() / 4) / 2, r->Y() + r->H() * 4 / 2, 1.05, r->W() / 3, r->H() * 6);
+        GEC::Render::Image("game.finish.base", r.X(), r.Y() - r.H(), 1.1, r.W(), r.H());
+        GEC::Render::Image("game.finish.flag", r.X() - r.W() / 2 + (r.W() / 4) / 2, r.Y() + r.H() * 4 / 2, 1.05, r.W() / 3, r.H() * 6);
     };
     ~FinishLine() { };
 

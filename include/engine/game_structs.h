@@ -50,6 +50,7 @@ namespace Game {
          * Add object to the scene
          */
         void AddObject(GameObject* obj);
+        void AddObject(GameObject* obj, float x, float y);
 
         /**
          * Remove Object from the top level of the scene
@@ -147,9 +148,9 @@ namespace Game {
          */
         GameObject(std::string identifier) : typeIdentifier(identifier.c_str()) {
             pList = new PropertyList();
-            position = new GEC::Vector3<float,float,float>(0,0,0);
-            rotation = new GEC::Vector3<float,float,float>(0,0,0);
-            scale = new GEC::Vector3<float,float,float>(1,1,1);
+            position = new GEC::Vector2<float,float>(0,0);
+            rotation = new GEC::Vector2<float,float>(0,0);
+            scale = new GEC::Vector2<float,float>(1,1);
         }
 
         /**
@@ -188,15 +189,15 @@ namespace Game {
         /**
          * Pointer to the Position Vector of the object
          */
-        GEC::Vector3<float,float,float>* Position();
+        GEC::Vector2<float,float>* Position();
         /**
          * Pointer to the Rotation Vector of the object
          */
-        GEC::Vector3<float,float,float>* Rotation();
+        GEC::Vector2<float,float>* Rotation();
         /**
          * Pointer to the Scale Vector of the object
          */
-        GEC::Vector3<float,float,float>* Scale();
+        GEC::Vector2<float,float>* Scale();
 
         /**
          * Returns a pointer to the parent object
@@ -239,9 +240,9 @@ namespace Game {
         const char* typeIdentifier;
         PropertyList* pList = nullptr;
 
-        GEC::Vector3<float, float, float>* position;
-        GEC::Vector3<float, float, float>* rotation;
-        GEC::Vector3<float, float, float>* scale;
+        GEC::Vector2<float, float>* position;
+        GEC::Vector2<float, float>* rotation;
+        GEC::Vector2<float, float>* scale;
         GameObject* parent;
         std::vector<GameObject*> children;
         std::string name = "Un-named Object";

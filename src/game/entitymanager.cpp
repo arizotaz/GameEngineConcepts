@@ -5,23 +5,22 @@
 #include <game/tile.h>
 
 Entity::Entity(const char* type, float x, float y, float width, float height)
-    : friction(10.0f, 0)
+    : GEC::Game::GameObject("com.arizotaz.entity")
+    , friction(10.0f, 0)
     , force(0, 0)
     , typeID(type)
+    , size(width,height)
 {
-    position_size = new GEC::Rect<float, float, float, float>(x, y, width, height);
+    this->position->Set(x, y);
 };
-Entity::~Entity()
+Entity::~Entity() { };
+GEC::Vector2<float, float>* Entity::Position() const
 {
-    delete position_size;
-};
-GEC::Vector2<float, float> Entity::Position() const
-{
-    return this->position_size->First();
+    return position;
 }
 GEC::Vector2<float, float> Entity::Size() const
 {
-    return this->position_size->Second();
+    return size;
 }
 
 void Entity::Kill()
@@ -68,32 +67,31 @@ std::vector<bool> Entity::ProcessForce()
 
     EntityManager* em = Manager();
 
-    float nx = position_size->X() + (force.First() * dtime) / mass;
-    float ny = position_size->Y() + (force.Second() * dtime) / mass;
+    float nx = position->First() + (force.First() * dtime) / mass;
+    float ny = position->Second() + (force.Second() * dtime) / mass;
 
-    std::vector<bool> collideAxis = ProcessForceCollision(position_size->X(), position_size->Y(), nx, ny, position_size->W(), position_size->H(), this);
+    std::vector<bool> collideAxis = ProcessForceCollision(position->First(), position->Second(), nx, ny, size.First(), size.Second(), this);
 
     bool collidesX = collideAxis[0];
     bool collidesY = collideAxis[1];
     bool collidesB = collideAxis[2];
 
     if (collidesX) {
-        nx = position_size->X();
+        nx = position->First();
         force.First() = 0;
     }
     if (collidesY) {
-        ny = position_size->Y();
+        ny = position->Second();
         force.Second() = 0;
     }
     if (collidesB && (!collidesX && !collidesY)) {
-        nx = position_size->X();
-        ny = position_size->Y();
+        nx = position->First();
+        ny = position->Second();
         force.First() = 0;
         force.Second() = 0;
     }
 
-    position_size->X() = nx;
-    position_size->Y() = ny;
+    position->Set(nx,ny);
 
     force.First() -= (friction.First() * force.First()) * dtime;
     force.Second() -= (friction.Second() * force.Second()) * dtime;
@@ -120,7 +118,7 @@ bool Entity::Collides(float rx, float ry, float rw, float rh, Entity* entity)
                         Tile* tile = TileList::GetInstance().GetTile(tileID);
                         if (tile) {
                             if (tile->SolidTop())
-                                if (entity->force.Second() <= 0 && entity->position_size->Y() - entity->position_size->H() > ty) {
+                                if (entity->force.Second() <= 0 && entity->position->Second() - entity->size.Second() > ty) {
                                     GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
                                     if (tcollider.IsColliding(collider)) {
                                         isColliding = true;
@@ -147,7 +145,7 @@ void Entity::ProcessGravity()
 bool Entity::OnSolidGround()
 {
     float dSize = .05f;
-    return Collides(position_size->X(), position_size->Y() - position_size->H() / 2 - dSize / 2, position_size->W() * .9f, dSize, this);
+    return Collides(position->First(), position->Second() - size.Second() / 2 - dSize / 2, size.First() * .9f, dSize, this);
 }
 
 EntityManager::EntityManager(LevelContainer* lp)
@@ -253,7 +251,7 @@ void EntityManager::Spawn(Entity* e, float x, float y)
     e->manager = this;
     ++id;
 
-    e->position_size->First().Set(x, y);
+    e->Position()->Set(x, y);
 
     entities.push_back(e);
 }
