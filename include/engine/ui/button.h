@@ -42,16 +42,16 @@ namespace UI {
             ~Button() { }
 
             /** Main Update Loop */
-            void Update() { }
+            virtual void Update() { }
 
             /** Interact Event */
-            void Interact()
+            virtual void Interact() override
             {
                 Clickable::Interact();
             }
 
             /** Render the button  */
-            void Render()
+            virtual void Render() override
             {
                 if (!hover)
                     GEC::Render::SetColor(buttonColor.X(), buttonColor.Y(), buttonColor.W(), buttonColor.H());
