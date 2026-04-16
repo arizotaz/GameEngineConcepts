@@ -61,9 +61,6 @@ namespace Game {
          */
         GameObject* RemoveObject(int i);
 
-        
-        std::vector<GameObject*> ListObjects() const;
-
         // Deconstructor
         ~Scene();
 
@@ -150,7 +147,7 @@ namespace Game {
             pList = new PropertyList();
             position = new GEC::Vector3<float,float,float>(0,0,0);
             rotation = new GEC::Vector3<float,float,float>(0,0,0);
-            scale = new GEC::Vector3<float,float,float>(0,0,0);
+            scale = new GEC::Vector3<float,float,float>(1,1,1);
         }
 
         /**
@@ -175,6 +172,16 @@ namespace Game {
          * Returns the internal type of the object
          */
         std::string Type() const;
+
+        /**
+         * Sets the name of the object
+         */
+        void SetName(std::string name) { this->name = name; }
+
+        /**
+         * Returns the name of the object
+         */
+        std::string GetName() { return this->name; }
 
         /**
          * Pointer to the Position Vector of the object
@@ -231,6 +238,7 @@ namespace Game {
         GEC::Vector3<float, float, float>* scale;
         GameObject* parent;
         std::vector<GameObject*> children;
+        std::string name = "Un-named Object";
 
         private:
         void RunChildStart();

@@ -129,6 +129,7 @@ namespace Game {
     bool PropertyList::RemoveEntry(std::string key)
     {
         properties.erase(key);
+        return true;
     }
 
     /**
@@ -137,15 +138,12 @@ namespace Game {
 
     void GameObject::Draw()
     {
-        glBegin(GL_QUADS);
-
+        glPushMatrix();
         glTranslatef(position->First(), position->Second(), position->Third());
         glRotatef(rotation->First(), rotation->Second(), rotation->Third(), 1);
         glScalef(scale->First(), scale->Second(), scale->Third());
-
         Render();
-
-        glEnd();
+        glPopMatrix();
     }
     std::string GameObject::Type() const
     {
