@@ -39,6 +39,8 @@ public:
     void CreateElements();
     void CreatePage();
 
+    void PlayGame();
+
     GEC::Game::Scene* Scene() const;
 
     void SetSelectedObj(GEC::Game::GameObject* obj)
@@ -97,13 +99,17 @@ private:
  */
 class Editor_StateBar : public GEC::UI::Elements::MouseInteractor {
 public:
-    Editor_StateBar();
+    Editor_StateBar(EditorMenu*);
 
     virtual void Update() override;
     virtual void Interact() override;
     virtual void Render() override;
 
     virtual ~Editor_StateBar() override;
+
+    private:
+    GEC::UI::Elements::Button* playButton = nullptr;
+    EditorMenu* editorObj;
 };
 
 /**

@@ -24,9 +24,10 @@ public:
         levelData = new Level("EditorLevel");
         levelData->Init(100, 100, 2);
         lr = new LevelRenderer(levelData);
+        this->persistent = true;
     }
-    void Start() { }
-    void Update()
+    void Start() override { }
+    void Update() override
     {
         if (editMode) {
             if (leftMouseDown)
@@ -34,7 +35,7 @@ public:
         } else
             leftMouseDown = false;
     }
-    void Render()
+    void Render() override
     {
         Camera& cam = Camera::GetInstance();
         cursor = GEC::Vector2<int, int>(
@@ -56,7 +57,9 @@ public:
     }
     ~TileRenderer() { }
 
-    void UpdatePropertiesPanel(float x, float y, float width, float height)
+    virtual GameObject* Clone() const override { return nullptr; }
+
+    void UpdatePropertiesPanel(float x, float y, float width, float height) override
     {
         editMode = true;
 
@@ -138,7 +141,7 @@ public:
             l->Update();
         }
     }
-    void InteractPropertiesPanel(float x, float y, float width, float height)
+    void InteractPropertiesPanel(float x, float y, float width, float height) override
     {
         for (int i = 0; i < tileSelect.size(); ++i) {
             tileSelect[i]->Interact();
@@ -151,7 +154,7 @@ public:
             if (layerSelect[i]->Clicked()) {
                 drawLayer = i - 1;
                 if (drawLayer > -1) {
-                    brushLayerInput->SetValueAsUser(std::to_string(i-1));
+                    brushLayerInput->SetValueAsUser(std::to_string(i - 1));
                 }
             }
         }
@@ -163,7 +166,7 @@ public:
                 layerCollidable_input->SetValue(levelData->GetLayerData(drawLayer)->collidable);
             }
         }
-        
+
         for (auto l : labels) {
             l->Interact();
         }
@@ -172,7 +175,7 @@ public:
             levelData->GetLayerData(brushLayer)->collidable = layerCollidable_input->GetValue();
         }
     }
-    void RenderPropertiesPanel(float x, float y, float width, float height)
+    void RenderPropertiesPanel(float x, float y, float width, float height) override
     {
         // Detect Mouse Down
         if (!GEC::UI::ElementRegistry::GetInstance().ShouldStopInteract()) {
@@ -210,6 +213,9 @@ public:
             layerCollidable_input->Render();
     }
 
+    Level* LevelData() {
+        return levelData;
+    }
 protected:
     LevelRenderer* lr;
     Level* levelData;

@@ -49,7 +49,7 @@ void Coin::Render()
 {
     GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r.X(), r.Y(), r.W(), r.H(), GEC::Vector2<int, int>(1, 13), 16);
+    GEC::Render::Sprite("game.entities", 0,0, r.W(), r.H(), GEC::Vector2<int, int>(1, 13), 16);
 };
 Coin::~Coin() { };
 void Coin::OnSpawn() { };

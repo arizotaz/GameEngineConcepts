@@ -13,6 +13,28 @@ Entity::Entity(const char* type, float x, float y, float width, float height)
 {
     this->position->Set(x, y);
 };
+Entity::Entity(const Entity& other)
+    : GEC::Game::GameObject(other)
+    , friction(10.0f, 0)
+    , force(0, 0)
+    , typeID(other.typeID)
+    , size(0,0)
+    {
+        id = other.id;
+        typeID = other.typeID;
+
+        size = other.size;
+        health = other.health;
+        isDead = other.isDead;
+        releaseEntity = other.releaseEntity;
+        spawned = other.spawned;
+
+        force = other.force;
+        friction = other.friction;
+        mass = other.mass;
+
+        manager = nullptr;
+    }
 Entity::~Entity() { };
 GEC::Vector2<float, float>* Entity::Position() const
 {
@@ -202,7 +224,7 @@ void EntityManager::Render()
     int i = 0;
     while (i < entities.size()) {
         Entity* entity = entities.at(i);
-        entity->Render();
+        entity->Draw();
         ++i;
     }
 }

@@ -2,11 +2,13 @@
 #include <engine/tools.h>
 #include <engine/web.h>
 #include <game/deltatime.h>
+#include <game/entities/finish_line.h>
+#include <game/entities/objects.h>
 #include <game/gameeditor.h>
 #include <game/global_states.h>
 #include <game/objects.h>
-#include <game/entities/objects.h>
 
+#include <game/menus.h>
 
 EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     : lastScreenSize(0, 0)
@@ -24,7 +26,7 @@ EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     activeScene->AddObject(new Coin(), 11, 8);
     activeScene->AddObject(new Coin(), 12, 8);
 
-    //activeScene->AddObject(new FinishLine(lc), 40, 10);
+    activeScene->AddObject(new FinishLine(), 40, 2);
 }
 void EditorMenu::Open()
 {
@@ -85,11 +87,14 @@ void EditorMenu::Render()
 void EditorMenu::Events() { }
 void EditorMenu::Leave()
 {
+    this->selectedGameObject = nullptr;
 }
 void EditorMenu::CreateElements()
 {
+    if (menuBar != nullptr) return;
+
     menuBar = new Editor_MenuBar();
-    stateBar = new Editor_StateBar();
+    stateBar = new Editor_StateBar(this);
     editorPanels.push_back(new EditorPanelSlot(this, 0));
     editorPanels.push_back(new EditorPanelSlot(this, 1));
     editorPanels.push_back(new EditorPanelSlot(this, 2));
@@ -137,6 +142,43 @@ void EditorMenu::CreatePage()
         elr->AddElement(editorPanels[i], 0);
     elr->AddElement(stateBar, 0);
     elr->AddElement(menuBar, 0);
+}
+void EditorMenu::PlayGame()
+{
+    GEC::MenuManager* mm = this->GetManager();
+    mm->RemoveMenu(20);
+    LevelContainer* lc = new LevelContainer();
+
+    // Copy Level
+    TileRenderer* tr = dynamic_cast<TileRenderer*>(this->activeScene->Objects()[0]);
+    lc->SetLevel(tr->LevelData()->Clone());
+
+    std::vector<GEC::Game::GameObject*> obj = this->activeScene->Objects();
+    for (auto i : obj) {
+        Entity* e = dynamic_cast<Entity*>(i);
+        if (e) {
+            Entity* en = dynamic_cast<Entity*>(e->Clone());
+
+            if (dynamic_cast<Player*>(en)) {
+                Player* p = dynamic_cast<Player*>(en);
+                lc->SetPlayer(p);
+                lc->GetEntityManager()->Spawn(lc->GetPlayer(), i->Position()->First(), i->Position()->Second());
+                continue;
+            }
+
+            if (dynamic_cast<FinishLine*>(en)) {
+                FinishLine* fl = dynamic_cast<FinishLine*>(en);
+                fl->SetLevelContainer(lc);
+                lc->GetEntityManager()->Spawn(fl, i->Position()->First(), i->Position()->Second());
+                continue;
+            }
+                lc->GetEntityManager()->Spawn(en, i->Position()->First(), i->Position()->Second());
+
+        }
+    }
+
+    mm->AddMenu(20, new GameScreen(elr, lc));
+    mm->GoTo(20);
 }
 GEC::Game::Scene* EditorMenu::Scene() const { return activeScene; }
 
@@ -298,9 +340,11 @@ void Editor_Hierarchy::Update()
     float yIndex = height / 2;
     float itemSize = 20;
     for (int i = 0; i < objectList.size(); ++i) {
+        if (objects[i] != nullptr) {
         yIndex -= itemSize / 2;
         objectList[i]->Set(objects[i]->GetName(), x, y + yIndex, width - 4, itemSize - 2);
         yIndex -= itemSize / 2;
+        }
     }
 }
 void Editor_Hierarchy::Interact()
@@ -369,7 +413,7 @@ void Editor_Properties::Update()
 {
 
     GEC::Game::GameObject* cObj = EditorObject()->GetSelectedObj();
-    if (lastGOBJ != cObj) {
+    if (EditorObject()->GetSelectedObj() != nullptr && lastGOBJ != cObj) {
         lastGOBJ = cObj;
 
         name->SetValue(EditorObject()->GetSelectedObj()->GetName());
@@ -421,7 +465,7 @@ void Editor_Properties::Update()
         scaleInputs[i]->Set(x - width / 2 + 2 + size / 2 + size * i, y + yIndex, size, iheight);
     yIndex -= iheight;
 
-    float propH = (yIndex+height/2) - 2;
+    float propH = (yIndex + height / 2) - 2;
     this->objPropBounds.X() = x;
     this->objPropBounds.Y() = y - height / 2 + propH / 2 + 4;
     this->objPropBounds.W() = width - 4;
@@ -587,20 +631,32 @@ void Editor_MenuBar::Render()
         menuButtons[i].Second()->Render();
 }
 
-Editor_StateBar::Editor_StateBar()
+Editor_StateBar::Editor_StateBar(EditorMenu* editor)
 {
+    this->editorObj = editor;
+    this->playButton = new GEC::UI::Elements::Button();
 }
-Editor_StateBar::~Editor_StateBar() { }
+Editor_StateBar::~Editor_StateBar()
+{
+    delete playButton;
+}
 void Editor_StateBar::Update()
 {
     GEC::UI::Elements::MouseInteractor::Update();
+    playButton->Set("Play", x, y, height / 2 * 3, height / 2);
+    playButton->Update();
 }
 void Editor_StateBar::Interact()
 {
+    playButton->Interact();
     GEC::UI::Elements::MouseInteractor::Interact();
+
+    if (playButton->Clicked())
+        editorObj->PlayGame();
 }
 void Editor_StateBar::Render()
 {
     GEC::Render::SetColor(120);
     GEC::Render::Rect(x, y, width, height);
+    playButton->Render();
 }

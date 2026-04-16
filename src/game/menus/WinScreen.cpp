@@ -22,7 +22,7 @@ void WinScreen::Render()
 void WinScreen::Events()
 {
     if (homeButton->Clicked()) {
-        GetManager()->GoTo(0);
+        GetManager()->GoTo(10);
     }
 }
 void WinScreen::Leave()

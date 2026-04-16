@@ -5,10 +5,10 @@
 // # Date Created:       03/03/2026
 // # Last Modification:  03/18/2026
 // #############################################################################
-// # 
+// #
 // #############################################################################
 // #
-// # 
+// #
 // #
 // #############################################################################
 #ifndef ENTITYMANAGER_HPP
@@ -17,8 +17,8 @@
 #include <iostream>
 #include <vector>
 
-#include <engine/structs.h>
 #include <engine/game_structs.h>
+#include <engine/structs.h>
 
 #include <game/level.h>
 
@@ -28,12 +28,15 @@ class EntityManager;
 class Entity : public GEC::Game::GameObject {
 public:
     Entity(const char* id, float, float, float, float);
+    Entity(const Entity& other);
+    virtual GameObject* Clone() const override = 0;
+
     virtual void OnSpawn() { }
-    virtual void Start() {}
+    virtual void Start() { }
     virtual void Tick() = 0;
     virtual void Update() = 0;
     virtual void Render() = 0;
-    virtual void OnDeath() {};
+    virtual void OnDeath() { };
     virtual void DeathLoop() { releaseEntity = true; }
     virtual void OnRemove() { }
 
@@ -60,7 +63,7 @@ protected:
     unsigned int id;
     const char* typeID;
 
-        GEC::Vector2<float, float> size;
+    GEC::Vector2<float, float> size;
     float health = 1;
     bool isDead = false, releaseEntity = false;
     bool spawned = false;

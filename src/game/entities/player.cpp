@@ -29,6 +29,7 @@ Player::Player()
     this->mass = 3;
     this->friction.Set(10.0f, 0);
     this->name = "Player";
+    this->persistent = true;
 }
 void Player::Update()
 {
@@ -149,9 +150,9 @@ void Player::Tick()
 }
 void Player::Render()
 {
-            GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
+    GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", r.X(), r.Y(), 1.1, r.W() * _dir, r.H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
+    GEC::Render::Sprite("game.entities", 0,0, 1.1, r.W() * _dir, r.H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
 }
 Player::~Player()
 {

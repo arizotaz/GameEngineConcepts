@@ -15,10 +15,11 @@ LevelContainer::LevelContainer()
     currentLevel = nullptr;
     lc_mm = new GEC::MenuManager();
 
-    currentLevel = new Level("test");
-    currentLevel->Init(100, 100, 2);
-
     timeRemaining = 255;
+}
+
+void LevelContainer::SetLevel(Level* level) {
+    currentLevel = level;
 }
 
 void LevelContainer::Update()
