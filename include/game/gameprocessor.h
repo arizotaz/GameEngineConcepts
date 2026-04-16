@@ -111,13 +111,16 @@ private:
 class LevelRenderer {
 public:
     LevelRenderer(LevelContainer*);
+    LevelRenderer(Level*);
     ~LevelRenderer();
     void Render();
     void DrawLayer(int layer, int z);
     LevelContainer* Container() const;
+    Level* GetLevel() const;
 
 private:
-    LevelContainer* levelContainer;
+    LevelContainer* levelContainer = nullptr;
+    Level* level = nullptr;
 };
 
 #endif
