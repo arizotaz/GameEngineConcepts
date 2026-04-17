@@ -7,11 +7,12 @@ void OpenWebURL(const char* url);
 void OpenWebURL(std::string str) { OpenWebURL(str.c_str()); }
 
 #ifdef _WIN32
-#include <shellapi.h>
-#include <windows.h>
+#include <cstdlib>
 void OpenWebURL(const char* url)
 {
-    ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
+    std::string cmd = "start ";
+    cmd += url;
+    std::system(cmd.c_str());
 }
 #endif
 

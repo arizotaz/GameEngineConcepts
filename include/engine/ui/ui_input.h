@@ -169,7 +169,7 @@ namespace UI {
                     GEC::Render::SetColor(255);
                     GEC::Render::Rect(x + checkboxOffset.First(), y + checkboxOffset.Second(), buttonSize - 6, buttonSize - 6);
                 }
-                GEC::Render::SetColor((int)0);
+                GEC::Render::SetColor(0,0,0);
                 tr->Render(x + buttonSize + 4, y, 10.1, fontSize);
             }
 
