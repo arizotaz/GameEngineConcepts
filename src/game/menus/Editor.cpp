@@ -35,8 +35,6 @@ void EditorMenu::Open()
     CreateElements();
     CreatePage();
     activeScene->Start();
-
-    GEC::Input::Keyboard::PrintKeysToConsole(true);
 }
 void EditorMenu::Update()
 {

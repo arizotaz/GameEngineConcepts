@@ -32,8 +32,6 @@ GEC::UI::ElementRenderer* elr;
 /** Start function of the Main Process */
 void Assignment2::Start()
 {
-    // Enable Console Print Keys
-    GEC::Input::Keyboard::PrintKeysToConsole(true);
 
     // Set the Window Title
     glutSetWindowTitle("Colton Staiduhar - 811138106");
