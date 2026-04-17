@@ -6,9 +6,93 @@ Level::Level(const char* name)
 {
     this->name = name;
 }
+Level::Level(const Level& other)
+{
+    // Copy simple values
+    width = other.width;
+    height = other.height;
+    layers = other.layers;
+
+    // Deep copy name
+    if (other.name) {
+        size_t len = strlen(other.name) + 1;
+        char* newName = new char[len];
+        strcpy(newName, other.name);
+        name = newName;
+    } else {
+        name = nullptr;
+    }
+
+    // Deep copy tiles
+    int size = width * height * layers;
+    tiles = new int[size];
+    for (int i = 0; i < size; ++i) {
+        tiles[i] = other.tiles[i];
+    }
+
+    // Deep copy layer data
+    layerData = new Level_Layer*[layers];
+    for (int i = 0; i < layers; ++i) {
+        layerData[i] = new Level_Layer(*other.layerData[i]);
+    }
+}
+Level& Level::operator=(const Level& other)
+{
+    if (this == &other)
+        return *this;
+
+    // Clean up existing memory
+    delete[] tiles;
+
+    for (int i = 0; i < layers; ++i)
+        delete layerData[i];
+    delete[] layerData;
+
+    delete[] name;
+
+    // Copy values
+    width = other.width;
+    height = other.height;
+    layers = other.layers;
+
+    // Copy name
+    if (other.name) {
+        size_t len = strlen(other.name) + 1;
+        char* newName = new char[len];
+        strcpy(newName, other.name);
+        name = newName;
+    } else {
+        name = nullptr;
+    }
+
+    // Copy tiles
+    int size = width * height * layers;
+    tiles = new int[size];
+    for (int i = 0; i < size; ++i) {
+        tiles[i] = other.tiles[i];
+    }
+
+    // Copy layer data
+    layerData = new Level_Layer*[layers];
+    for (int i = 0; i < layers; ++i) {
+        layerData[i] = new Level_Layer(*other.layerData[i]);
+    }
+
+    return *this;
+}
+Level* Level::Clone() const
+{
+    return new Level(*this);
+}
+
+
+
+
+
+
 Level::~Level()
 {
-
+delete[] name;
     std::cout << "[Level] Removing Level " << name << std::endl;
 
     for (int i = layers - 1; i >= 0; --i) {
@@ -102,7 +186,7 @@ bool Level::SetTile(int tileID, int x, int y, int layer)
     int i = XYIndex(x, y, layer);
     if (!SetTile(tileID, i))
         return false;
-    return GetTile(layer, x, y) == tileID;
+    return GetTile(x, y,layer) == tileID;
 }
 
 int Level::XYIndex(int x, int y, int layer) const
@@ -132,7 +216,7 @@ int Level::Width() const
 }
 int Level::Height() const
 {
-    return width;
+    return height;
 }
 int Level::Layers() const
 {

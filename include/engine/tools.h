@@ -2,8 +2,8 @@
 // # tools.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       02/12/2025
-// # Last Modification:  03/10/2025
+// # Date Created:       02/12/2026
+// # Last Modification:  03/10/2026
 // #############################################################################
 // # Main Entry point for Cmake project, declare by the int main() function
 // #############################################################################
@@ -37,6 +37,13 @@ namespace Tools {
      */
     float Distance(float x1, float y1, float x2, float y2);
 
+    /**
+     * Clamps a value to a specific range
+     * @param var - the value to clamp
+     * @param min - the minimum value to clamp to
+     * @param max - the maximum value to clamp to
+     * @returns the value with clamps applied
+     */
     template <typename T>
     T ClampVar(T var, T _min, T _max)
     {

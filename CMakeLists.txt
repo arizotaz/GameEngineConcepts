@@ -8,7 +8,12 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 
 # Declare Project where "GSM_TEMPLATE" is the project name
-project(Assignment2 LANGUAGES C CXX)
+project(Assignment3 LANGUAGES C CXX)
+
+# Set C++ Standards
+set(CMAKE_CXX_STANDARD 17)   
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) 
 
 # Use FreeGlut on Macos (Requires X11 to be installed, but doesn't use it)
 option(USE_FREEGLUT "Use FreeGLUT on Mac (ignored on Windows)" ON)
@@ -241,6 +246,29 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
   opengl32
   winmm
   gdi32
+  stb_image
+  miniaudio
+  freetype
+)
+
+elseif(UNIX AND NOT APPLE)
+
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${glad_SOURCE_DIR}/include")
+
+# Add our include files
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC 
+"${CMAKE_CURRENT_SOURCE_DIR}/include/"
+"${freeglut_SOURCE_DIR}/include"
+"${glad_SOURCE_DIR}/include"
+)
+
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC use_freeglut=TRUE)
+
+target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL
+  freeglut_static
   stb_image
   miniaudio
   freetype

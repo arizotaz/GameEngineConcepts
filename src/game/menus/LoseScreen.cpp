@@ -22,11 +22,12 @@ void LoseScreen::Render()
 void LoseScreen::Events()
 {
     if (homeButton->Clicked())
-        this->GetManager()->GoTo(0);
+        this->GetManager()->GoTo(10);
 }
 void LoseScreen::Leave()
 {
     delete homeButton;
+    delete tds;
 }
 
 void LoseScreen::CreateElements()

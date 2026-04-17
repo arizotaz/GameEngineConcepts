@@ -2,8 +2,8 @@
 // # main.cpp
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       02/03/2025
-// # Last Modification:  02/18/2025
+// # Date Created:       02/03/2026
+// # Last Modification:  02/18/2026
 // #############################################################################
 // # Main Entry point for Cmake project, declare by the int main() function
 // #############################################################################
@@ -76,11 +76,15 @@ typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int);
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
 
+// Frame list to store FPS Averages
 std::vector<float> fpsList;
 
+/** Returns the current FPS based on the last frame time */
 float FPS() {
     return 1.0f/(GetMainDeltaTime()/1000.0f);
 }
+
+/** Returns the average FPS of the client over the last 240 Frames */
 float FPS_AVERAGE() {
     fpsList.push_back(FPS());
     while (fpsList.size() > 240) 
@@ -95,6 +99,8 @@ float FPS_AVERAGE() {
     return total;
 }
 
+
+/** Returns a pointer to the global font */
 GEC::TextRender::Font* GetGlobalFont() {
     if (!globalFont)
     globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
@@ -143,8 +149,8 @@ int main(int argc, char** argv)
 
     pro = new Assignment2();
 
-    int winW = 1280;
-    int winH = 720;
+    int winW = 1600;
+    int winH = 900;
 
     // Initialize GLUT
     glutInit(&argc, argv);

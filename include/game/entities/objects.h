@@ -2,8 +2,8 @@
 // # objects.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       03/16/2025
-// # Last Modification:  03/18/2025
+// # Date Created:       03/16/2026
+// # Last Modification:  03/18/2026
 // #############################################################################
 // # Entity Objects Implemntation
 // #############################################################################
@@ -20,6 +20,14 @@
 class Coin : public Entity {
 public:
     Coin();
+    Coin(const Coin& other)
+        : Entity(other)
+    {
+    }
+    GameObject* Clone() const override
+    {
+        return new Coin(*this);
+    }
     void Update() override;
     void Tick() override;
     void Render() override;

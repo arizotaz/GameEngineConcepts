@@ -2,8 +2,8 @@
 // # tile.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       03/09/2025
-// # Last Modification:  03/09/2025
+// # Date Created:       03/09/2026
+// # Last Modification:  03/09/2026
 // #############################################################################
 // # This header file serves as the level data structure.  It also implements
 // # saving, loading, and modification of the level.
@@ -85,7 +85,7 @@ public:
         this->solidTop = true;
     }
     void Render(LevelRenderer* r, int x, int y, int z) override {
-        Level* level = r->Container()->GetLevelData();
+        Level* level = r->GetLevel();
 
         int iniImgX = 0;
         int iniImgY = 2;
@@ -131,7 +131,7 @@ public:
         this->solidTop = true;
     }
     void Render(LevelRenderer* r, int x, int y, int z) override {
-        Level* level = r->Container()->GetLevelData();
+        Level* level = r->GetLevel();
 
         int ix = 0;
 		int iy = 16-2;

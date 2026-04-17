@@ -1,57 +1,112 @@
+// #############################################################################
+// # button.h
+// #############################################################################
+// # Written by Colton Staiduhar
+// # Date Created:       03/15/2022
+// # Date Ported:        03/15/2026
+// # Last Modification:  03/18/2026
+// #############################################################################
+// # Defines the code used to create a button that can be rendered and managed
+// # by the element renderer.  It uses the element registry to track element
+// # overlap and only resond to clicks when it is the top element.
+// #
+// # This function is similar to every other "clickable" derived element with
+// # the exception that it can be rendered with text on it.
+// #
+// #############################################################################
+
 #ifndef ENGINE_UI_ELEMENT_BUTTON_H
 #define ENGINE_UI_ELEMENT_BUTTON_H 1
 
 #include <engine/renderobjects.h>
 #include <engine/text.h>
 #include <engine/ui/element.h>
+#include <vector>
 
 namespace GEC {
 namespace UI {
     namespace Elements {
 
+        /** Basic button class for elements in the element renderer */
         class Button : public Clickable {
         public:
+            /** Default Constructor */
             Button()
                 : buttonColor(255, 255, 255, 255)
-                , textColor(25,25,25, 255)
+                , textColor(25, 25, 25, 255)
             {
+                this->font = GEC::TextRender::Font::GetDefault();
             }
+
+            // Deconstructor
             ~Button() { }
-            void Update() { }
-            void Interact()
+
+            /** Main Update Loop */
+            virtual void Update() { }
+
+            /** Interact Event */
+            virtual void Interact() override
             {
                 Clickable::Interact();
-                if (this->clicked) {
-                    int i;
-                }
             }
-            void Render()
+
+            /** Render the button  */
+            virtual void Render() override
             {
-                glDisable(GL_DEPTH_TEST);
-                if (!hover) GEC::Render::SetColor(buttonColor.X(), buttonColor.Y(), buttonColor.W(),buttonColor.H());
-                else GEC::Render::SetColor(buttonColor.X()-30, buttonColor.Y()-30, buttonColor.W()-30,buttonColor.H());
+                if (!hover)
+                    GEC::Render::SetColor(buttonColor.X(), buttonColor.Y(), buttonColor.W(), buttonColor.H());
+                else
+                    GEC::Render::SetColor(buttonColor.X() - 30, buttonColor.Y() - 30, buttonColor.W() - 30, buttonColor.H());
                 GEC::Render::Rect(x, y, width, height);
 
                 GEC::Render::SetColor(textColor.X(), textColor.Y(), textColor.W(), textColor.H());
                 GEC::TextRender::Text text(font);
                 text.SetText(this->text);
                 text.Align(1, 1);
-                text.Render(x,y, -0.001f, height-height/5);
-                
+                text.Render(x, y, -0.001f, height - height / 5);
             }
 
+            /** Sets the values of the button
+             * @param text - the text to be displayed on the button
+             * @param x - the x position of the button
+             * @param y - the y position of the button
+             * @param width - the width of the button
+             * @param height - the height of the button
+             */
             void Set(std::string text, float x, float y, float width, float height)
             {
                 this->text = text;
+                Set(x, y, width, height);
+            }
+
+            /** Sets the values of the button
+             * @param x - the x position of the button
+             * @param y - the y position of the button
+             * @param width - the width of the button
+             * @param height - the height of the button
+             */
+            void Set(float x, float y, float width, float height)
+            {
                 Clickable::Set(x, y, width, height);
             }
 
+            /** Sets the color of the button object
+             * @param r - the red channel of the color
+             * @param g - the green channal of the color
+             * @param b - the blue channel of the color
+             */
             void SetButtonColor(float r, float g, float b)
             {
                 buttonColor.X() = r;
                 buttonColor.Y() = g;
                 buttonColor.W() = b;
             }
+
+            /** Sets the color of the button text
+             * @param r - the red channel of the button text color
+             * @param g - the green channal of the button text color
+             * @param b - the blue channel of the button text color
+             */
             void SetTextColor(float r, float g, float b)
             {
                 textColor.X() = r;
@@ -59,6 +114,7 @@ namespace UI {
                 textColor.W() = b;
             }
 
+            /** Sets the text font to render */
             void SetFont(GEC::TextRender::Font* font)
             {
                 this->font = font;
@@ -70,6 +126,90 @@ namespace UI {
             GEC::TextRender::Font* font;
         };
 
+        class ButtonOfButtons : public Button {
+        public:
+            ButtonOfButtons() { };
+
+            virtual void Update()
+            {
+                float bobYInd = 0;
+                bobYInd -= height / 2;
+
+                GEC::Vector2<float, float> bobSize(width, height * .70f);
+
+                for (int i = 0; i < buttons.size(); ++i) {
+                    bobYInd -= bobSize.Second() / 2;
+                    buttons[i]->Set(operations[i].First(), x, y + bobYInd, bobSize.First(), bobSize.Second());
+                    bobYInd -= bobSize.Second() / 2;
+                    buttons[i]->Update();
+                }
+
+                GEC::UI::Elements::Button::Update();
+            }
+            virtual void Interact()
+            {
+
+                // Call Interact functions of button if they are visible
+                if (buttonDropped)
+                    for (int i = 0; i < buttons.size(); ++i) {
+                        buttons[i]->Interact();
+                        if (buttons[i]->Clicked()) {
+                            operations[i].Second()();
+
+                            // Close the dropdown after an option is pressed
+                            buttonDropped = false;
+                        }
+                    }
+
+                // Interact Script of this button, toggle other buttons when clicked
+                GEC::UI::Elements::Button::Interact();
+                if (Clicked())
+                    buttonDropped = !buttonDropped;
+
+
+
+                // When the user clicks outside the object, close the dropdown
+                if (GEC::Input::Mouse::GetInstance().LeftPressed()) {
+                    bool objectClicked = false;
+                    for (int i = 0; i < buttons.size(); ++i)
+                        if (buttons[i]->Clicked())
+                            objectClicked = true;
+                    if (Clicked())
+                        objectClicked = true;
+
+                    if (!objectClicked)
+                        buttonDropped = false;
+                        
+                }
+            }
+            virtual void Render()
+            {
+                if (buttonDropped)
+                    for (int i = 0; i < buttons.size(); ++i)
+                        buttons[i]->Render();
+                GEC::UI::Elements::Button::Render();
+            }
+
+            void AddOption(std::string name, void (*operation)())
+            {
+                int index = operations.size();
+                operations.push_back(GEC::Vector2<std::string, void (*)()>(name, operation));
+
+                buttons.push_back(new Button());
+            }
+
+            virtual ~ButtonOfButtons()
+            {
+                for (int i = 0; i < buttons.size(); ++i)
+                    delete buttons[i];
+            }
+
+        private:
+            bool buttonDropped = false;
+            std::vector<Button*> buttons;
+
+            std::vector<GEC::Vector2<std::string, void (*)()>> operations;
+        };
     }
 }
 }

@@ -12,6 +12,7 @@ public:
     void Tick();
     void Render();
 
+    void SetLevel(Level* level);
     Level* GetLevelData();
     LevelProcessor* GetLevelProcessor();
     LevelRenderer* GetLevelRenderer();

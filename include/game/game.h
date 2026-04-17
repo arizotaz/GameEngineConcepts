@@ -2,8 +2,8 @@
 // # game.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       02/10/2025
-// # Last Modification:  02/10/2025
+// # Date Created:       02/10/2026
+// # Last Modification:  02/10/2026
 // #############################################################################
 // # Main Entry point for Cmake project, declare by the int main() function
 // #############################################################################
@@ -30,7 +30,7 @@ public:
     void Render() override;
 
     /** Process GUI Events */
-    void Events();
+    void Events() override;
 
     /** On Exit */
     void Exit() override;

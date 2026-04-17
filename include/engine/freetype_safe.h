@@ -1,3 +1,17 @@
+// #############################################################################
+// # freetype_safe.h
+// #############################################################################
+// # Written by Colton Staiduhar
+// # Date Created:       03/16/2026
+// # Last Modification:  03/16/2026
+// #############################################################################
+// # A reimplemnetation of a function for the freetype library
+// #############################################################################
+// # I have to be completely honest, I have no idea how this code works.  It
+// # but it does and I fear I shall never touch it again
+// #############################################################################
+
+
 #ifndef FREETYPE_SAFE_H
 #define FREETYPE_SAFE_H
 

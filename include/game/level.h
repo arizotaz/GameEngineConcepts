@@ -2,8 +2,8 @@
 // # level.h
 // #############################################################################
 // # Written by Colton Staiduhar
-// # Date Created:       03/09/2025
-// # Last Modification:  03/10/2025
+// # Date Created:       03/09/2026
+// # Last Modification:  03/10/2026
 // #############################################################################
 // # This header file serves as the level data structure.  It also implements
 // # saving, loading, and modification of the level.
@@ -22,6 +22,9 @@ struct Level_Layer {
 class Level {
 public:
     Level(const char* name);
+    Level(const Level& other);
+    Level& operator=(const Level& other);
+    Level* Clone() const;
 
     void Init(int width, int height, int layers);
 
