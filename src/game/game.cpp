@@ -47,8 +47,10 @@ void Assignment2::Start()
 
     // Create the main menus of the application
     mm->AddMenu(0, new EngineBootScreen(elr));
+    mm->AddMenu(3, new LoseScreen(elr));
+    mm->AddMenu(5, new MainMenu(elr));
     mm->AddMenu(10, new EditorMenu(elr));
-    //mm->AddMenu(10, new GameScreen(elr));
+    // mm->AddMenu(10, new GameScreen(elr));
 
     // Load Game Textures
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");

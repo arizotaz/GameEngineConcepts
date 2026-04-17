@@ -24,7 +24,7 @@ public:
     virtual void Open() override { };
     virtual void Update() override
     {
-        this->GetManager()->GoTo(10);
+        this->GetManager()->GoTo(5);
     };
     virtual void Render() override { };
     virtual void Events() override { };
@@ -46,8 +46,7 @@ private:
 
     GEC::UI::Elements::TextDisplay* title;
     GEC::UI::Elements::Button* start;
-    GEC::UI::Elements::Button* settings;
-    GEC::UI::Elements::Button* about;
+    GEC::UI::Elements::Button* editor;
     GEC::UI::Elements::Button* quit;
 
     void CreatePage();
