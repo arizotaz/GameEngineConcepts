@@ -9,7 +9,7 @@ Entity::Entity(const char* type, float x, float y, float width, float height)
     , friction(10.0f, 0)
     , force(0, 0)
     , typeID(type)
-    , size(width,height)
+    , size(width, height)
 {
     this->position->Set(x, y);
 };
@@ -18,23 +18,25 @@ Entity::Entity(const Entity& other)
     , friction(10.0f, 0)
     , force(0, 0)
     , typeID(other.typeID)
-    , size(0,0)
-    {
-        id = other.id;
-        typeID = other.typeID;
+    , size(0, 0)
+{
+    id = other.id;
+    typeID = other.typeID;
 
-        size = other.size;
-        health = other.health;
-        isDead = other.isDead;
-        releaseEntity = other.releaseEntity;
-        spawned = other.spawned;
+    size = other.size;
+    health = other.health;
+    isDead = other.isDead;
+    releaseEntity = other.releaseEntity;
+    spawned = other.spawned;
 
-        force = other.force;
-        friction = other.friction;
-        mass = other.mass;
+    force = other.force;
+    friction = other.friction;
+    mass = other.mass;
 
-        manager = nullptr;
-    }
+    useGravity = other.useGravity;
+
+    manager = nullptr;
+}
 Entity::~Entity() { };
 GEC::Vector2<float, float>* Entity::Position() const
 {
@@ -42,7 +44,11 @@ GEC::Vector2<float, float>* Entity::Position() const
 }
 GEC::Vector2<float, float> Entity::Size() const
 {
-    return size;
+    return GEC::Vector2<float, float>(size.First()*scale->First(),size.Second()*scale->Second());
+}
+GEC::Vector2<float, float> Entity::RawSize() const
+{
+    return GEC::Vector2<float, float>(size.First(),size.Second());
 }
 
 void Entity::Kill()
@@ -92,7 +98,7 @@ std::vector<bool> Entity::ProcessForce()
     float nx = position->First() + (force.First() * dtime) / mass;
     float ny = position->Second() + (force.Second() * dtime) / mass;
 
-    std::vector<bool> collideAxis = ProcessForceCollision(position->First(), position->Second(), nx, ny, size.First(), size.Second(), this);
+    std::vector<bool> collideAxis = ProcessForceCollision(position->First(), position->Second(), nx, ny, Size().First(), Size().Second(), this);
 
     bool collidesX = collideAxis[0];
     bool collidesY = collideAxis[1];
@@ -113,7 +119,7 @@ std::vector<bool> Entity::ProcessForce()
         force.Second() = 0;
     }
 
-    position->Set(nx,ny);
+    position->Set(nx, ny);
 
     force.First() -= (friction.First() * force.First()) * dtime;
     force.Second() -= (friction.Second() * force.Second()) * dtime;
@@ -140,7 +146,7 @@ bool Entity::Collides(float rx, float ry, float rw, float rh, Entity* entity)
                         Tile* tile = TileList::GetInstance().GetTile(tileID);
                         if (tile) {
                             if (tile->SolidTop())
-                                if (entity->force.Second() <= 0 && entity->position->Second() - entity->size.Second() > ty) {
+                                if (entity->force.Second() <= 0 && entity->position->Second() - entity->Size().Second() > ty) {
                                     GEC::Physics::BoxCollider2D tcollider(tx, ty, 1, 1);
                                     if (tcollider.IsColliding(collider)) {
                                         isColliding = true;
@@ -161,13 +167,15 @@ bool Entity::Collides(float rx, float ry, float rw, float rh, Entity* entity)
 }
 void Entity::ProcessGravity()
 {
-    float dtime = GetMainDeltaTime() / 1000.0f;
-    force.Second() -= 9.5 * 15 * dtime;
+    if (useGravity) {
+        float dtime = GetMainDeltaTime() / 1000.0f;
+        force.Second() -= 9.5 * 15 * dtime;
+    }
 }
 bool Entity::OnSolidGround()
 {
     float dSize = .05f;
-    return Collides(position->First(), position->Second() - size.Second() / 2 - dSize / 2, size.First() * .9f, dSize, this);
+    return Collides(position->First(), position->Second() - Size().Second() / 2 - dSize / 2, Size().First() * .9f, dSize, this);
 }
 
 EntityManager::EntityManager(LevelContainer* lp)
