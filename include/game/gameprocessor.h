@@ -22,6 +22,8 @@
 
 #include <game/level.h>
 
+#include <engine/ui/ui_input.h>
+
 class LevelContainer;
 class EntityManager;
 
@@ -43,6 +45,7 @@ public:
     virtual ~Entity();
     GEC::Vector2<float, float>* Position() const;
     GEC::Vector2<float, float> Size() const;
+    GEC::Vector2<float, float> RawSize() const;
 
     void Kill();
     bool IsDead() const;
@@ -59,11 +62,35 @@ public:
 
     friend EntityManager;
 
+
+    void UpdatePropertiesPanel(float x, float y, float width, float height) override
+    {
+        if (useGravityCheckbox == nullptr) {
+            useGravityCheckbox = new GEC::UI::Elements::Checkbox();
+            useGravityCheckbox->SetValue(this->useGravity);
+        }
+
+        float bSize = 20;
+        useGravityCheckbox->Set("Process Gravity",x-width/2,y+height/2-bSize/2,width,bSize);
+        useGravityCheckbox->Update();
+    }
+    void InteractPropertiesPanel(float x, float y, float width, float height) override {
+        useGravityCheckbox->Interact();
+        if (useGravityCheckbox->Changed()) {
+            this->useGravity = useGravityCheckbox->GetValue();
+        }
+    }
+    void RenderPropertiesPanel(float x, float y, float width, float height) override {
+        if (useGravityCheckbox!= nullptr)useGravityCheckbox->Render();
+    }
+
 protected:
     unsigned int id;
     const char* typeID;
 
-    GEC::Vector2<float, float> size;
+        GEC::Vector2<float, float> size;
+
+    bool useGravity = true;
     float health = 1;
     bool isDead = false, releaseEntity = false;
     bool spawned = false;
@@ -80,6 +107,9 @@ protected:
 private:
     void SetID(unsigned int);
     EntityManager* manager;
+
+
+    GEC::UI::Elements::Checkbox* useGravityCheckbox = nullptr;
 };
 
 class EntityManager {
