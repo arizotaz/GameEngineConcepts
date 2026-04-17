@@ -49,6 +49,8 @@ namespace UI {
                     this->text += GEC::Input::Keyboard::GetStringInput();
                     if (GEC::Input::Keyboard::IsSpecialKeyPressed(111))
                         this->text = text.substr(0, text.length() - 1);
+                    if (GEC::Input::Keyboard::IsKeyPressed(8) || GEC::Input::Keyboard::IsKeyPressed(127))
+                        this->text = text.substr(0, text.length() - 2);
                 }
                 changed = false;
                 if (!selected && last_state)
