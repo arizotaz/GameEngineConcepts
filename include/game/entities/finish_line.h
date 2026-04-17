@@ -31,6 +31,7 @@ public:
         : Entity("gec.assign2.finish", 0, 0, 6, 0.5)
     {
         this->mass = 3;
+        this->name = "FinishLine";
     };
 
     FinishLine(const FinishLine& other)
