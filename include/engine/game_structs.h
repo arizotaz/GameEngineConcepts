@@ -242,6 +242,8 @@ namespace Game {
          */
         GameObject* RemoveChild(int i);
 
+        bool Persistent() const { return persistent; }
+
         /**
          * I dont need to explain this
          */
