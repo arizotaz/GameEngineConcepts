@@ -16,6 +16,10 @@
 #include <engine/ui/ui_input.h>
 #include <engine/ui/panels.h>
 #include <engine/ui/textdisplay.h>
+#include <game/entities/finish_line.h>
+#include <game/entities/objects.h>
+
+
 #include <vector>
 class Editor_MenuBar;
 class Editor_StateBar;
@@ -192,6 +196,10 @@ public:
     virtual void Interact() override;
     virtual void Render() override;
     virtual ~Editor_Assets() override;
+
+    private:
+    std::vector<GEC::Game::GameObject*> objs;
+    std::vector<GEC::UI::Elements::Button*> assetIcons;
 };
 class Editor_Properties : public EditorPanel {
 public:
@@ -204,6 +212,7 @@ public:
 
     void CleanUp();
 private:
+    GEC::UI::Elements::Button* removeButton;
     const float axis = 2;
     GEC::Game::GameObject* lastGOBJ = nullptr;
     std::vector<GEC::UI::Elements::TextDisplay*> labels;
@@ -213,4 +222,36 @@ private:
     std::vector<GEC::UI::Elements::InputField*> scaleInputs;
 
     GEC::Rect<float,float,float,float> objPropBounds;
+};
+
+
+
+
+
+class AssetObjectList {
+    public:
+    static AssetObjectList& GetInstance()
+    {
+        static AssetObjectList aol;
+        return aol;
+    }
+    AssetObjectList(const AssetObjectList&) = delete;
+    AssetObjectList& operator=(const AssetObjectList&) = delete;
+
+    std::vector<GEC::Game::GameObject*> Objects() {
+        return list;
+    }
+
+private:
+    std::vector<GEC::Game::GameObject*> list;
+    AssetObjectList()
+    {
+        list.push_back(new Coin());
+        list.push_back(new FinishLine());
+    }
+    ~AssetObjectList() { 
+        for (auto i : list)
+        delete i;
+
+    }
 };

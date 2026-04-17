@@ -10,6 +10,8 @@
 
 #include <game/menus.h>
 
+bool drawEditorAxis = true;
+
 EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     : lastScreenSize(0, 0)
 {
@@ -67,6 +69,9 @@ void EditorMenu::Update()
         if (GEC::Input::Keyboard::IsSpecialKeyDown(102))
             cam.Move(mSpeed, 0);
     }
+
+    if (GEC::Input::Keyboard::IsKeyPressed(97))
+        drawEditorAxis = !drawEditorAxis;
 }
 void EditorMenu::Render()
 {
@@ -83,15 +88,27 @@ void EditorMenu::Render()
     glTranslatef(-cPos.First(), -cPos.Second(), -cPos.Third());
     activeScene->Render();
     glPopMatrix();
+
+    if (drawEditorAxis) {
+        GEC::Render::SetColor(0, 255, 0, 80);
+        GEC::Render::Arrow(GEC::Vector3<float, float, float>(0, 0, 1), GEC::Vector3<float, float, float>(0, cam.ViewPort().Second() / 2 - 80, -1), 2, 20);
+        GEC::Render::SetColor(255, 0, 0, 80);
+        GEC::Render::Arrow(GEC::Vector3<float, float, float>(0, 0, 1), GEC::Vector3<float, float, float>(cam.ViewPort().First() / 2 - 250, 0, -1), 2, 20);
+    }
 }
-void EditorMenu::Events() { }
+void EditorMenu::Events()
+{
+    if (GEC::Input::Keyboard::IsKeyPressed(103))
+        PlayGame();
+}
 void EditorMenu::Leave()
 {
     this->selectedGameObject = nullptr;
 }
 void EditorMenu::CreateElements()
 {
-    if (menuBar != nullptr) return;
+    if (menuBar != nullptr)
+        return;
 
     menuBar = new Editor_MenuBar();
     stateBar = new Editor_StateBar(this);
@@ -172,13 +189,16 @@ void EditorMenu::PlayGame()
                 lc->GetEntityManager()->Spawn(fl, i->Position()->First(), i->Position()->Second());
                 continue;
             }
-                lc->GetEntityManager()->Spawn(en, i->Position()->First(), i->Position()->Second());
-
+            lc->GetEntityManager()->Spawn(en, i->Position()->First(), i->Position()->Second());
         }
     }
 
     mm->AddMenu(20, new GameScreen(elr, lc));
-    mm->GoTo(20);
+
+    if (GEC::Input::Keyboard::IsKeyPressed(103))
+        mm->GoTo(5);
+    else
+        mm->GoTo(20);
 }
 GEC::Game::Scene* EditorMenu::Scene() const { return activeScene; }
 
@@ -341,9 +361,9 @@ void Editor_Hierarchy::Update()
     float itemSize = 20;
     for (int i = 0; i < objectList.size(); ++i) {
         if (objects[i] != nullptr) {
-        yIndex -= itemSize / 2;
-        objectList[i]->Set(objects[i]->GetName(), x, y + yIndex, width - 4, itemSize - 2);
-        yIndex -= itemSize / 2;
+            yIndex -= itemSize / 2;
+            objectList[i]->Set(objects[i]->GetName(), x, y + yIndex, width - 4, itemSize - 2);
+            yIndex -= itemSize / 2;
         }
     }
 }
@@ -373,19 +393,56 @@ Editor_Hierarchy::~Editor_Hierarchy()
 Editor_Assets::Editor_Assets()
 {
     panelName = "Assets";
+    objs = AssetObjectList::GetInstance().Objects();
+    for (int i = 0; i < objs.size(); ++i) {
+        assetIcons.push_back(new GEC::UI::Elements::Button());
+    }
 }
 void Editor_Assets::Update()
 {
     GEC::UI::Elements::MouseInteractor::Update();
+
+    GEC::Vector2<float, float> iInd(x - width / 2, y + height / 2);
+
+    float iconSize = 40;
+    iInd.Move(iconSize / 2 + 2, -iconSize / 2 - 5);
+
+    for (int i = 0; i < assetIcons.size(); ++i) {
+        assetIcons[i]->Update();
+        assetIcons[i]->Set(iInd.First(), iInd.Second(), iconSize, iconSize);
+        iInd.Move(iconSize + 5, 0);
+    }
 }
 void Editor_Assets::Interact()
 {
+    for (int i = 0; i < assetIcons.size(); ++i) {
+        assetIcons[i]->Interact();
+        if (assetIcons[i]->Clicked()) {
+            GEC::Game::GameObject* gc = objs[i]->Clone();
+            gc->Scale()->Set(1, 1);
+            EditorObject()->Scene()->AddObject(gc, 0, 0);
+        }
+    }
+
     GEC::UI::Elements::MouseInteractor::Interact();
 }
 void Editor_Assets::Render()
 {
     GEC::Render::SetColor(200);
     GEC::Render::Rect(x, y, width, height);
+
+    for (int i = 0; i < assetIcons.size(); ++i) {
+        assetIcons[i]->Render();
+        objs[i]->Position()->Set(assetIcons[i]->X(), assetIcons[i]->Y());
+        objs[i]->Scale()->Set(assetIcons[i]->Width(), assetIcons[i]->Height());
+
+        Entity* e = dynamic_cast<Entity*>(objs[i]);
+        if (e) {
+            objs[i]->Scale()->Set(assetIcons[i]->Width() * (1 / e->RawSize().First()), assetIcons[i]->Height() * (1 / e->RawSize().Second()));
+        }
+
+        objs[i]->Draw();
+    }
 }
 Editor_Assets::~Editor_Assets()
 {
@@ -408,6 +465,7 @@ Editor_Properties::Editor_Properties()
         labels[i]->Align(0, 0);
 
     name = new GEC::UI::Elements::InputField();
+    removeButton = new GEC::UI::Elements::Button();
 }
 void Editor_Properties::Update()
 {
@@ -438,6 +496,12 @@ void Editor_Properties::Update()
     yIndex -= iheight / 2;
     name->Set(x, y + yIndex, width, iheight);
     yIndex -= iheight / 2;
+    if (EditorObject()->GetSelectedObj() != nullptr && !EditorObject()->GetSelectedObj()->Persistent()) {
+
+        yIndex -= iheight / 2;
+        removeButton->Set("Delete Object", x, y + yIndex, width, iheight);
+        yIndex -= iheight / 2;
+    }
 
     yIndex -= iheight;
 
@@ -472,6 +536,7 @@ void Editor_Properties::Update()
     this->objPropBounds.H() = propH;
 
     name->Update();
+    removeButton->Update();
     for (auto i : positionInputs)
         i->Update();
     for (auto i : rotationInputs)
@@ -538,6 +603,15 @@ void Editor_Properties::Interact()
 
     EditorObject()->GetSelectedObj()->InteractPropertiesPanel(objPropBounds.X(), objPropBounds.Y(), objPropBounds.W(), objPropBounds.H());
 
+    if (!EditorObject()->GetSelectedObj()->Persistent()) {
+        removeButton->Interact();
+        if (removeButton->Clicked()) {
+            EditorObject()->Scene()->RemoveObject(EditorObject()->GetSelectedObj());
+            reload = true;
+            EditorObject()->SetSelectedObj(nullptr);
+        }
+    }
+
     if (reload)
         this->lastGOBJ = nullptr;
 
@@ -548,9 +622,12 @@ void Editor_Properties::Render()
     GEC::Render::SetColor(200);
     GEC::Render::Rect(x, y, width, height);
 
-    name->Render();
     if (this->EditorObject()->GetSelectedObj() == nullptr)
         return;
+
+    name->Render();
+    if (EditorObject()->GetSelectedObj() != nullptr && !EditorObject()->GetSelectedObj()->Persistent())
+        removeButton->Render();
     for (auto i : positionInputs)
         i->Render();
     for (auto i : rotationInputs)
@@ -589,10 +666,27 @@ Editor_MenuBar::Editor_MenuBar()
     menuButtons.push_back(fileOption);
 
     GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> helpMenu("Help", new GEC::UI::Elements::ButtonOfButtons());
-    helpMenu.Second()->AddOption("Controls", CloseCallBack);
-    helpMenu.Second()->AddOption("About", CloseCallBack);
+    helpMenu.Second()->AddOption("Controls", []() {
+        std::cout << "Game Controls" << std::endl;
+        std::cout << "Player Move: Arrow Keys + Spacebar" << std::endl;
+        std::cout << "Pause: p" << std::endl;
+        std::cout << "Close App: esc" << std::endl;
+        std::cout << "Toggle Axises: a" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Editor Controls" << std::endl;
+        std::cout << "Camera Move: arrow keys" << std::endl;
+        std::cout << "Camera Fast: shift" << std::endl;
+        std::cout << "Start from Title: g" << std::endl;
+        std::cout << "Toggle Axises: a" << std::endl;
+        std::cout << "PS: GLUT is weird, use fn+delete instead of backspace for text inputs" << std::endl;
+        std::cout << "" << std::endl;
+    });
+    helpMenu.Second()->AddOption("About", []() {
+        std::cout << "This is a simple game with an editor included.  The game will eventually take on the form of a small indie game called \"MicroMages\", look up the video about it, it's really cool.  However this is just a simple platformer with an editor to modify the tilemap and place entities on the level." << std::endl;
+        std::cout << "You can see more about MicroMages here: https://www.youtube.com/watch?v=ZWQ0591PAxM" << std::endl;
+    });
     helpMenu.Second()->AddOption("Support", []() {
-        OpenWebURL("https://arizotaz.com/contact/kent/gameengineconcepts");
+        OpenWebURL("https://www.youtube.com/watch?v=Y2nEje0JGdQ");
     });
     menuButtons.push_back(helpMenu);
 }
