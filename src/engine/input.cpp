@@ -17,6 +17,12 @@ void GEC::Input::Keyboard::InterruptKeyDown(unsigned char key, int x, int y)
         keys_pressed[key] = 2;
     keys[key] = true;
 
+    if (IsKeyPressed(key)) {
+        charInput += key;
+        while (charInput.length() > 10)
+            charInput = charInput.substr(1);
+    }
+
     if (printKeys) {
         std::cout << "Key " << key << " " << "(" << (int)key << ")" << " is down";
         fflush(stdout);
@@ -35,10 +41,12 @@ void GEC::Input::Keyboard::InterruptKeyUp(unsigned char key, int x, int y)
 
 void GEC::Input::Keyboard::InterruptSpecialDown(int key, int x, int y)
 {
+    if (!specialKeys[key])
+        spec_keys_pressed[key] = 2;
     specialKeys[key] = true;
 
     if (printKeys) {
-        std::cout << "Key " << key << " " << "(" << (int)key << ")" << " is down" << std::endl;
+        std::cout << "Special Key " << key << " " << "(" << (int)key << ")" << " is down" << std::endl;
         fflush(stdout);
     }
 }
@@ -48,7 +56,7 @@ void GEC::Input::Keyboard::InterruptSpecialUp(int key, int x, int y)
     specialKeys[key] = false;
 
     if (printKeys) {
-        std::cout << "Key " << key << " " << "(" << (int)key << ")" << " is up" << std::endl;
+        std::cout << "Special Key " << key << " " << "(" << (int)key << ")" << " is up" << std::endl;
         fflush(stdout);
     }
 }
@@ -71,6 +79,11 @@ bool GEC::Input::Keyboard::IsKeyPressed(int key)
     return keys_pressed[key] > 0;
 }
 
+bool GEC::Input::Keyboard::IsSpecialKeyPressed(int key)
+{
+    return spec_keys_pressed[key] > 0;
+}
+
 bool GEC::Input::Keyboard::IsSpecialKeyDown(int key)
 {
     return specialKeys[key];
@@ -78,9 +91,19 @@ bool GEC::Input::Keyboard::IsSpecialKeyDown(int key)
 
 void GEC::Input::Keyboard::UpdateLoop()
 {
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < 256; ++i) {
         if (keys_pressed[i] > 0)
             --keys_pressed[i];
+        if (spec_keys_pressed[i] > 0)
+            --spec_keys_pressed[i];
+    }
+}
+
+std::string GEC::Input::Keyboard::GetStringInput()
+{
+    std::string tmp = charInput;
+    charInput = "";
+    return tmp;
 }
 
 void GEC::Input::Mouse_GLUT::PassiveMotionInterrupt(int x, int y)
@@ -98,7 +121,7 @@ void GEC::Input::Mouse_GLUT::MouseWheelInterrupt(int b, int dir, int x, int y)
 
 GEC::Input::Mouse::Mouse() { }
 GEC::Input::Mouse::~Mouse() { }
-GEC::Vector2<float,float> GEC::Input::Mouse::Position() const { return GEC::Vector2<float,float>(x,y); }
+GEC::Vector2<float, float> GEC::Input::Mouse::Position() const { return GEC::Vector2<float, float>(x, y); }
 bool GEC::Input::Mouse::LeftDown() const { return buttons[MouseButtons::LEFT]; }
 bool GEC::Input::Mouse::RightDown() const { return buttons[MouseButtons::RIGHT]; }
 bool GEC::Input::Mouse::LeftPressed() const { return pressedButtons[MouseButtons::LEFT] == 2; }
@@ -147,15 +170,15 @@ void GEC::Input::Mouse::Update()
     }
 }
 
-void GEC::Input::Mouse::SetCursor(std::string cursor) {
+void GEC::Input::Mouse::SetCursor(std::string cursor)
+{
     this->cursor = cursor;
     if (cursor == "cursor")
-    glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
+        glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
     if (cursor == "pointer")
-    glutSetCursor(GLUT_CURSOR_INFO);
-    
-    
+        glutSetCursor(GLUT_CURSOR_INFO);
 }
-std::string GEC::Input::Mouse::GetCursor() const {
+std::string GEC::Input::Mouse::GetCursor() const
+{
     return cursor;
 }

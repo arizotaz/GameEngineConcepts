@@ -35,7 +35,7 @@ namespace UI {
             {
                 if (!ElementRegistry::GetInstance().ShouldStopInteract())
                     if (MouseInBounds(mouse, x, y, width, height))
-                        ElementRegistry::GetInstance().ShouldStopInteract();
+                        ElementRegistry::GetInstance().StopInteract();
             }
             void Render() { }
 

@@ -22,6 +22,9 @@ struct Level_Layer {
 class Level {
 public:
     Level(const char* name);
+    Level(const Level& other);
+    Level& operator=(const Level& other);
+    Level* Clone() const;
 
     void Init(int width, int height, int layers);
 

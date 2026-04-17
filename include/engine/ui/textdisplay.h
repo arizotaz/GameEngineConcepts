@@ -37,6 +37,7 @@ namespace UI {
                 , align(0, 0)
             {
                 this->text = text;
+                this->font = GEC::TextRender::Font::GetDefault();
             }
 
             /**

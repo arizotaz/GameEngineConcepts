@@ -18,6 +18,19 @@
 #include <engine/ui/textdisplay.h>
 #include <game/levelcontainer.h>
 
+class EngineBootScreen : public GEC::Menu {
+public:
+    EngineBootScreen(GEC::UI::ElementRenderer* elr) { };
+    virtual void Open() override { };
+    virtual void Update() override
+    {
+        this->GetManager()->GoTo(5);
+    };
+    virtual void Render() override { };
+    virtual void Events() override { };
+    virtual void Leave() override { };
+};
+
 /** Main Menu Declaration */
 class MainMenu : public GEC::Menu {
 public:
@@ -33,8 +46,7 @@ private:
 
     GEC::UI::Elements::TextDisplay* title;
     GEC::UI::Elements::Button* start;
-    GEC::UI::Elements::Button* settings;
-    GEC::UI::Elements::Button* about;
+    GEC::UI::Elements::Button* editor;
     GEC::UI::Elements::Button* quit;
 
     void CreatePage();
@@ -43,7 +55,7 @@ private:
 /** GameScreen Menu Declaration */
 class GameScreen : public GEC::Menu {
 public:
-    GameScreen(GEC::UI::ElementRenderer*);
+    GameScreen(GEC::UI::ElementRenderer*, LevelContainer*);
     virtual void Open() override;
     virtual void Update() override;
     virtual void Render() override;
@@ -51,6 +63,7 @@ public:
     virtual void Leave() override;
 
 private:
+    LevelContainer* lc;
     GEC::UI::ElementRenderer* elr;
 };
 
@@ -66,7 +79,7 @@ public:
 
 class GAME_PauseMenu : public GEC::Menu {
 public:
-    GAME_PauseMenu(GEC::UI::ElementRenderer*, LevelContainer* lc);
+    GAME_PauseMenu(GEC::UI::ElementRenderer*, LevelContainer*, GEC::MenuManager*);
     virtual void Open() override;
     virtual void Update() override;
     virtual void Render() override;
@@ -77,7 +90,10 @@ public:
     void CreatePage();
 
 private:
+    GEC::MenuManager* globalManager;
+
     GEC::UI::Elements::Button* backButton;
+    GEC::UI::Elements::Button* editButton;
 
     GEC::UI::ElementRenderer* elr;
     LevelContainer* lc;

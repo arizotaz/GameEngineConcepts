@@ -26,31 +26,18 @@
 
 bool drawAxis = true;
 
-LevelContainer* lc;
-
-GameScreen::GameScreen(GEC::UI::ElementRenderer* elr)
+GameScreen::GameScreen(GEC::UI::ElementRenderer* elr, LevelContainer* levelContainer)
 {
     this->elr = elr;
+    this->lc = levelContainer;
 }
 void GameScreen::Open()
 {
-    lc = new LevelContainer();
 
-    lc->SetPlayer(new Player());
-    lc->GetEntityManager()->Spawn(lc->GetPlayer(), 5, 5);
-    lc->GetEntityManager()->Spawn(new Coin(), 6, 5);
-    lc->GetEntityManager()->Spawn(new Coin(), 7, 8);
-    lc->GetEntityManager()->Spawn(new Coin(), 8, 8);
-    lc->GetEntityManager()->Spawn(new Coin(), 9, 8);
-    lc->GetEntityManager()->Spawn(new Coin(), 10, 8);
-    lc->GetEntityManager()->Spawn(new Coin(), 11, 8);
-    lc->GetEntityManager()->Spawn(new Coin(), 12, 8);
-
-    lc->GetEntityManager()->Spawn(new FinishLine(lc), 40, 10);
-
+    elr->ClearCycle();
     GEC::MenuManager* mm = lc->GetMenuManager();
     mm->AddMenu(0, new GAME_BlankMenu());
-    mm->AddMenu(1, new GAME_PauseMenu(elr, lc));
+    mm->AddMenu(1, new GAME_PauseMenu(elr, lc, this->GetManager()));
 
     GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
 };
@@ -69,7 +56,7 @@ void GameScreen::Update()
             this->GetManager()->GoTo(2);
         }
     }
-    if (lc->GetPlayer()->Position().Second() <= -10)
+    if (lc->GetPlayer()->Position()->Second() <= -10)
         lc->GetPlayer()->Kill();
     if (lc->GetPlayer()->IsDead())
         GetManager()->GoTo(3);
@@ -136,10 +123,11 @@ void GameScreen::Leave()
     delete lc;
 };
 
-GAME_PauseMenu::GAME_PauseMenu(GEC::UI::ElementRenderer* elr, LevelContainer* lc)
+GAME_PauseMenu::GAME_PauseMenu(GEC::UI::ElementRenderer* elr, LevelContainer* lc, GEC::MenuManager* globalManager)
 {
     this->elr = elr;
     this->lc = lc;
+    this->globalManager = globalManager;
 }
 void GAME_PauseMenu::Open()
 {
@@ -158,6 +146,10 @@ void GAME_PauseMenu::Events()
 {
     if (GEC::Input::Keyboard::IsKeyPressed(112) || backButton->Clicked())
         this->GetManager()->GoTo(0);
+
+        if (editButton->Clicked()) {
+            globalManager->GoTo(10);
+        }
 };
 void GAME_PauseMenu::Leave()
 {
@@ -175,6 +167,7 @@ void GAME_PauseMenu::CreateElements()
     bgPanel = new GEC::UI::Elements::Panel(0, 150);
     pausedText = new GEC::UI::Elements::TextDisplay("Game Paused");
     backButton = new GEC::UI::Elements::Button();
+    editButton = new GEC::UI::Elements::Button();
 }
 void GAME_PauseMenu::CreatePage()
 {
@@ -187,11 +180,12 @@ void GAME_PauseMenu::CreatePage()
     pausedText->Set(0, 30, 100, 28);
 
     backButton->Set("Back to Game", 0, -30, 200, 28);
-    backButton->SetFont(GetGlobalFont());
+    editButton->Set("Open Editor", 0, -60, 200, 28);
 
     elr->AddElement(bgPanel, 0);
     elr->AddElement(pausedText, 0);
     elr->AddElement(backButton, 0);
+    elr->AddElement(editButton, 0);
 };
 
 GAME_BlankMenu::GAME_BlankMenu() { };

@@ -5,10 +5,10 @@
 // # Date Created:       03/03/2026
 // # Last Modification:  03/18/2026
 // #############################################################################
-// # 
+// #
 // #############################################################################
 // #
-// # 
+// #
 // #
 // #############################################################################
 #ifndef ENTITYMANAGER_HPP
@@ -17,27 +17,35 @@
 #include <iostream>
 #include <vector>
 
+#include <engine/game_structs.h>
 #include <engine/structs.h>
 
 #include <game/level.h>
 
+#include <engine/ui/ui_input.h>
+
 class LevelContainer;
 class EntityManager;
 
-class Entity {
+class Entity : public GEC::Game::GameObject {
 public:
     Entity(const char* id, float, float, float, float);
+    Entity(const Entity& other);
+    virtual GameObject* Clone() const override = 0;
+
     virtual void OnSpawn() { }
+    virtual void Start() { }
     virtual void Tick() = 0;
     virtual void Update() = 0;
     virtual void Render() = 0;
-    virtual void OnDeath() {};
+    virtual void OnDeath() { };
     virtual void DeathLoop() { releaseEntity = true; }
     virtual void OnRemove() { }
 
     virtual ~Entity();
-    GEC::Vector2<float, float> Position() const;
+    GEC::Vector2<float, float>* Position() const;
     GEC::Vector2<float, float> Size() const;
+    GEC::Vector2<float, float> RawSize() const;
 
     void Kill();
     bool IsDead() const;
@@ -54,14 +62,38 @@ public:
 
     friend EntityManager;
 
+
+    void UpdatePropertiesPanel(float x, float y, float width, float height) override
+    {
+        if (useGravityCheckbox == nullptr) {
+            useGravityCheckbox = new GEC::UI::Elements::Checkbox();
+            useGravityCheckbox->SetValue(this->useGravity);
+        }
+
+        float bSize = 20;
+        useGravityCheckbox->Set("Process Gravity",x-width/2,y+height/2-bSize/2,width,bSize);
+        useGravityCheckbox->Update();
+    }
+    void InteractPropertiesPanel(float x, float y, float width, float height) override {
+        useGravityCheckbox->Interact();
+        if (useGravityCheckbox->Changed()) {
+            this->useGravity = useGravityCheckbox->GetValue();
+        }
+    }
+    void RenderPropertiesPanel(float x, float y, float width, float height) override {
+        if (useGravityCheckbox!= nullptr)useGravityCheckbox->Render();
+    }
+
 protected:
     unsigned int id;
     const char* typeID;
 
+        GEC::Vector2<float, float> size;
+
+    bool useGravity = true;
     float health = 1;
     bool isDead = false, releaseEntity = false;
     bool spawned = false;
-    GEC::Rect<float, float, float, float>* position_size;
     GEC::Vector2<float, float> force;
     GEC::Vector2<float, float> friction;
     float mass = 10;
@@ -75,6 +107,9 @@ protected:
 private:
     void SetID(unsigned int);
     EntityManager* manager;
+
+
+    GEC::UI::Elements::Checkbox* useGravityCheckbox = nullptr;
 };
 
 class EntityManager {
@@ -111,13 +146,16 @@ private:
 class LevelRenderer {
 public:
     LevelRenderer(LevelContainer*);
+    LevelRenderer(Level*);
     ~LevelRenderer();
     void Render();
     void DrawLayer(int layer, int z);
     LevelContainer* Container() const;
+    Level* GetLevel() const;
 
 private:
-    LevelContainer* levelContainer;
+    LevelContainer* levelContainer = nullptr;
+    Level* level = nullptr;
 };
 
 #endif

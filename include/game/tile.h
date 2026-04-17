@@ -85,7 +85,7 @@ public:
         this->solidTop = true;
     }
     void Render(LevelRenderer* r, int x, int y, int z) override {
-        Level* level = r->Container()->GetLevelData();
+        Level* level = r->GetLevel();
 
         int iniImgX = 0;
         int iniImgY = 2;
@@ -131,7 +131,7 @@ public:
         this->solidTop = true;
     }
     void Render(LevelRenderer* r, int x, int y, int z) override {
-        Level* level = r->Container()->GetLevelData();
+        Level* level = r->GetLevel();
 
         int ix = 0;
 		int iy = 16-2;

@@ -30,7 +30,7 @@ public:
     void Render() override;
 
     /** Process GUI Events */
-    void Events();
+    void Events() override;
 
     /** On Exit */
     void Exit() override;

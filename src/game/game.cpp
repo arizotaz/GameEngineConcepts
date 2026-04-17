@@ -12,14 +12,16 @@
 #include <game/game.h>
 #include <game/menus.h>
 
-#include <engine/input.h>
 #include <engine/audio.h>
+#include <engine/input.h>
 #include <engine/renderobjects.h>
 #include <engine/texture.h>
 #include <engine/ui/element.h>
 #include <game/global_states.h>
 #include <game/tile.h>
 #include <iostream>
+
+#include <game/gameeditor.h>
 
 // MenuManager Pointer
 GEC::MenuManager* mm;
@@ -30,8 +32,6 @@ GEC::UI::ElementRenderer* elr;
 /** Start function of the Main Process */
 void Assignment2::Start()
 {
-    // Enable Console Print Keys
-    GEC::Input::Keyboard::PrintKeysToConsole(true);
 
     // Set the Window Title
     glutSetWindowTitle("Colton Staiduhar - 811138106");
@@ -44,10 +44,11 @@ void Assignment2::Start()
     elr = new GEC::UI::ElementRenderer();
 
     // Create the main menus of the application
-    mm->AddMenu(0, new MainMenu(elr));
-    mm->AddMenu(1, new GameScreen(elr));
-    mm->AddMenu(2, new WinScreen(elr,0,0));
+    mm->AddMenu(0, new EngineBootScreen(elr));
     mm->AddMenu(3, new LoseScreen(elr));
+    mm->AddMenu(5, new MainMenu(elr));
+    mm->AddMenu(10, new EditorMenu(elr));
+    // mm->AddMenu(10, new GameScreen(elr));
 
     // Load Game Textures
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");
@@ -66,14 +67,9 @@ void Assignment2::Start()
 /** Main Processing loop of the process */
 void Assignment2::Update()
 {
-
-    // Reset the Element Click Limit
-    GEC::UI::ElementRegistry::GetInstance().Reset();
-
-
     // Update Elements in the ElementRenderer
     elr->Update();
-    
+
     // Update the MenuManager
     mm->Update();
 
@@ -97,7 +93,7 @@ void Assignment2::Render()
     // Clear the screen buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Run the menu manager 
+    // Run the menu manager
     mm->Render();
 
     // Render all elements in the Element Manager
@@ -109,6 +105,9 @@ void Assignment2::Events()
 {
     // Run the event loop of the Menu Manager
     mm->Events();
+
+    // Reset the Element Click Limit
+    GEC::UI::ElementRegistry::GetInstance().Reset();
 }
 /** Called when the process exits */
 void Assignment2::Exit()

@@ -9,10 +9,10 @@
 #include <engine/structs.h>
 #include <engine/tools.h>
 
-
 namespace GEC {
 
-MenuManager::MenuManager() { 
+MenuManager::MenuManager()
+{
     menuList = new GEC::Menu*[0];
 }
 void MenuManager::Update()
@@ -46,11 +46,12 @@ void MenuManager::Events()
     if (this->currMenu != nullptr)
         this->currMenu->Events();
 }
-void MenuManager::AddMenu(int id, Menu* m) {
+void MenuManager::AddMenu(int id, Menu* m)
+{
     // If the list is empty
     if (this->menus < 1) {
         this->menus = id + 1;
-        this->menuList = new Menu * [this->menus];
+        this->menuList = new Menu*[this->menus];
 
         // Fill List with nullptr
         for (int i = 0; i < this->menus; ++i)
@@ -60,7 +61,7 @@ void MenuManager::AddMenu(int id, Menu* m) {
     if (id > this->menus - 1) {
         // Resize Menu Index
         int newSize = id + 1;
-        Menu** newList = new Menu * [newSize];
+        Menu** newList = new Menu*[newSize];
 
         // Copy everything over
         for (int i = 0; i < this->menus; ++i)
@@ -91,18 +92,20 @@ void MenuManager::AddMenu(int id, Menu* m) {
 }
 void MenuManager::RemoveMenu(int id)
 {
-    delete this->menuList[id];
-    this->menuList[id] = nullptr;
+    if (Exists(id)) {
+        delete this->menuList[id];
+        this->menuList[id] = nullptr;
+    }
 }
 bool MenuManager::Exists(int id)
 {
     return GetMenu(id) != nullptr;
 }
 
-
 Menu* MenuManager::GetMenu(int id)
 {
-    if (id < 0) return nullptr;
+    if (id < 0)
+        return nullptr;
     if (this->menus <= id)
         return nullptr;
     return this->menuList[id];
@@ -116,18 +119,20 @@ MenuManager::~MenuManager()
     delete[] this->menuList;
 }
 
-
-DeltaTime::DeltaTime() {
+DeltaTime::DeltaTime()
+{
     lastTime = glutGet(GLUT_ELAPSED_TIME);
 }
-void DeltaTime::Update() {
+void DeltaTime::Update()
+{
     int currentTime = glutGet(GLUT_ELAPSED_TIME); // milliseconds
     int delta = currentTime - lastTime;
     lastTime = currentTime;
     dtime = delta / 1000.0f;
 }
-float DeltaTime::Get() {
-    return GEC::Tools::ClampVar<float>(dtime,0,.02f);
+float DeltaTime::Get()
+{
+    return GEC::Tools::ClampVar<float>(dtime, 0, .02f);
 }
 
 }

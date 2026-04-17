@@ -49,6 +49,7 @@
 #include <stdbool.h>
 #include <iostream>
 #include <engine/structs.h>
+#include <string>
 
 namespace GEC {
 namespace Input {
@@ -61,8 +62,10 @@ namespace Input {
         //                                   (1 = Waiting for key release)
         //                                   (2 = KeyPressed)
         static int keys_pressed[256];
+        static int spec_keys_pressed[256];
         static bool specialKeys[256];
         static bool printKeys = false;
+        static std::string charInput;
 
         /**
          * Main Update loop to process single key press events
@@ -134,6 +137,16 @@ namespace Input {
          * @return {key_depressed} - The key is currently depressed
          */
         bool IsSpecialKeyDown(int key);
+
+        /**
+         * Returns true, for only one frame when a key is depressed
+         * This function is only for letter keys (a,b,c,d,q,.etc)
+         * @param {key} - char letter of the key
+         * @return {key_depressed} - The key has been pressed
+         */
+        bool IsSpecialKeyPressed(int key);
+
+        std::string GetStringInput();
     }
 
     /**

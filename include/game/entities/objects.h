@@ -20,6 +20,14 @@
 class Coin : public Entity {
 public:
     Coin();
+    Coin(const Coin& other)
+        : Entity(other)
+    {
+    }
+    GameObject* Clone() const override
+    {
+        return new Coin(*this);
+    }
     void Update() override;
     void Tick() override;
     void Render() override;

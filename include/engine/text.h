@@ -11,7 +11,6 @@
 // # It hold the code to load a fond and render text with said font.
 // #############################################################################
 
-
 #ifndef GEC_ENGINE_TEXT_H
 #define GEC_ENGINE_TEXT_H 1
 
@@ -42,6 +41,12 @@ namespace TextRender {
     /** Font Class, used to load a font file and return the texture and locations of each character */
     class Font {
     public:
+        static Font* GetDefault()
+        {
+            static GEC::TextRender::Font* globalFont;
+            if (globalFont == nullptr) globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
+            return globalFont;
+        }
 
         /**
          * Constructor for the Font, requires a font file and size to load.
@@ -134,6 +139,11 @@ namespace TextRender {
      */
     class Text {
     public:
+
+        Text() {
+            font = Font::GetDefault();
+        }
+        
         /**
          * Text Consturctor
          * @param f - the font to use for the text render
@@ -145,7 +155,7 @@ namespace TextRender {
 
         /** Gets the size of the rendered text
          * @returns Vector2 where first() is the width and second() is the height
-        */
+         */
         GEC::Vector2<float, float> GetSize(float scale)
         {
             int width = 0;
@@ -177,7 +187,7 @@ namespace TextRender {
         void SetText(const std::string& str) { text = str; }
 
         /**
-         * Sets the align configuration to render the text 
+         * Sets the align configuration to render the text
          */
         void Align(int horizontal, int vertical)
         {
@@ -195,7 +205,7 @@ namespace TextRender {
         void Render(float x, float y, float z, float fontSize = 1.0f)
         {
 
-            float scale = fontSize/font->Size();
+            float scale = fontSize / font->Size();
 
             GEC::Vector2<float, float> s = GetSize(scale);
             if (h_align == 1)

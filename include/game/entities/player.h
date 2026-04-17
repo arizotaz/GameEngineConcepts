@@ -18,11 +18,36 @@
  */
 class Player : public Entity {
 public:
-
     /**
      * Default Player Constructor
      */
     Player();
+
+    Player(const Player& other)
+        : Entity(other)
+    {
+        jumped = other.jumped;
+        isInAJump = other.isInAJump;
+
+        input_left = other.input_left;
+        input_right = other.input_right;
+        input_x_axis = other.input_x_axis;
+        input_jump = other.input_jump;
+
+        _imgX = other._imgX;
+        _imgY = other._imgY;
+        _dir = other._dir;
+
+        walk_ani = other.walk_ani;
+        walk_time = other.walk_time;
+
+        collectedCoins = other.collectedCoins;
+        userInput = other.userInput;
+    }
+    GameObject* Clone() const override
+    {
+        return new Player(*this);
+    }
 
     /**
      * Update the player, this is mainly inputs
@@ -33,7 +58,7 @@ public:
      * Process the player's physics, health, and movement
      */
     void Tick() override;
-    
+
     /**
      * Draws the player
      */
