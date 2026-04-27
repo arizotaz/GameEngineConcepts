@@ -1,12 +1,10 @@
 #include <engine/renderobjects.h>
 #include <engine/tools.h>
 #include <engine/web.h>
-#include <game/deltatime.h>
-#include <game/entities/finish_line.h>
 #include <game/entities/objects.h>
 #include <game/gameeditor.h>
 #include <game/global_states.h>
-#include <game/objects.h>
+#include <game/game_objects.h>
 
 #include <game/menus.h>
 
@@ -39,7 +37,7 @@ void EditorMenu::Open()
 void EditorMenu::Update()
 {
 
-    Camera* cam = &Camera::GetInstance();
+    GEC::Camera* cam = &GEC::Camera::GetInstance();
     GEC::Vector2<float, float> curScreen = cam->ViewPort();
 
     if (lastScreenSize.First() != curScreen.First() || lastScreenSize.Second() != curScreen.Second()) {
@@ -50,7 +48,7 @@ void EditorMenu::Update()
     activeScene->Update();
 
     if (true) {
-        Camera& cam = Camera::GetInstance();
+        GEC::Camera& cam = GEC::Camera::GetInstance();
         float mSpeed = GetMainDeltaTime() / 100;
         if (GEC::Input::Keyboard::IsSpecialKeyDown(112))
             mSpeed *= 2;
@@ -73,7 +71,7 @@ void EditorMenu::Update()
 }
 void EditorMenu::Render()
 {
-    Camera& cam = Camera::GetInstance();
+    GEC::Camera& cam = GEC::Camera::GetInstance();
 
     cam.SetScale(cam.ViewPort().Second() / 15.0f);
     GEC::Vector3<float, float, float>
@@ -124,7 +122,7 @@ void EditorMenu::CreateElements()
 void EditorMenu::CreatePage()
 {
     elr->ClearCycle();
-    Camera* cam = &Camera::GetInstance();
+    GEC::Camera* cam = &GEC::Camera::GetInstance();
     GEC::Vector2<float, float> canvas = cam->ViewPort();
 
     /**

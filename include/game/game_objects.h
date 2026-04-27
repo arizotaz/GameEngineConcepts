@@ -1,16 +1,14 @@
 #ifndef GAME_OBJECTS_H
 #define GAME_OBJECTS_H 1
 
-#include <engine/camera.h>
+#include <engine/structs.h>
 #include <engine/game_structs.h>
 #include <engine/input.h>
 #include <game/gameprocessor.h>
 #include <game/level.h>
 
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/textdisplay.h>
-#include <engine/ui/ui_input.h>
+#include <engine/ui/elements.h>
 #include <game/tile.h>
 
 class TileRenderer : public GEC::Game::GameObject {
@@ -37,7 +35,7 @@ public:
     }
     void Render() override
     {
-        Camera& cam = Camera::GetInstance();
+        GEC::Camera& cam = GEC::Camera::GetInstance();
         cursor = GEC::Vector2<int, int>(
             round(m_pos.First() / cam.GetScale() + cam.Position().First()),
             round(m_pos.Second() / cam.GetScale() + cam.Position().Second()));
@@ -63,7 +61,7 @@ public:
     {
         editMode = true;
 
-        Camera& cam = Camera::GetInstance();
+        GEC::Camera& cam = GEC::Camera::GetInstance();
         GEC::Input::Mouse& mou = GEC::Input::Mouse::GetInstance();
 
         m_pos = mou.Position();

@@ -15,9 +15,7 @@
 #include <iostream>
 #include <vector>
 
-#include <engine/camera.h>
 #include <engine/texture.h>
-#include <game/entities/finish_line.h>
 #include <game/entities/objects.h>
 #include <game/entities/player.h>
 #include <game/gameprocessor.h>
@@ -72,7 +70,7 @@ void GameScreen::Update()
 };
 void GameScreen::Render()
 {
-    Camera& cam = Camera::GetInstance();
+    GEC::Camera& cam = GEC::Camera::GetInstance();
 
     cam.SetScale(cam.ViewPort().Second() / 15.0f);
     GEC::Vector3<float, float, float>
@@ -119,7 +117,7 @@ void GameScreen::Leave()
 {
 
     GEC::AudioEngine::GetInstance().StopSound("BG_MUSIC");
-    Camera::GetInstance().SetScale(1);
+    GEC::Camera::GetInstance().SetScale(1);
     delete lc;
 };
 
@@ -172,7 +170,7 @@ void GAME_PauseMenu::CreateElements()
 void GAME_PauseMenu::CreatePage()
 {
     elr->ClearCycle();
-    bgPanel->Set(0, 0, Camera::GetInstance().ViewPort().First(), Camera::GetInstance().ViewPort().Second());
+    bgPanel->Set(0, 0, GEC::Camera::GetInstance().ViewPort().First(), GEC::Camera::GetInstance().ViewPort().Second());
 
     pausedText->Align(1, 1);
     pausedText->SetFont(GetGlobalFont());

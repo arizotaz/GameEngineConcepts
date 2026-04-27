@@ -15,13 +15,10 @@
 #include <iostream>
 #include <math.h>
 
-#include <game/deltatime.h>
-
-#include <engine/camera.h>
-
 #include <engine/tools.h>
 
 #include <engine/audio.h>
+#include <game/global_states.h>
 
 Player::Player()
     : Entity("gec.assign2.player", 0, 0, .8f, .8f)
@@ -33,7 +30,7 @@ Player::Player()
 }
 void Player::Update()
 {
-    
+
     float dtime = GetMainDeltaTime() / 1000.0f;
 
     float input_x_axis = 0;
@@ -141,18 +138,18 @@ void Player::Tick()
         // Play Step Audio
     }
 
-    GEC::Vector3<float, float, float> pos = Camera::GetInstance().Position();
+    GEC::Vector3<float, float, float> pos = GEC::Camera::GetInstance().Position();
     float dist = GEC::Tools::Distance(position->First(), position->Second(), pos.First(), pos.Second());
     float tdis = 2;
     if (dist > tdis) {
-        Camera::GetInstance().MoveTo(position->First(), position->Second(), (float)pow((dist - tdis), 2) * 20 * (dtime / 10.0f));
+        GEC::Camera::GetInstance().MoveTo(position->First(), position->Second(), (float)pow((dist - tdis), 2) * 20 * (dtime / 10.0f));
     }
 }
 void Player::Render()
 {
     GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", 0,0, 1.1, r.W() * _dir, r.H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
+    GEC::Render::Sprite("game.entities", 0, 0, 1.1, r.W() * _dir, r.H(), GEC::Vector2<int, int>(_imgX / 8, _imgY / 8), 16);
 }
 Player::~Player()
 {

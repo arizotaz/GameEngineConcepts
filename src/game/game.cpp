@@ -85,7 +85,7 @@ void Assignment2::Update()
 void Assignment2::Render()
 {
     // Update the camera with the window's viewport information
-    Camera::GetInstance().SetScreen(
+    GEC::Camera::GetInstance().SetScreen(
         GEC::Vector2<float, float>(
             glutGet(GLUT_WINDOW_WIDTH),
             glutGet(GLUT_WINDOW_HEIGHT)));

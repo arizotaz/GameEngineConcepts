@@ -196,6 +196,7 @@ target_compile_options("${CMAKE_PROJECT_NAME}"
   PRIVATE
   -Wno-deprecated-declarations
 	-Wdelete-incomplete
+  -Wno-write-strings
 	$<$<CXX_COMPILER_ID:Clang>:-Wno-pedantic -Wno-macro-redefined>
 )
 

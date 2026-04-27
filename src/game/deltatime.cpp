@@ -1,12 +1,14 @@
-#include <game/deltatime.h>
+#include <game/global_states.h>
 
 float GetMainDeltaTime()
 {
-    if (MainLoopDeltaTime == nullptr) MainLoopDeltaTime = new GEC::DeltaTime();
-    return MainLoopDeltaTime->Get()*1000.0f;
+    if (MainLoopDeltaTime == nullptr)
+        MainLoopDeltaTime = new GEC::DeltaTime();
+    return MainLoopDeltaTime->Get() * 1000.0f;
 }
 void UpdateMainDeltaTime()
 {
-    if (MainLoopDeltaTime == nullptr) MainLoopDeltaTime = new GEC::DeltaTime();
+    if (MainLoopDeltaTime == nullptr)
+        MainLoopDeltaTime = new GEC::DeltaTime();
     MainLoopDeltaTime->Update();
 }

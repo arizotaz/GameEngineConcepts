@@ -1,11 +1,10 @@
-#include <engine/camera.h>
 #include <engine/renderobjects.h>
 #include <engine/texture.h>
 #include <engine/tools.h>
-#include <game/deltatime.h>
 #include <game/gameprocessor.h>
 #include <game/levelcontainer.h>
 #include <game/tile.h>
+#include <game/global_states.h>
 
 LevelContainer::LevelContainer()
 {
@@ -127,11 +126,11 @@ void LevelRenderer::DrawLayer(int layer, int z)
     if (!l)
         return;
 
-    GEC::Vector3<float, float, float> camPos = Camera::GetInstance().Position();
+    GEC::Vector3<float, float, float> camPos = GEC::Camera::GetInstance().Position();
     int cx = round(camPos.First());
     int cy = round(camPos.Second());
 
-    Camera& cam = Camera::GetInstance();
+    GEC::Camera& cam = GEC::Camera::GetInstance();
 
     int renderDistance = GEC::Tools::ClampVar<float>(cam.ViewPort().First() / cam.GetScale(), 2, 100);
     for (int yo = -renderDistance; yo <= renderDistance; ++yo)

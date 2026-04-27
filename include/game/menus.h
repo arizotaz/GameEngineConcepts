@@ -12,10 +12,8 @@
 #define MENUS_H 1
 
 #include <engine/structs.h>
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/panels.h>
-#include <engine/ui/textdisplay.h>
+#include <engine/ui/elements.h>
 #include <game/levelcontainer.h>
 
 class EngineBootScreen : public GEC::Menu {

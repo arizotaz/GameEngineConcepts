@@ -1,8 +1,6 @@
 #include <engine/renderobjects.h>
 #include <engine/text.h>
-#include <engine/ui/button.h>
-#include <engine/ui/element.h>
-#include <engine/ui/textdisplay.h>
+#include <engine/ui/elements.h>
 
 #include <game/global_states.h>
 

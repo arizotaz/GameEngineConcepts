@@ -19,5 +19,11 @@ void CloseCallBack();
 float FPS();
 float FPS_AVERAGE();
 
+static GEC::DeltaTime* MainLoopDeltaTime = nullptr;
+
+/** Returns the DeltaTime of the MainLoopDeltaTime Object */
+float GetMainDeltaTime();
+/** Runs the .Update() function of the MainLoopDeltaTime Object */
+void UpdateMainDeltaTime();
 
 #endif

@@ -1,6 +1,7 @@
-#include <engine/camera.h>
+#include <engine/structs.h>
 #include <math.h>
 
+namespace GEC {
 void Camera::SetPos(float x, float y)
 {
     cameraView.First().Set(x, y);
@@ -52,24 +53,26 @@ void Camera::SetPosAndSize(GEC::Vector2<float, float> pos, GEC::Vector2<float, f
 {
     SetPosAndSize(pos.First(), pos.Second(), canvas.First(), canvas.Second());
 }
-void Camera::SetPosAndSize(GEC::Rect<float, float, float, float> rect) {
-    SetPosAndSize(rect.First(),rect.Second());
+void Camera::SetPosAndSize(GEC::Rect<float, float, float, float> rect)
+{
+    SetPosAndSize(rect.First(), rect.Second());
 }
 
 GEC::Vector2<float, float> Camera::ViewPort()
-    {
-        return GEC::Vector2(cameraView.Second());
-    }
-
+{
+    return GEC::Vector2(cameraView.Second());
+}
 
 GEC::Vector3<float, float, float> Camera::Position()
 {
     return GEC::Vector3<float, float, float>(cameraView.First().First(), cameraView.First().Second(), 0);
 }
 
-void Camera::MoveTo(float x, float y, float speed) {		
-		double angle = atan2(Position().Second()-y,Position().First()-x);
-		double dx = (cos(angle) * speed);
-		double dy = (sin(angle) * speed);
-		Move(-dx,-dy);
-	}
+void Camera::MoveTo(float x, float y, float speed)
+{
+    double angle = atan2(Position().Second() - y, Position().First() - x);
+    double dx = (cos(angle) * speed);
+    double dy = (sin(angle) * speed);
+    Move(-dx, -dy);
+}
+}

@@ -11,16 +11,12 @@
 
 #include <engine/game_structs.h>
 #include <engine/structs.h>
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/ui_input.h>
-#include <engine/ui/panels.h>
-#include <engine/ui/textdisplay.h>
-#include <game/entities/finish_line.h>
+#include <engine/ui/elements.h>
 #include <game/entities/objects.h>
-
-
 #include <vector>
+
+
 class Editor_MenuBar;
 class Editor_StateBar;
 class Editor_Hierarchy;

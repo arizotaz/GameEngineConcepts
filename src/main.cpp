@@ -65,7 +65,6 @@
 // Custom includes
 #include <engine/input.h>
 #include <engine/structs.h>
-#include <game/deltatime.h>
 #include <game/game.h>
 #include <game/global_states.h>
 #include <vector>

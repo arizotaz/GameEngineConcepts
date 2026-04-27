@@ -12,8 +12,8 @@
 // # Ported from the Arizotaz Java Lilac Engine
 // #############################################################################
 
-#ifndef GEC_ENGINE_BOX_COLLIDER_H
-#define GEC_ENGINE_BOX_COLLIDER_H 1
+#ifndef GEC_ENGINE_PHYSICS
+#define GEC_ENGINE_PHYSICS 1
 
 namespace GEC {
 namespace Physics {
