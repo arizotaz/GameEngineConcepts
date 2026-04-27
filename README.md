@@ -3,7 +3,7 @@
 ## About
 This project was created as part of a Kent State University class.  The goal of the class was to make a game from scratch using the GLUT window library.  The game is created in raw C++ and uses OpenGL for graphics, Glut creates the window and the rendering context for the application.
 
-The assignment was broken into 4 parts
+The assignment was broken into 4 parts:
 
 - #### Assignment1
     Create a basic player that moves around the screen and throw some shapes on the screen.
