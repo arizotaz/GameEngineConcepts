@@ -64,8 +64,8 @@ private:
     // Pointer to the applications ElementRenderer
     GEC::UI::ElementRenderer* elr;
 
-    Editor_MenuBar* menuBar;
-    Editor_StateBar* stateBar;
+    Editor_MenuBar* menuBar = nullptr;
+    Editor_StateBar* stateBar = nullptr;
 
     // List of all available panel locations
     std::vector<EditorPanelSlot*> editorPanels;
