@@ -67,72 +67,6 @@ namespace Game {
         objects.clear();
     }
 
-    PropertyList::PropertyList() { }
-    void PropertyList::SetInt(std::string key, int value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetBool(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetFloat(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetString(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    int PropertyList::GetInt(std::string key)
-    {
-        return std::get<int>(properties[key]);
-    }
-    bool PropertyList::GetBool(std::string key)
-    {
-        return std::get<bool>(properties[key]);
-    }
-    float PropertyList::GetFloat(std::string key)
-    {
-        return std::get<float>(properties[key]);
-    }
-    std::string PropertyList::GetString(std::string key)
-    {
-        return std::get<std::string>(properties[key]);
-    }
-    std::variant<bool, int, float, std::string> PropertyList::GetValue(std::string key)
-    {
-        return properties[key];
-    }
-    std::string PropertyList::GetType(std::string key)
-    {
-        switch (properties[key].index()) {
-        case 1:
-            return "bool";
-        case 2:
-            return "int";
-        case 3:
-            return "float";
-        case 4:
-            return "string";
-        default:
-            return "na";
-        }
-    }
-    std::vector<std::string> PropertyList::GetKeys()
-    {
-        std::vector<std::string> keys;
-        for (auto const& element : properties) {
-            keys.push_back(element.first);
-        }
-        return keys;
-    }
-    bool PropertyList::RemoveEntry(std::string key)
-    {
-        properties.erase(key);
-        return true;
-    }
-
     /**
      * GameObject Constructors are declared in the header file
      */
@@ -186,7 +120,6 @@ namespace Game {
             delete child;
         }
         children.clear();
-        delete pList;
         delete position;
         delete rotation;
         delete scale;
