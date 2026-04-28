@@ -20,8 +20,9 @@
 #include <engine/audio.h>
 #include <game/global_states.h>
 
+static GEC::Game::GameObjectRegistrar<Player> regobj_player("com.arizotaz.gec.entity.player");
 Player::Player()
-    : Entity("gec.assign2.player", 0, 0, .8f, .8f)
+    : Entity("com.arizotaz.gec.entity.player", 0, 0, .8f, .8f)
 {
     this->mass = 3;
     this->friction.Set(10.0f, 0);

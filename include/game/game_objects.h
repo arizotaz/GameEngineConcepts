@@ -1,9 +1,9 @@
 #ifndef GAME_OBJECTS_H
 #define GAME_OBJECTS_H 1
 
-#include <engine/structs.h>
 #include <engine/game_structs.h>
 #include <engine/input.h>
+#include <engine/structs.h>
 #include <game/gameprocessor.h>
 #include <game/level.h>
 
@@ -211,12 +211,27 @@ public:
             layerCollidable_input->Render();
     }
 
-    Level* LevelData() {
+    Level* LevelData()
+    {
         return levelData;
     }
+
+    void WriteObject(std::ostream& out) const override
+    {
+        levelData->Serialize(out);
+    }
+    void ReadObject(std::istream& in) override {
+        if (levelData != nullptr) {
+            delete levelData;
+        }
+
+        levelData = new Level("");
+        levelData->Deserialize(in);
+    }
+
 protected:
     LevelRenderer* lr;
-    Level* levelData;
+    Level* levelData = nullptr;
 
     // Editor vars
     GEC::Vector2<float, float> m_pos;
@@ -232,5 +247,6 @@ protected:
 
     GEC::UI::Elements::Checkbox* layerCollidable_input = nullptr;
 };
+
 
 #endif

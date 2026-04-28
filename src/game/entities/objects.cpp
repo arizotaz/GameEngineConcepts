@@ -6,8 +6,11 @@
 #include <math.h>
 #include <string.h>
 
+static GEC::Game::GameObjectRegistrar<Coin> regobj_coin("com.arizotaz.gec.entity.coin");
+static GEC::Game::GameObjectRegistrar<FinishLine> regobj_finishline("com.arizotaz.gec.entity.finish");
+
 Coin::Coin()
-    : Entity("gec.assign2.coin", 0, 0, .3, .3)
+    : Entity("com.arizotaz.gec.entity.coin", 0, 0, .3, .3)
 {
     mass = 3.0f;
     force.Move(20, 0);
@@ -49,8 +52,52 @@ void Coin::Render()
 {
     GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
     GEC::Render::SetColor(255);
-    GEC::Render::Sprite("game.entities", 0,0, r.W(), r.H(), GEC::Vector2<int, int>(1, 13), 16);
+    GEC::Render::Sprite("game.entities", 0, 0, r.W(), r.H(), GEC::Vector2<int, int>(1, 13), 16);
 };
 Coin::~Coin() { };
 void Coin::OnSpawn() { };
 void Coin::OnDeath() { };
+
+FinishLine::FinishLine()
+    : Entity("com.arizotaz.gec.entity.finish", 0, 0, 6, 0.5)
+{
+    this->mass = 3;
+    this->name = "FinishLine";
+};
+
+void FinishLine::Update() {
+
+};
+void FinishLine::Tick()
+{
+    float dtime = GetMainDeltaTime() / 1000.0f;
+    ProcessForce();
+    ProcessGravity();
+
+    Player* p = lc->GetPlayer();
+    GEC::Vector2<float, float>* pos = p->Position();
+    GEC::Vector2<float, float> size = p->Size();
+
+    GEC::Physics::BoxCollider2D player_collider(pos->First(), pos->Second(), size.First(), size.Second());
+    GEC::Physics::BoxCollider2D my_collider(Position()->First(), Position()->Second(), Size().First() - 1, Size().Second());
+
+    if (my_collider.IsColliding(player_collider)) {
+        if (!lc->GameWon()) {
+            GEC::AudioEngine::GetInstance().PlaySound("finish_line");
+            lc->MarkWin();
+        }
+    }
+};
+void FinishLine::Render()
+{
+    GEC::Rect<float, float, float, float> r(position->First(), position->Second(), size.First(), size.Second());
+    GEC::Render::SetColor(255);
+    GEC::Render::Image("game.finish.base", 0, 0 - r.H(), 1.1, r.W(), r.H());
+    GEC::Render::Image("game.finish.flag", 0 - r.W() / 2 + (r.W() / 4) / 2, 0 + r.H() * 4 / 2, 1.05, r.W() / 3, r.H() * 6);
+};
+FinishLine::~FinishLine() { };
+
+void FinishLine::SetLevelContainer(LevelContainer* lc) { this->lc = lc; }
+
+void FinishLine::WriteObject(std::ostream& out) const { }
+void FinishLine::ReadObject(std::istream& in) { }

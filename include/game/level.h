@@ -12,6 +12,8 @@
 #ifndef GAME_LEVEL_H
 #define GAME_LEVEL_H 1
 
+#include <fstream>
+
 struct Level_Layer {
     bool collidable = 1;
     bool visible = 1;
@@ -65,6 +67,9 @@ public:
     Level_Layer* GetLayerData(int layer);
 
     ~Level();
+
+    void Serialize(std::ostream& out) const;
+    void Deserialize(std::istream& in);
 
 private:
     /**

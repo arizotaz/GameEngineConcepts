@@ -5,7 +5,7 @@
 #include <game/global_states.h>
 
 Entity::Entity(const char* type, float x, float y, float width, float height)
-    : GEC::Game::GameObject("com.arizotaz.entity")
+    : GEC::Game::GameObject(type)
     , friction(10.0f, 0)
     , force(0, 0)
     , typeID(type)

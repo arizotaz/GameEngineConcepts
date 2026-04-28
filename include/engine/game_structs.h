@@ -10,6 +10,8 @@
 // Remove this later
 #include <engine/renderobjects.h>
 
+#include <engine/serialization.h>
+
 namespace GEC {
 namespace Game {
 
@@ -65,7 +67,18 @@ namespace Game {
         // Deconstructor
         ~Scene();
 
+        /**
+         * Serialize the scene to a file
+         */
+        void Serialize(std::ostream& out) const;
+
+        /**
+         * Take a serialized file and extract the scene objects
+         */
+        void Deserialize(std::istream& in);
+
     private:
+        const int serializeVersion = 0;
         std::vector<GameObject*> objects;
     };
     /**
@@ -186,10 +199,13 @@ namespace Game {
         virtual void RenderPropertiesPanel(float x, float y, float width, float height) { }
 
         friend class Scene;
+        friend GameObject* DeserializeGameObject(std::istream& in);
+
+        virtual void Serialize(std::ostream& out) const final;
+        virtual void WriteObject(std::ostream& out) const = 0;
+        virtual void ReadObject(std::istream& in) = 0;
 
     protected:
-        const char* typeIdentifier;
-
         GEC::Vector2<float, float>* position;
         GEC::Vector2<float, float>* rotation;
         GEC::Vector2<float, float>* scale;
@@ -199,10 +215,35 @@ namespace Game {
         bool persistent = false;
 
     private:
+        std::string typeIdentifier;
         void RunChildStart();
         void RunChildUpdate();
         void RunChildDraw();
     };
+
+    class GameObjectFactory {
+    public:
+        using Creator = std::function<GameObject*()>;
+
+        static void Register(const std::string& type, Creator creator);
+        static GameObject* Create(const std::string& type);
+
+    private:
+        static std::unordered_map<std::string, Creator>& Registry();
+    };
+
+    template <typename T>
+    class GameObjectRegistrar {
+    public:
+        GameObjectRegistrar(const std::string& type)
+        {
+            GameObjectFactory::Register(type, []() -> GameObject* {
+                return new T();
+            });
+        }
+    };
+
+    GameObject* DeserializeGameObject(std::istream& in);
 }
 }
 
