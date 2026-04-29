@@ -66,19 +66,20 @@ namespace Game {
     }
     void Scene::Serialize(std::ostream& out) const
     {
-        GEC::Serial::WriteString(out, "com.arizotaz.gec.engine.scene");
+        GEC::Serial::WriteString(out, "com.arizotaz.gec.engine.scene.start");
         GEC::Serial::Write(out, serializeVersion);
         size_t childCount = objects.size();
         GEC::Serial::Write(out, childCount);
         for (auto child : objects) {
             child->Serialize(out);
         }
+        GEC::Serial::WriteString(out, "com.arizotaz.gec.engine.scene.end");
     }
     void Scene::Deserialize(std::istream& in)
     {
         std::string header;
         GEC::Serial::ReadString(in, header);
-        if (header != "com.arizotaz.gec.engine.scene")
+        if (header != "com.arizotaz.gec.engine.scene.start")
             throw std::runtime_error("This is not a valid scene file");
 
         int sceneVersion;
@@ -93,6 +94,11 @@ namespace Game {
         for (size_t i = 0; i < count; i++) {
             objects.push_back(DeserializeGameObject(in));
         }
+
+        std::string footer;
+        GEC::Serial::ReadString(in, footer);
+        if (footer != "com.arizotaz.gec.engine.scene.end")
+            throw std::runtime_error("This is not a completed scene file");
     }
     Scene::~Scene()
     {
