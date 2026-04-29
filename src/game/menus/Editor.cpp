@@ -9,24 +9,37 @@
 #include <fstream>
 #include <game/menus.h>
 
+#include <filesystem>
+
 bool drawEditorAxis = true;
 
 EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     : lastScreenSize(0, 0)
 {
     this->elr = elr;
-    activeScene = new GEC::Game::Scene();
 
-    try {
-        std::ifstream in(RESOURCES_PATH "scene.dat", std::ios::binary);
-        this->activeScene->Deserialize(in);
-        in.close();
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        delete activeScene;
+    const char* editorSceneLocation = "./lasteditor.scene";
+
+    if (std::filesystem::exists(editorSceneLocation)) {
+        try {
+            activeScene = new GEC::Game::Scene();
+            std::ifstream in(editorSceneLocation, std::ios::binary);
+            this->activeScene->Deserialize(in);
+            in.close();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to load scene " << editorSceneLocation << ": " << e.what() << std::endl;
+            if (activeScene != nullptr)
+                delete activeScene;
+                activeScene = nullptr;
+        }
+    }
+
+    if (activeScene == nullptr) {
         activeScene = new GEC::Game::Scene();
         activeScene->AddObject(new TileRenderer());
-        activeScene->AddObject(new Player(), 1, 2);
+        Player* p = new Player();
+        p->Position()->Set(1, 2);
+        activeScene->AddObject(p);
     }
 }
 void EditorMenu::Open()
@@ -190,9 +203,14 @@ void EditorMenu::PlayGame()
         }
     }
 
-    std::ofstream out(RESOURCES_PATH "scene.dat", std::ios::binary);
-    this->activeScene->Serialize(out);
-    out.close();
+    const char* editorSceneLocation = "./lasteditor.scene";
+    try {
+        std::ofstream out(editorSceneLocation, std::ios::binary);
+        this->activeScene->Serialize(out);
+        out.close();
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to save scene " << editorSceneLocation << ": " << e.what() << std::endl;
+    }
 
     mm->AddMenu(20, new GameScreen(elr, lc));
 
