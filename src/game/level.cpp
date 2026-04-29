@@ -26,7 +26,7 @@ Level::Level(const Level& other)
 
     // Deep copy tiles
     int size = width * height * layers;
-    tiles = new int[size];
+    tiles = new char[size];
     for (int i = 0; i < size; ++i) {
         tiles[i] = other.tiles[i];
     }
@@ -68,7 +68,7 @@ Level& Level::operator=(const Level& other)
 
     // Copy tiles
     int size = width * height * layers;
-    tiles = new int[size];
+    tiles = new char[size];
     for (int i = 0; i < size; ++i) {
         tiles[i] = other.tiles[i];
     }
@@ -107,7 +107,7 @@ void Level::Init(int width, int height, int layers)
     this->layers = layers;
 
     int s = width * height * layers;
-    tiles = new int[s];
+    tiles = new char[s];
     for (int i = 0; i < s; ++i)
         tiles[i] = 0;
     layerData = new Level_Layer*[layers];
@@ -251,7 +251,7 @@ void Level::Deserialize(std::istream& in)
     GEC::Serial::Read(in, layers);
 
     int size = width * height * layers;
-    tiles = new int[size];
+    tiles = new char[size];
 
     in.read(reinterpret_cast<char*>(tiles), sizeof(int) * size);
 
