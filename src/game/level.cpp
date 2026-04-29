@@ -236,7 +236,8 @@ void Level::Serialize(std::ostream& out) const
 
     // Write tile data
     int size = width * height * layers;
-    out.write(reinterpret_cast<char*>(tiles), sizeof(int) * size);
+    for (int i = 0; i < size; ++i)
+        GEC::Serial::Write(out, tiles[i]);
 
     // Write layers
     for (int i = 0; i < layers; i++) {
@@ -250,7 +251,6 @@ void Level::Deserialize(std::istream& in)
     GEC::Serial::ReadString(in, nameStr);
     name = nameStr.c_str();
 
-
     GEC::Serial::Read(in, width);
     GEC::Serial::Read(in, height);
     GEC::Serial::Read(in, layers);
@@ -258,12 +258,12 @@ void Level::Deserialize(std::istream& in)
     int size = width * height * layers;
     tiles = new char[size];
 
-    in.read(reinterpret_cast<char*>(tiles), sizeof(int) * size);
+    for (int i = 0; i < size; ++i)
+        GEC::Serial::Read(in, tiles[i]);
 
     layerData = new Level_Layer*[layers];
     for (int i = 0; i < layers; i++) {
         layerData[i] = new Level_Layer();
-
         GEC::Serial::Read(in, layerData[i]->zDepth);
         GEC::Serial::Read(in, layerData[i]->collidable);
     }

@@ -227,6 +227,8 @@ public:
 
         levelData = new Level("");
         levelData->Deserialize(in);
+        delete lr;
+        lr = new LevelRenderer(levelData);
     }
 
 protected:
