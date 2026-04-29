@@ -80,7 +80,7 @@ private:
     const char* name;
     int width, height, layers;
     Level_Layer** layerData;
-    int* tiles;
+    char* tiles;
 };
 
 #endif
