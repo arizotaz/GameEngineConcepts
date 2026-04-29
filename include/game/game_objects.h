@@ -14,7 +14,7 @@
 class TileRenderer : public GEC::Game::GameObject {
 public:
     TileRenderer()
-        : GameObject("ocm.arizotaz.tilerenderer")
+        : GameObject("com.arizotaz.gec.tilerenderer")
         , m_pos(0, 0)
         , cursor(0, 0)
     {
