@@ -119,33 +119,38 @@ void Level::Init(int width, int height, int layers)
     layerData[0]->zDepth = -4.0f;
     layerData[1]->zDepth = 1.0f;
 
-    for (int x = 0; x < width; ++x) {
-        SetTile(1, x, 0, 1);
-        SetTile(1, x, 1, 1);
-    }
+    // Create small default platform
+    for (int x = 0; x < 2; ++x)
+        for (int y = 0; y < 2; ++y)
+            SetTile(1, x, y, 1);
 
-    for (int x = 6; x < width; ++x) {
-        for (int y = 0; y < 8; ++y) {
-            SetTile(3, x, y, 0);
-        }
-    }
+    // for (int x = 0; x < width; ++x) {
+    //     SetTile(1, x, 0, 1);
+    //     SetTile(1, x, 1, 1);
+    // }
 
-    SetTile(2, 8, 5, 1);
-    SetTile(2, 9, 5, 1);
-    SetTile(1, 10, 4, 1);
-    SetTile(1, 10, 5, 1);
-    SetTile(1, 11, 4, 1);
-    SetTile(1, 11, 5, 1);
-    SetTile(2, 12, 4, 1);
-    SetTile(2, 13, 4, 1);
-    SetTile(2, 14, 4, 1);
-    SetTile(2, 15, 4, 1);
-    SetTile(1, 16, 4, 1);
+    // for (int x = 6; x < width; ++x) {
+    //     for (int y = 0; y < 8; ++y) {
+    //         SetTile(3, x, y, 0);
+    //     }
+    // }
 
-    for (int i = 2; i < 8; ++i) {
-        SetTile(1, 20, i, 1);
-        SetTile(1, 21, i, 1);
-    }
+    // SetTile(2, 8, 5, 1);
+    // SetTile(2, 9, 5, 1);
+    // SetTile(1, 10, 4, 1);
+    // SetTile(1, 10, 5, 1);
+    // SetTile(1, 11, 4, 1);
+    // SetTile(1, 11, 5, 1);
+    // SetTile(2, 12, 4, 1);
+    // SetTile(2, 13, 4, 1);
+    // SetTile(2, 14, 4, 1);
+    // SetTile(2, 15, 4, 1);
+    // SetTile(1, 16, 4, 1);
+
+    // for (int i = 2; i < 8; ++i) {
+    //     SetTile(1, 20, i, 1);
+    //     SetTile(1, 21, i, 1);
+    // }
 }
 
 int Level::GetTile(int index) const
