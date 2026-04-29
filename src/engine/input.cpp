@@ -112,10 +112,12 @@ void GEC::Input::Mouse_GLUT::PassiveMotionInterrupt(int x, int y)
 }
 void GEC::Input::Mouse_GLUT::MouseFuncInterrupt(int button, int state, int x, int y)
 {
+    Mouse::GetInstance().SetPosition(x, y);
     Mouse::GetInstance().SetButton(button, state == GLUT_DOWN);
 }
 void GEC::Input::Mouse_GLUT::MouseWheelInterrupt(int b, int dir, int x, int y)
 {
+    Mouse::GetInstance().SetPosition(x, y);
     Mouse::GetInstance().SetScroll(0, dir);
 }
 
