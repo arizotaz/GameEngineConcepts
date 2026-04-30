@@ -39,7 +39,7 @@ void Coin::Tick()
     std::vector<int> list = em->List();
     for (int i = 0; i < list.size(); ++i) {
         Entity* entity = em->Get(list[i]);
-        if (strcmp(entity->GetType(), "gec.assign2.player") == 0) {
+        if (strcmp(entity->GetType(), "com.arizotaz.gec.entity.player") == 0) {
             if (GEC::Tools::Distance(*(entity->Position()), *(this->Position())) < this->Size().First() + entity->Size().First()) {
                 Player* p = dynamic_cast<Player*>(entity);
                 p->collectedCoins++;
