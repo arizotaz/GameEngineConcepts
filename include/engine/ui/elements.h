@@ -108,7 +108,7 @@ namespace UI {
             virtual void Interact();
             virtual void Render();
 
-            void AddOption(std::string name, void (*operation)());
+            void AddOption(std::string name, std::function<void()> func);
 
             virtual ~ButtonOfButtons();
 
@@ -116,7 +116,7 @@ namespace UI {
             bool buttonDropped = false;
             std::vector<Button*> buttons;
 
-            std::vector<GEC::Vector2<std::string, void (*)()>> operations;
+            std::vector<GEC::Vector2<std::string, std::function<void()>>> operations;
         };
 
         // #############################################################################

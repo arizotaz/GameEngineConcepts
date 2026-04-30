@@ -103,10 +103,10 @@ namespace UI {
                     buttons[i]->Render();
             GEC::UI::Elements::Button::Render();
         }
-        void ButtonOfButtons::AddOption(std::string name, void (*operation)())
+        void ButtonOfButtons::AddOption(std::string name, std::function<void()> func)
         {
             int index = operations.size();
-            operations.push_back(GEC::Vector2<std::string, void (*)()>(name, operation));
+            operations.push_back(GEC::Vector2<std::string, std::function<void()>>(name, func));
 
             buttons.push_back(new Button());
         }
