@@ -1,13 +1,15 @@
+#include <cctype>
 #include <engine/renderobjects.h>
 #include <engine/tools.h>
 #include <engine/web.h>
+#include <fstream>
 #include <game/entities/objects.h>
 #include <game/game_objects.h>
 #include <game/gameeditor.h>
 #include <game/global_states.h>
-
-#include <fstream>
 #include <game/menus.h>
+#include <iostream>
+#include <string>
 
 #include <filesystem>
 
@@ -82,6 +84,9 @@ void EditorMenu::Update()
 
     if (GEC::Input::Keyboard::IsKeyPressed(97))
         drawEditorAxis = !drawEditorAxis;
+
+    if (sceneName == "")
+        CreatePage();
 }
 void EditorMenu::Render()
 {
@@ -110,6 +115,27 @@ void EditorMenu::Events()
 {
     if (GEC::Input::Keyboard::IsKeyPressed(103))
         PlayGame();
+
+    if (fileName_input->Changed()) {
+        std::string input_text = fileName_input->GetValue();
+        std::transform(input_text.begin(), input_text.end(), input_text.begin(), ::toupper);
+
+        if (!GEC::Tools::StrHasEnding(input_text, ".scene")) {
+            fileName_input->SetValue(fileName_input->GetValue() + ".scene");
+        }
+    } else if (fileName_confirm->Clicked()) {
+        fileName_confirm->Interact();
+        fileName_input->Interact();
+        this->sceneName = fileName_input->GetValue();
+        CreatePage();
+        if (std::filesystem::exists(std::string("./" + sceneName))) {
+            try {
+                LoadScene();
+            } catch (const std::exception& e) {
+                std::cerr << "Failed to load scene ./" << sceneName << ": " << e.what() << std::endl;
+            }
+        }
+    }
 }
 void EditorMenu::Leave()
 {
@@ -132,6 +158,13 @@ void EditorMenu::CreateElements()
     editorPanels[1]->panels[0]->SetCurrectSlot(editorPanels[1]);
     editorPanels[2]->panels.push_back(new Editor_Properties());
     editorPanels[2]->panels[0]->SetCurrectSlot(editorPanels[2]);
+
+    fileName_input = new GEC::UI::Elements::InputField();
+    fileName_pane_bgl = new GEC::UI::Elements::Panel(0, 100);
+    fileName_panel = new GEC::UI::Elements::Panel(240);
+    fileName_text = new GEC::UI::Elements::TextDisplay("Please enter a file name");
+    fileName_confirm = new GEC::UI::Elements::Button();
+    fileName_text->Align(1, 0);
 }
 void EditorMenu::CreatePage()
 {
@@ -169,6 +202,23 @@ void EditorMenu::CreatePage()
         elr->AddElement(editorPanels[i], 0);
     elr->AddElement(stateBar, 0);
     elr->AddElement(menuBar, 0);
+
+    if (sceneName == "") {
+        int w = 450;
+        int h = 300;
+        fileName_pane_bgl->Set(0, 0, canvas.First(), canvas.Second());
+        elr->AddElement(fileName_pane_bgl, 0);
+
+        fileName_panel->Set(0, 0, GEC::Tools::ClampVar<float>(w, 100, canvas.First()), GEC::Tools::ClampVar<float>(h, 50, canvas.Second()));
+        fileName_input->Set(0, 0, GEC::Tools::ClampVar<float>(w - 10, 100, 400), 30);
+        fileName_text->Set(0, 30, w - 10, 25);
+        fileName_confirm->Set("Ok", 0, -30, GEC::Tools::ClampVar<float>(w - 10, 100, 200), 25);
+
+        elr->AddElement(fileName_panel, 0);
+        elr->AddElement(fileName_input, 0);
+        elr->AddElement(fileName_text, 0);
+        elr->AddElement(fileName_confirm, 0);
+    }
 }
 void EditorMenu::PlayGame()
 {

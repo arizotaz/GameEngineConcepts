@@ -41,6 +41,10 @@ public:
 
     void PlayGame();
 
+    void ChangeFileName();
+    void SaveScene();
+    void LoadScene();
+
     GEC::Game::Scene* Scene() const;
 
     void SetSelectedObj(GEC::Game::GameObject* obj)
@@ -75,6 +79,14 @@ private:
 
     // The selected game obj
     GEC::Game::GameObject* selectedGameObject = nullptr;
+
+    std::string sceneName;
+    GEC::UI::Elements::InputField* fileName_input = nullptr;
+    GEC::UI::Elements::Panel* fileName_pane_bgl = nullptr;
+    GEC::UI::Elements::Panel* fileName_panel = nullptr;
+    GEC::UI::Elements::TextDisplay* fileName_text = nullptr;
+    GEC::UI::Elements::Button* fileName_confirm = nullptr;
+
 };
 
 /**
