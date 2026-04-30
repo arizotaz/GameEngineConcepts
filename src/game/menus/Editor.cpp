@@ -22,20 +22,6 @@ EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
 
     const char* editorSceneLocation = "./lasteditor.scene";
 
-    if (std::filesystem::exists(editorSceneLocation)) {
-        try {
-            activeScene = new GEC::Game::Scene();
-            std::ifstream in(editorSceneLocation, std::ios::binary);
-            this->activeScene->Deserialize(in);
-            in.close();
-        } catch (const std::exception& e) {
-            std::cerr << "Failed to load scene " << editorSceneLocation << ": " << e.what() << std::endl;
-            if (activeScene != nullptr)
-                delete activeScene;
-                activeScene = nullptr;
-        }
-    }
-
     if (activeScene == nullptr) {
         activeScene = new GEC::Game::Scene();
         activeScene->AddObject(new TileRenderer());
@@ -146,7 +132,7 @@ void EditorMenu::CreateElements()
     if (menuBar != nullptr)
         return;
 
-    menuBar = new Editor_MenuBar();
+    menuBar = new Editor_MenuBar(this);
     stateBar = new Editor_StateBar(this);
     editorPanels.push_back(new EditorPanelSlot(this, 0));
     editorPanels.push_back(new EditorPanelSlot(this, 1));
@@ -262,6 +248,12 @@ void EditorMenu::PlayGame()
         std::cerr << "Failed to save scene " << editorSceneLocation << ": " << e.what() << std::endl;
     }
 
+    try {
+        SaveScene();
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to save scene ./" << sceneName << ": " << e.what() << std::endl;
+    }
+
     mm->AddMenu(20, new GameScreen(elr, lc));
 
     if (GEC::Input::Keyboard::IsKeyPressed(103))
@@ -270,6 +262,24 @@ void EditorMenu::PlayGame()
         mm->GoTo(20);
 }
 GEC::Game::Scene* EditorMenu::Scene() const { return activeScene; }
+void EditorMenu::ChangeFileName()
+{
+    this->sceneName = "";
+}
+void EditorMenu::SaveScene()
+{
+    std::ofstream out(std::string("./" + sceneName).c_str(), std::ios::binary);
+    this->activeScene->Serialize(out);
+    out.close();
+}
+void EditorMenu::LoadScene()
+{
+    delete activeScene;
+    activeScene = new GEC::Game::Scene();
+    std::ifstream in(std::string("./" + sceneName).c_str(), std::ios::binary);
+    this->activeScene->Deserialize(in);
+    in.close();
+}
 
 EditorPanelSlot::EditorPanelSlot(EditorMenu* editor, int slotID)
 {
@@ -728,9 +738,21 @@ void Editor_Properties::CleanUp()
     delete name;
 }
 
-Editor_MenuBar::Editor_MenuBar()
+Editor_MenuBar::Editor_MenuBar(EditorMenu* editor)
 {
+    this->editorObj = editor;
+
     GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> fileOption("File", new GEC::UI::Elements::ButtonOfButtons());
+    fileOption.Second()->AddOption("Change Filename", [editor]() mutable {
+        editor->ChangeFileName();
+    });
+    fileOption.Second()->AddOption("Save", [editor]() mutable {
+        editor->SaveScene();
+    });
+    fileOption.Second()->AddOption("Load", [editor]() mutable {
+        editor->LoadScene();
+    });
+
     fileOption.Second()->AddOption("Exit", CloseCallBack);
     menuButtons.push_back(fileOption);
 

@@ -94,7 +94,7 @@ private:
  */
 class Editor_MenuBar : public GEC::UI::Elements::MouseInteractor {
 public:
-    Editor_MenuBar();
+    Editor_MenuBar(EditorMenu*);
 
     virtual void Update() override;
     virtual void Interact() override;
@@ -104,6 +104,7 @@ public:
 
 private:
     std::vector<GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*>> menuButtons;
+        EditorMenu* editorObj;
 };
 
 /**
