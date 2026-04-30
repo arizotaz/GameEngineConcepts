@@ -2,11 +2,14 @@
 #include <engine/tools.h>
 #include <engine/web.h>
 #include <game/entities/objects.h>
+#include <game/game_objects.h>
 #include <game/gameeditor.h>
 #include <game/global_states.h>
-#include <game/game_objects.h>
 
+#include <fstream>
 #include <game/menus.h>
+
+#include <filesystem>
 
 bool drawEditorAxis = true;
 
@@ -14,19 +17,30 @@ EditorMenu::EditorMenu(GEC::UI::ElementRenderer* elr)
     : lastScreenSize(0, 0)
 {
     this->elr = elr;
-    activeScene = new GEC::Game::Scene();
 
-    activeScene->AddObject(new TileRenderer());
-    activeScene->AddObject(new Player(), 1, 2);
-    activeScene->AddObject(new Coin(), 6, 5);
-    activeScene->AddObject(new Coin(), 7, 8);
-    activeScene->AddObject(new Coin(), 8, 8);
-    activeScene->AddObject(new Coin(), 9, 8);
-    activeScene->AddObject(new Coin(), 10, 8);
-    activeScene->AddObject(new Coin(), 11, 8);
-    activeScene->AddObject(new Coin(), 12, 8);
+    const char* editorSceneLocation = "./lasteditor.scene";
 
-    activeScene->AddObject(new FinishLine(), 40, 2);
+    if (std::filesystem::exists(editorSceneLocation)) {
+        try {
+            activeScene = new GEC::Game::Scene();
+            std::ifstream in(editorSceneLocation, std::ios::binary);
+            this->activeScene->Deserialize(in);
+            in.close();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to load scene " << editorSceneLocation << ": " << e.what() << std::endl;
+            if (activeScene != nullptr)
+                delete activeScene;
+                activeScene = nullptr;
+        }
+    }
+
+    if (activeScene == nullptr) {
+        activeScene = new GEC::Game::Scene();
+        activeScene->AddObject(new TileRenderer());
+        Player* p = new Player();
+        p->Position()->Set(1, 2);
+        activeScene->AddObject(p);
+    }
 }
 void EditorMenu::Open()
 {
@@ -187,6 +201,15 @@ void EditorMenu::PlayGame()
             }
             lc->GetEntityManager()->Spawn(en, i->Position()->First(), i->Position()->Second());
         }
+    }
+
+    const char* editorSceneLocation = "./lasteditor.scene";
+    try {
+        std::ofstream out(editorSceneLocation, std::ios::binary);
+        this->activeScene->Serialize(out);
+        out.close();
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to save scene " << editorSceneLocation << ": " << e.what() << std::endl;
     }
 
     mm->AddMenu(20, new GameScreen(elr, lc));

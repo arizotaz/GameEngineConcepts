@@ -13,6 +13,8 @@
 
 #include <game/gameprocessor.h>
 
+#include <engine/serialization.h>
+
 /**
  * Main Player Obect
  */
@@ -100,6 +102,8 @@ public:
     /** Allow the coin class to modify the private memebers of this class */
     friend class Coin;
 
+    void WriteObject(std::ostream& out) const override {}
+    void ReadObject(std::istream& in) override {}
 private:
     bool jumped = false, isInAJump = false;
     float input_left, input_right, input_x_axis, input_jump;

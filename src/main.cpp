@@ -216,6 +216,7 @@ int main(int argc, char** argv)
     glutSpecialUpFunc(GEC::Input::Keyboard::InterruptSpecialUp);
 
     // Mouse Move Callback
+    glutMotionFunc(GEC::Input::Mouse_GLUT::PassiveMotionInterrupt);
     glutPassiveMotionFunc(GEC::Input::Mouse_GLUT::PassiveMotionInterrupt);
 
     // Mouse Click Callback

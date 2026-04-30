@@ -12,6 +12,8 @@
 #ifndef GAME_LEVEL_H
 #define GAME_LEVEL_H 1
 
+#include <fstream>
+
 struct Level_Layer {
     bool collidable = 1;
     bool visible = 1;
@@ -66,6 +68,9 @@ public:
 
     ~Level();
 
+    void Serialize(std::ostream& out) const;
+    void Deserialize(std::istream& in);
+
 private:
     /**
      * Returns the Index in the tile list at the given XY position, returns -1 for null
@@ -75,7 +80,7 @@ private:
     const char* name;
     int width, height, layers;
     Level_Layer** layerData;
-    int* tiles;
+    char* tiles;
 };
 
 #endif
