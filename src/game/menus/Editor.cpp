@@ -498,8 +498,9 @@ void Editor_Assets::Interact()
         assetIcons[i]->Interact();
         if (assetIcons[i]->Clicked()) {
             GEC::Game::GameObject* gc = objs[i]->Clone();
+            GEC::Camera& cam = GEC::Camera::GetInstance();
             gc->Scale()->Set(1, 1);
-            EditorObject()->Scene()->AddObject(gc, 0, 0);
+            EditorObject()->Scene()->AddObject(gc, cam.Position().First(), cam.Position().Second());
         }
     }
 
