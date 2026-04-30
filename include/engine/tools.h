@@ -11,6 +11,7 @@
 #ifndef tools_h
 #define tools_h 1
 #include <engine/structs.h>
+#include <iostream>
 
 namespace GEC {
 namespace Tools {
@@ -57,6 +58,9 @@ namespace Tools {
 
         return var;
     }
+
+    // https://stackoverflow.com/questions/874134/find-out-if-string-ends-with-another-string-in-c
+    bool StrHasEnding(std::string const& fullString, std::string const& ending);
 }
 }
 
