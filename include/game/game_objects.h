@@ -71,7 +71,7 @@ public:
         // Create Buttons;
         if (tileSelect.size() == 0) {
             labels.push_back(new GEC::UI::Elements::TextDisplay("Tile Select"));
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 7; ++i)
                 tileSelect.push_back(new GEC::UI::Elements::Button());
         }
         if (layerSelect.size() == 0) {
@@ -115,7 +115,7 @@ public:
             tileSelect[i]->Set(iInd.First(), iInd.Second(), bSize, bSize);
             iInd.Move(bSize / 2 + 5, 0);
             if (iInd.First() + bSize > x + width / 2)
-                iInd.Set(x - width / 2, iInd.Second() + bSize + 5);
+                iInd.Set(x - width / 2, iInd.Second() - bSize - 5);
 
             tileSelect[i]->Update();
         }
