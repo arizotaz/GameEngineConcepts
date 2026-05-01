@@ -86,4 +86,29 @@ private:
     LevelContainer* lc;
 };
 
+class Melbin : public Entity {
+public:
+    Melbin();
+    Melbin(const Melbin& other)
+        : Entity(other)
+    {
+    }
+    GameObject* Clone() const override
+    {
+        return new Melbin(*this);
+    }
+    void Update() override;
+    void Tick() override;
+    void Render() override;
+    ~Melbin();
+
+    void OnSpawn() override;
+    void OnDeath() override;
+    void WriteObject(std::ostream& out) const override {};
+    void ReadObject(std::istream& in) override {}
+
+    private:
+    bool active = false;
+};
+
 #endif
