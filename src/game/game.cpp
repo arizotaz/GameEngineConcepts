@@ -47,11 +47,11 @@ void Assignment4::Start()
 
     LoadLevel("./game.dat");
 
-
     GEC::TextureEngine::GetInstance().LoadTexture("box", RESOURCES_PATH "container.jpg");
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
     GEC::TextureEngine::GetInstance().LoadTexture("game.finish.base", RESOURCES_PATH "Finish_Line_Base.png");
     GEC::TextureEngine::GetInstance().LoadTexture("game.finish.flag", RESOURCES_PATH "Finish_Line_Flag.png");
+    GEC::TextureEngine::GetInstance().LoadTexture("game.melbin", RESOURCES_PATH "melbin.jpeg");
 
     // Load Game Audio
     GEC::AudioEngine::GetInstance().LoadSound("player.step", RESOURCES_PATH "audio/step.mp3");
@@ -59,6 +59,7 @@ void Assignment4::Start()
     GEC::AudioEngine::GetInstance().LoadSound("player.death", RESOURCES_PATH "audio/die.mp3");
     GEC::AudioEngine::GetInstance().LoadSound("finish_line", RESOURCES_PATH "audio/totally_not_happy_wheels.mp3");
     GEC::AudioEngine::GetInstance().LoadSound("BG_MUSIC", RESOURCES_PATH "audio/Portal Radio music uncompressed and HQ.mp3");
+    GEC::AudioEngine::GetInstance().LoadSound("game.melbin", RESOURCES_PATH "audio/melbin.mp3");
 }
 void Assignment4::Update()
 {
@@ -105,7 +106,8 @@ void Assignment4::Exit()
     delete elr;
     delete mm;
 }
-void Assignment4::LoadLevel(std::string sceneLocation) {
+void Assignment4::LoadLevel(std::string sceneLocation)
+{
 
     GEC::Game::Scene* activeScene = nullptr;
 
@@ -173,6 +175,7 @@ void Editor::Start()
     GEC::TextureEngine::GetInstance().LoadTexture("game.entities", RESOURCES_PATH "entities.png");
     GEC::TextureEngine::GetInstance().LoadTexture("game.finish.base", RESOURCES_PATH "Finish_Line_Base.png");
     GEC::TextureEngine::GetInstance().LoadTexture("game.finish.flag", RESOURCES_PATH "Finish_Line_Flag.png");
+    GEC::TextureEngine::GetInstance().LoadTexture("game.melbin", RESOURCES_PATH "melbin.jpeg");
 
     // Load Game Audio
     GEC::AudioEngine::GetInstance().LoadSound("player.step", RESOURCES_PATH "audio/step.mp3");
@@ -180,6 +183,7 @@ void Editor::Start()
     GEC::AudioEngine::GetInstance().LoadSound("player.death", RESOURCES_PATH "audio/die.mp3");
     GEC::AudioEngine::GetInstance().LoadSound("finish_line", RESOURCES_PATH "audio/totally_not_happy_wheels.mp3");
     GEC::AudioEngine::GetInstance().LoadSound("BG_MUSIC", RESOURCES_PATH "audio/Portal Radio music uncompressed and HQ.mp3");
+    GEC::AudioEngine::GetInstance().LoadSound("game.melbin", RESOURCES_PATH "audio/melbin.mp3");
 }
 
 /** Main Processing loop of the process */

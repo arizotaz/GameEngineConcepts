@@ -258,6 +258,7 @@ private:
     {
         list.push_back(new Coin());
         list.push_back(new FinishLine());
+        list.push_back(new Melbin());
     }
     ~AssetObjectList() { 
         for (auto i : list)
