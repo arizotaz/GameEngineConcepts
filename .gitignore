@@ -10,3 +10,4 @@ GSM_TEMPLATE
 out/
 .vs/
 resources/game_runner*
+grader - README.txt
