@@ -79,14 +79,16 @@ PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 std::vector<float> fpsList;
 
 /** Returns the current FPS based on the last frame time */
-float FPS() {
-    return 1.0f/(GetMainDeltaTime()/1000.0f);
+float FPS()
+{
+    return 1.0f / (GetMainDeltaTime() / 1000.0f);
 }
 
 /** Returns the average FPS of the client over the last 240 Frames */
-float FPS_AVERAGE() {
+float FPS_AVERAGE()
+{
     fpsList.push_back(FPS());
-    while (fpsList.size() > 240) 
+    while (fpsList.size() > 240)
         fpsList.erase(fpsList.begin());
 
     float total = 0;
@@ -98,11 +100,11 @@ float FPS_AVERAGE() {
     return total;
 }
 
-
 /** Returns a pointer to the global font */
-GEC::TextRender::Font* GetGlobalFont() {
+GEC::TextRender::Font* GetGlobalFont()
+{
     if (!globalFont)
-    globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
+        globalFont = new GEC::TextRender::Font(RESOURCES_PATH "arial.ttf", 48);
     return globalFont;
 }
 
@@ -146,7 +148,11 @@ int main(int argc, char** argv)
     std::cout << "Starting";
     fflush(stdout);
 
-    pro = new Assignment2();
+#if EDITOR_BUILD
+    pro = new Editor();
+#else
+    pro = new Assignment4();
+#endif
 
     int winW = 1600;
     int winH = 900;
@@ -304,7 +310,6 @@ void UpdateViewPort()
         1000.0f); // Clipping plane is set to 1000 behind camera and 1000
                   // infront, this works because ortho is cool
 
-
     // Set last size to the new size
     lastWinW = winW;
     lastWinH = winH;
@@ -357,6 +362,5 @@ void CenterWindowOnScreen()
     int windowX = (screenWidth - width) / 2;
     int windowY = (screenHeight - height) / 2;
 
-    glutPositionWindow(windowX,windowY);
-
+    glutPositionWindow(windowX, windowY);
 }
