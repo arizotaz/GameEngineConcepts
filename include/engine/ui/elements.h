@@ -16,6 +16,7 @@
 #include <engine/text.h>
 #include <engine/ui/element.h>
 #include <vector>
+#include <functional>
 
 namespace GEC {
 namespace UI {

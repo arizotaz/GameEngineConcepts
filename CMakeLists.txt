@@ -266,16 +266,21 @@ endif()
 elseif (MSVC)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC _CRT_SECURE_NO_WARNINGS)
 
 	#remove console
 	#set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 	
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug<$<CONFIG:Debug>:Debug>")
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+set_property(TARGET "${CMAKE_PROJECT_NAME}_runner" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug<$<CONFIG:Debug>:Debug>")
+set_property(TARGET "${CMAKE_PROJECT_NAME}_runner" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${glad_SOURCE_DIR}/include")
+target_sources("${CMAKE_PROJECT_NAME}_runner" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC "${glad_SOURCE_DIR}/include")
 
 
 # Add our include files
@@ -284,11 +289,29 @@ target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC
 "${freeglut_SOURCE_DIR}/include"
 "${glad_SOURCE_DIR}/include"
 )
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC 
+"${CMAKE_CURRENT_SOURCE_DIR}/include/"
+"${freeglut_SOURCE_DIR}/include"
+"${glad_SOURCE_DIR}/include"
+)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC use_freeglut=TRUE)
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC FREEGLUT_STATIC)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC use_freeglut=TRUE)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC FREEGLUT_STATIC)
 
 target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL
+  freeglut_static
+  opengl32
+  winmm
+  gdi32
+  stb_image
+  miniaudio
+  freetype
+)
+target_link_libraries("${CMAKE_PROJECT_NAME}_runner" 
   PRIVATE 
   OpenGL::GL
   freeglut_static
