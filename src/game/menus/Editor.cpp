@@ -280,6 +280,30 @@ void EditorMenu::LoadScene()
     this->activeScene->Deserialize(in);
     in.close();
 }
+void EditorMenu::BuildApplication()
+{
+    std::string appLocation = RESOURCES_PATH "runner";
+#ifdef _WIN32
+    appLocation += ".exe";
+#endif
+    std::string appName = "Game";
+
+#ifdef _WIN32
+    appName += ".exe";
+#endif
+    std::string outputLocation = "./out/";
+    std::filesystem::create_directories(outputLocation);
+    std::filesystem::copy_file(appLocation, outputLocation + appName, std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file(std::string("./" + sceneName), outputLocation + "game.dat", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::create_directories(outputLocation + "resources");
+    std::filesystem::copy(RESOURCES_PATH, outputLocation + "resources", std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
+    std::ofstream outFile(outputLocation + "manifest");
+    if (outFile.is_open()) {
+        outFile << "gamedata=./game.dat" << std::endl;
+    } else {
+        std::cerr << "Error: Could not open the file for writing." << std::endl;
+    }
+}
 
 EditorPanelSlot::EditorPanelSlot(EditorMenu* editor, int slotID)
 {
@@ -690,6 +714,25 @@ void Editor_Properties::Interact()
             reload = true;
             EditorObject()->SetSelectedObj(nullptr);
         }
+        if (GEC::Input::Keyboard::IsSpecialKeyDown(114) && GEC::Input::Keyboard::IsSpecialKeyDown(114)) {
+            if (GEC::Input::Keyboard::IsSpecialKeyPressed(111)) {
+
+                int i = 0;
+                std::vector<GEC::Game::GameObject*> v = EditorObject()->Scene()->Objects();
+                while (i < v.size()) {
+                    if (v[i] == EditorObject()->GetSelectedObj())
+                        break;
+                    ++i;
+                }
+                EditorObject()->Scene()->RemoveObject(EditorObject()->GetSelectedObj());
+                reload = true;
+
+                if (i < v.size())
+                    EditorObject()->SetSelectedObj(EditorObject()->Scene()->Objects()[i]);
+                else
+                    EditorObject()->SetSelectedObj(nullptr);
+            }
+        }
     }
 
     if (reload)
@@ -781,6 +824,13 @@ Editor_MenuBar::Editor_MenuBar(EditorMenu* editor)
         OpenWebURL("https://www.youtube.com/watch?v=Y2nEje0JGdQ");
     });
     menuButtons.push_back(helpMenu);
+
+    GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*> building("Build", new GEC::UI::Elements::ButtonOfButtons());
+    building.Second()->AddOption("Build App", [editor]() mutable {
+        editor->BuildApplication();
+    });
+
+    menuButtons.push_back(building);
 }
 Editor_MenuBar::~Editor_MenuBar()
 {

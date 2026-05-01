@@ -44,6 +44,7 @@ public:
     void ChangeFileName();
     void SaveScene();
     void LoadScene();
+    void BuildApplication();
 
     GEC::Game::Scene* Scene() const;
 

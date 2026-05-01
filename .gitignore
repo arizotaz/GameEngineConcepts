@@ -9,3 +9,6 @@ Makefile
 GSM_TEMPLATE
 out/
 .vs/
+resources/game_runner
+resources/game_runner.exe
+resources/runner
