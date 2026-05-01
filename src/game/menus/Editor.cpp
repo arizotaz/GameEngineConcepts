@@ -282,7 +282,9 @@ void EditorMenu::LoadScene()
 }
 void EditorMenu::BuildApplication()
 {
-    std::string appLocation = RESOURCES_PATH "runner";
+    this->SaveScene();
+
+    std::string appLocation = RESOURCES_PATH "game_runner";
 #ifdef _WIN32
     appLocation += ".exe";
 #endif
