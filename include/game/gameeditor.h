@@ -11,16 +11,12 @@
 
 #include <engine/game_structs.h>
 #include <engine/structs.h>
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/ui_input.h>
-#include <engine/ui/panels.h>
-#include <engine/ui/textdisplay.h>
-#include <game/entities/finish_line.h>
+#include <engine/ui/elements.h>
 #include <game/entities/objects.h>
-
-
 #include <vector>
+
+
 class Editor_MenuBar;
 class Editor_StateBar;
 class Editor_Hierarchy;
@@ -45,6 +41,11 @@ public:
 
     void PlayGame();
 
+    void ChangeFileName();
+    void SaveScene();
+    void LoadScene();
+    void BuildApplication();
+
     GEC::Game::Scene* Scene() const;
 
     void SetSelectedObj(GEC::Game::GameObject* obj)
@@ -68,8 +69,8 @@ private:
     // Pointer to the applications ElementRenderer
     GEC::UI::ElementRenderer* elr;
 
-    Editor_MenuBar* menuBar;
-    Editor_StateBar* stateBar;
+    Editor_MenuBar* menuBar = nullptr;
+    Editor_StateBar* stateBar = nullptr;
 
     // List of all available panel locations
     std::vector<EditorPanelSlot*> editorPanels;
@@ -79,6 +80,14 @@ private:
 
     // The selected game obj
     GEC::Game::GameObject* selectedGameObject = nullptr;
+
+    std::string sceneName;
+    GEC::UI::Elements::InputField* fileName_input = nullptr;
+    GEC::UI::Elements::Panel* fileName_pane_bgl = nullptr;
+    GEC::UI::Elements::Panel* fileName_panel = nullptr;
+    GEC::UI::Elements::TextDisplay* fileName_text = nullptr;
+    GEC::UI::Elements::Button* fileName_confirm = nullptr;
+
 };
 
 /**
@@ -86,7 +95,7 @@ private:
  */
 class Editor_MenuBar : public GEC::UI::Elements::MouseInteractor {
 public:
-    Editor_MenuBar();
+    Editor_MenuBar(EditorMenu*);
 
     virtual void Update() override;
     virtual void Interact() override;
@@ -96,6 +105,7 @@ public:
 
 private:
     std::vector<GEC::Vector2<std::string, GEC::UI::Elements::ButtonOfButtons*>> menuButtons;
+        EditorMenu* editorObj;
 };
 
 /**
@@ -248,6 +258,7 @@ private:
     {
         list.push_back(new Coin());
         list.push_back(new FinishLine());
+        list.push_back(new Melbin());
     }
     ~AssetObjectList() { 
         for (auto i : list)

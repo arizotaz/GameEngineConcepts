@@ -7,6 +7,7 @@
 #endif
 
 #include <engine/game_structs.h>
+#include <engine/serialization.h>
 #include <ranges>
 
 namespace GEC {
@@ -40,7 +41,11 @@ namespace Game {
         return objects;
     }
     void Scene::AddObject(GameObject* obj) { this->objects.push_back(obj); }
-    void Scene::AddObject(GameObject* obj, float x, float y) { this->objects.push_back(obj);obj->position->Set(x,y); }
+    void Scene::AddObject(GameObject* obj, float x, float y)
+    {
+        this->objects.push_back(obj);
+        obj->position->Set(x, y);
+    }
     GameObject* Scene::RemoveObject(GameObject* obj)
     {
         int index = 0;
@@ -59,78 +64,48 @@ namespace Game {
         this->objects.erase(it);
         return obj;
     }
+    void Scene::Serialize(std::ostream& out) const
+    {
+        GEC::Serial::WriteString(out, "com.arizotaz.gec.engine.scene.start");
+        GEC::Serial::Write(out, serializeVersion);
+        size_t childCount = objects.size();
+        GEC::Serial::Write(out, childCount);
+        for (auto child : objects) {
+            child->Serialize(out);
+        }
+        GEC::Serial::WriteString(out, "com.arizotaz.gec.engine.scene.end");
+    }
+    void Scene::Deserialize(std::istream& in)
+    {
+        std::string header;
+        GEC::Serial::ReadString(in, header);
+        if (header != "com.arizotaz.gec.engine.scene.start")
+            throw std::runtime_error("This is not a valid scene file");
+
+        int sceneVersion;
+        GEC::Serial::Read(in, sceneVersion);
+        if (sceneVersion != this->serializeVersion)
+            throw std::runtime_error("Scene version is not supported");
+
+        size_t count;
+        GEC::Serial::Read(in, count);
+        objects.clear();
+
+        for (size_t i = 0; i < count; i++) {
+            objects.push_back(DeserializeGameObject(in));
+        }
+
+        std::string footer;
+        GEC::Serial::ReadString(in, footer);
+        if (footer != "com.arizotaz.gec.engine.scene.end")
+            throw std::runtime_error("This is not a completed scene file");
+    }
     Scene::~Scene()
     {
         for (auto child : objects) {
             delete child;
         }
         objects.clear();
-    }
-
-    PropertyList::PropertyList() { }
-    void PropertyList::SetInt(std::string key, int value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetBool(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetFloat(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    void PropertyList::SetString(std::string key, float value)
-    {
-        properties[key] = value;
-    }
-    int PropertyList::GetInt(std::string key)
-    {
-        return std::get<int>(properties[key]);
-    }
-    bool PropertyList::GetBool(std::string key)
-    {
-        return std::get<bool>(properties[key]);
-    }
-    float PropertyList::GetFloat(std::string key)
-    {
-        return std::get<float>(properties[key]);
-    }
-    std::string PropertyList::GetString(std::string key)
-    {
-        return std::get<std::string>(properties[key]);
-    }
-    std::variant<bool, int, float, std::string> PropertyList::GetValue(std::string key)
-    {
-        return properties[key];
-    }
-    std::string PropertyList::GetType(std::string key)
-    {
-        switch (properties[key].index()) {
-        case 1:
-            return "bool";
-        case 2:
-            return "int";
-        case 3:
-            return "float";
-        case 4:
-            return "string";
-        default:
-            return "na";
-        }
-    }
-    std::vector<std::string> PropertyList::GetKeys()
-    {
-        std::vector<std::string> keys;
-        for (auto const& element : properties) {
-            keys.push_back(element.first);
-        }
-        return keys;
-    }
-    bool PropertyList::RemoveEntry(std::string key)
-    {
-        properties.erase(key);
-        return true;
     }
 
     /**
@@ -186,7 +161,6 @@ namespace Game {
             delete child;
         }
         children.clear();
-        delete pList;
         delete position;
         delete rotation;
         delete scale;
@@ -212,6 +186,66 @@ namespace Game {
         for (auto child : children) {
             child->RunChildDraw();
         }
+    }
+
+    void GameObject::Serialize(std::ostream& out) const
+    {
+
+        GEC::Serial::WriteString(out, typeIdentifier);
+        GEC::Serial::WriteString(out, name);
+
+        GEC::Serial::Write(out, position->First());
+        GEC::Serial::Write(out, position->Second());
+
+        GEC::Serial::Write(out, rotation->First());
+        GEC::Serial::Write(out, rotation->Second());
+
+        GEC::Serial::Write(out, scale->First());
+        GEC::Serial::Write(out, scale->Second());
+
+        WriteObject(out);
+
+        size_t childCount = children.size();
+        GEC::Serial::Write(out, childCount);
+        for (auto child : children) {
+            child->Serialize(out);
+        }
+    }
+
+    GameObject* DeserializeGameObject(std::istream& in)
+    {
+        std::string type;
+        GEC::Serial::ReadString(in, type);
+
+        GameObject* obj = GameObjectFactory::Create(type);
+
+        GEC::Serial::ReadString(in, obj->name);
+
+        float x, y;
+
+        GEC::Serial::Read(in, x);
+        GEC::Serial::Read(in, y);
+        obj->Position()->Set(x, y);
+
+        GEC::Serial::Read(in, x);
+        GEC::Serial::Read(in, y);
+        obj->Rotation()->Set(x, y);
+
+        GEC::Serial::Read(in, x);
+        GEC::Serial::Read(in, y);
+        obj->Scale()->Set(x, y);
+
+        obj->ReadObject(in);
+
+        size_t childCount;
+        GEC::Serial::Read(in, childCount);
+
+        for (size_t i = 0; i < childCount; i++) {
+            GameObject* child = DeserializeGameObject(in);
+            obj->AddChild(child);
+        }
+
+        return obj;
     }
 
 }

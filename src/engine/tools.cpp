@@ -28,3 +28,11 @@ float GEC::Tools::Distance(float x1, float y1, float x2, float y2)
 {
     return (float)hypot((double)(x1 - x2), (double)(y1 - y2));
 }
+bool GEC::Tools::StrHasEnding(std::string const& fullString, std::string const& ending)
+    {
+        if (fullString.length() >= ending.length()) {
+            return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+        } else {
+            return false;
+        }
+    }

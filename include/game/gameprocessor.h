@@ -22,7 +22,7 @@
 
 #include <game/level.h>
 
-#include <engine/ui/ui_input.h>
+#include <engine/ui/elements.h>
 
 class LevelContainer;
 class EntityManager;
@@ -34,10 +34,10 @@ public:
     virtual GameObject* Clone() const override = 0;
 
     virtual void OnSpawn() { }
-    virtual void Start() { }
+    virtual void Start() override { }
     virtual void Tick() = 0;
-    virtual void Update() = 0;
-    virtual void Render() = 0;
+    virtual void Update() override = 0;
+    virtual void Render() override = 0;
     virtual void OnDeath() { };
     virtual void DeathLoop() { releaseEntity = true; }
     virtual void OnRemove() { }

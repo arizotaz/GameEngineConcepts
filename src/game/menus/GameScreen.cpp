@@ -15,9 +15,7 @@
 #include <iostream>
 #include <vector>
 
-#include <engine/camera.h>
 #include <engine/texture.h>
-#include <game/entities/finish_line.h>
 #include <game/entities/objects.h>
 #include <game/entities/player.h>
 #include <game/gameprocessor.h>
@@ -72,7 +70,7 @@ void GameScreen::Update()
 };
 void GameScreen::Render()
 {
-    Camera& cam = Camera::GetInstance();
+    GEC::Camera& cam = GEC::Camera::GetInstance();
 
     cam.SetScale(cam.ViewPort().Second() / 15.0f);
     GEC::Vector3<float, float, float>
@@ -119,7 +117,7 @@ void GameScreen::Leave()
 {
 
     GEC::AudioEngine::GetInstance().StopSound("BG_MUSIC");
-    Camera::GetInstance().SetScale(1);
+    GEC::Camera::GetInstance().SetScale(1);
     delete lc;
 };
 
@@ -134,10 +132,10 @@ void GAME_PauseMenu::Open()
     lc->Pause();
     CreateElements();
     CreatePage();
-        GEC::AudioEngine::GetInstance().PauseSound("BG_MUSIC");
+    GEC::AudioEngine::GetInstance().PauseSound("BG_MUSIC");
 };
 void GAME_PauseMenu::Update() {
- 
+
 };
 void GAME_PauseMenu::Render() {
 
@@ -147,9 +145,9 @@ void GAME_PauseMenu::Events()
     if (GEC::Input::Keyboard::IsKeyPressed(112) || backButton->Clicked())
         this->GetManager()->GoTo(0);
 
-        if (editButton->Clicked()) {
-            globalManager->GoTo(10);
-        }
+    if (editButton->Clicked()) {
+        globalManager->GoTo(10);
+    }
 };
 void GAME_PauseMenu::Leave()
 {
@@ -159,8 +157,7 @@ void GAME_PauseMenu::Leave()
     delete backButton;
 
     lc->UnPause();
-            GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
-
+    GEC::AudioEngine::GetInstance().PlaySound("BG_MUSIC");
 };
 void GAME_PauseMenu::CreateElements()
 {
@@ -172,7 +169,7 @@ void GAME_PauseMenu::CreateElements()
 void GAME_PauseMenu::CreatePage()
 {
     elr->ClearCycle();
-    bgPanel->Set(0, 0, Camera::GetInstance().ViewPort().First(), Camera::GetInstance().ViewPort().Second());
+    bgPanel->Set(0, 0, GEC::Camera::GetInstance().ViewPort().First(), GEC::Camera::GetInstance().ViewPort().Second());
 
     pausedText->Align(1, 1);
     pausedText->SetFont(GetGlobalFont());
@@ -185,7 +182,9 @@ void GAME_PauseMenu::CreatePage()
     elr->AddElement(bgPanel, 0);
     elr->AddElement(pausedText, 0);
     elr->AddElement(backButton, 0);
+#if EDITOR_BUILD
     elr->AddElement(editButton, 0);
+#endif
 };
 
 GAME_BlankMenu::GAME_BlankMenu() { };

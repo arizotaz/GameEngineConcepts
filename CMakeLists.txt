@@ -8,7 +8,7 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 
 # Declare Project where "GSM_TEMPLATE" is the project name
-project(Assignment3 LANGUAGES C CXX)
+project(Assignment4 LANGUAGES C CXX)
 
 # Set C++ Standards
 set(CMAKE_CXX_STANDARD 17)   
@@ -124,9 +124,11 @@ file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 
 
 add_executable("${CMAKE_PROJECT_NAME}")
+add_executable("${CMAKE_PROJECT_NAME}_runner")
 
 # Set the C++ standard to 17
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
+set_property(TARGET "${CMAKE_PROJECT_NAME}_runner" PROPERTY CXX_STANDARD 17)
 
 #========================================================================================
 # CHANGE RESOURCES DEFINITION
@@ -138,6 +140,7 @@ set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
 # Uncomment the line below when in development, this uses the resources folder
 # in the CMake project for the RESOURCES_PATH definition
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
 #
 # Uncomment the line below when in production, this uses a folder in the same working
 # directory of the binary called "resources".  Effectively RESOURCES_PATH
@@ -151,7 +154,14 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAK
 
 # Add our sources
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${MY_SOURCES})
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC EDITOR_BUILD=1)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC EDITOR_BUILD=0)
 
+target_sources("${CMAKE_PROJECT_NAME}_runner" PRIVATE ${MY_SOURCES})
+set_target_properties("${CMAKE_PROJECT_NAME}_runner" PROPERTIES
+    OUTPUT_NAME "game_runner"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+)
 
 # If on mac
 if (APPLE)
@@ -162,6 +172,8 @@ if (USE_FREEGLUT)
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${glad_SOURCE_DIR}/include")
+target_sources("${CMAKE_PROJECT_NAME}_runner" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC "${glad_SOURCE_DIR}/include")
 
 # Add our include files
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC 
@@ -169,10 +181,28 @@ target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC
 "${freeglut_SOURCE_DIR}/include"
 "${glad_SOURCE_DIR}/include"
 )
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC 
+"${CMAKE_CURRENT_SOURCE_DIR}/include/"
+"${freeglut_SOURCE_DIR}/include"
+"${glad_SOURCE_DIR}/include"
+)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC use_freeglut=TRUE)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC use_freeglut=TRUE)
 
 target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL
+  freeglut_static
+  "-framework Cocoa"
+  "-framework IOKit"
+  "-framework CoreVideo"
+  "-lpthread"
+  stb_image
+  miniaudio
+  freetype
+)
+target_link_libraries("${CMAKE_PROJECT_NAME}_runner" 
   PRIVATE 
   OpenGL::GL
   freeglut_static
@@ -190,17 +220,36 @@ else()
 
 # Add our include files
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 # Disable different warning (Glut is really old, we already know that)
 target_compile_options("${CMAKE_PROJECT_NAME}"
   PRIVATE
   -Wno-deprecated-declarations
 	-Wdelete-incomplete
+  -Wno-write-strings
+	$<$<CXX_COMPILER_ID:Clang>:-Wno-pedantic -Wno-macro-redefined>
+)
+target_compile_options("${CMAKE_PROJECT_NAME}_runner"
+  PRIVATE
+  -Wno-deprecated-declarations
+	-Wdelete-incomplete
+  -Wno-write-strings
 	$<$<CXX_COMPILER_ID:Clang>:-Wno-pedantic -Wno-macro-redefined>
 )
 
 # Include the libraries loaded earlier
 target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL 
+  "-framework GLUT" 
+  "-lpthread"
+  "-lm"
+  stb_image
+  miniaudio
+  freetype
+)
+target_link_libraries("${CMAKE_PROJECT_NAME}_runner" 
   PRIVATE 
   OpenGL::GL 
   "-framework GLUT" 
@@ -217,16 +266,21 @@ endif()
 elseif (MSVC)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC _CRT_SECURE_NO_WARNINGS)
 
 	#remove console
 	#set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 	
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug<$<CONFIG:Debug>:Debug>")
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+set_property(TARGET "${CMAKE_PROJECT_NAME}_runner" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug<$<CONFIG:Debug>:Debug>")
+set_property(TARGET "${CMAKE_PROJECT_NAME}_runner" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${glad_SOURCE_DIR}/include")
+target_sources("${CMAKE_PROJECT_NAME}_runner" PRIVATE "${glad_SOURCE_DIR}/src/glad.c")
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC "${glad_SOURCE_DIR}/include")
 
 
 # Add our include files
@@ -235,11 +289,29 @@ target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC
 "${freeglut_SOURCE_DIR}/include"
 "${glad_SOURCE_DIR}/include"
 )
+target_include_directories("${CMAKE_PROJECT_NAME}_runner" PUBLIC 
+"${CMAKE_CURRENT_SOURCE_DIR}/include/"
+"${freeglut_SOURCE_DIR}/include"
+"${glad_SOURCE_DIR}/include"
+)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC use_freeglut=TRUE)
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC FREEGLUT_STATIC)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC use_freeglut=TRUE)
+target_compile_definitions("${CMAKE_PROJECT_NAME}_runner" PUBLIC FREEGLUT_STATIC)
 
 target_link_libraries("${CMAKE_PROJECT_NAME}" 
+  PRIVATE 
+  OpenGL::GL
+  freeglut_static
+  opengl32
+  winmm
+  gdi32
+  stb_image
+  miniaudio
+  freetype
+)
+target_link_libraries("${CMAKE_PROJECT_NAME}_runner" 
   PRIVATE 
   OpenGL::GL
   freeglut_static

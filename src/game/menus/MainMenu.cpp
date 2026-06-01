@@ -1,8 +1,6 @@
 #include <engine/renderobjects.h>
 #include <engine/text.h>
-#include <engine/ui/button.h>
-#include <engine/ui/element.h>
-#include <engine/ui/textdisplay.h>
+#include <engine/ui/elements.h>
 
 #include <game/global_states.h>
 
@@ -15,7 +13,7 @@ MainMenu::MainMenu(GEC::UI::ElementRenderer* _elr)
 
 void MainMenu::Open()
 {
-    title = new GEC::UI::Elements::TextDisplay("Assignment 3!");
+    title = new GEC::UI::Elements::TextDisplay("Assignment 4!");
     start = new GEC::UI::Elements::Button();
     editor = new GEC::UI::Elements::Button();
     quit = new GEC::UI::Elements::Button();
@@ -34,7 +32,7 @@ void MainMenu::Events()
 {
     if (start->Clicked())
         this->GetManager()->GoTo(20);
-if (editor->Clicked())
+    if (editor->Clicked())
         this->GetManager()->GoTo(10);
     if (quit->Clicked())
         CloseCallBack();
@@ -68,7 +66,9 @@ void MainMenu::CreatePage()
         elr->AddElement(start, 0);
     }
     editor->Set("Open Editor", 0, bh / 2 + bp / 2, bw, bh);
-    elr->AddElement(editor, 0);
+    #if EDITOR_BUILD
+elr->AddElement(editor, 0);
+#endif
     quit->Set("Quit", 0, -(bh * 1.5f + bp * 1.5f), bw, bh);
     elr->AddElement(quit, 0);
 }

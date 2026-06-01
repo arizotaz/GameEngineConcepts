@@ -12,7 +12,6 @@
 #ifndef ENGINE_UI_ELEMENT_H
 #define ENGINE_UI_ELEMENT_H 1
 
-#include <engine/camera.h>
 #include <engine/input.h>
 #include <engine/structs.h>
 #include <iostream>

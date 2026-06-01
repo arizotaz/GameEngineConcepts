@@ -12,23 +12,24 @@
 #define MENUS_H 1
 
 #include <engine/structs.h>
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/panels.h>
-#include <engine/ui/textdisplay.h>
+#include <engine/ui/elements.h>
 #include <game/levelcontainer.h>
 
 class EngineBootScreen : public GEC::Menu {
 public:
-    EngineBootScreen(GEC::UI::ElementRenderer* elr) { };
+    EngineBootScreen(GEC::UI::ElementRenderer* elr, int next) { this->next = next; };
     virtual void Open() override { };
     virtual void Update() override
     {
-        this->GetManager()->GoTo(5);
+        this->GetManager()->GoTo(next);
     };
     virtual void Render() override { };
     virtual void Events() override { };
     virtual void Leave() override { };
+
+private:
+    int next = 0;
 };
 
 /** Main Menu Declaration */

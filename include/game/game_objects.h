@@ -1,22 +1,20 @@
 #ifndef GAME_OBJECTS_H
 #define GAME_OBJECTS_H 1
 
-#include <engine/camera.h>
 #include <engine/game_structs.h>
 #include <engine/input.h>
+#include <engine/structs.h>
 #include <game/gameprocessor.h>
 #include <game/level.h>
 
-#include <engine/ui/button.h>
 #include <engine/ui/element.h>
-#include <engine/ui/textdisplay.h>
-#include <engine/ui/ui_input.h>
+#include <engine/ui/elements.h>
 #include <game/tile.h>
 
 class TileRenderer : public GEC::Game::GameObject {
 public:
     TileRenderer()
-        : GameObject("ocm.arizotaz.tilerenderer")
+        : GameObject("com.arizotaz.gec.tilerenderer")
         , m_pos(0, 0)
         , cursor(0, 0)
     {
@@ -37,7 +35,7 @@ public:
     }
     void Render() override
     {
-        Camera& cam = Camera::GetInstance();
+        GEC::Camera& cam = GEC::Camera::GetInstance();
         cursor = GEC::Vector2<int, int>(
             round(m_pos.First() / cam.GetScale() + cam.Position().First()),
             round(m_pos.Second() / cam.GetScale() + cam.Position().Second()));
@@ -63,7 +61,7 @@ public:
     {
         editMode = true;
 
-        Camera& cam = Camera::GetInstance();
+        GEC::Camera& cam = GEC::Camera::GetInstance();
         GEC::Input::Mouse& mou = GEC::Input::Mouse::GetInstance();
 
         m_pos = mou.Position();
@@ -73,7 +71,7 @@ public:
         // Create Buttons;
         if (tileSelect.size() == 0) {
             labels.push_back(new GEC::UI::Elements::TextDisplay("Tile Select"));
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 7; ++i)
                 tileSelect.push_back(new GEC::UI::Elements::Button());
         }
         if (layerSelect.size() == 0) {
@@ -117,7 +115,7 @@ public:
             tileSelect[i]->Set(iInd.First(), iInd.Second(), bSize, bSize);
             iInd.Move(bSize / 2 + 5, 0);
             if (iInd.First() + bSize > x + width / 2)
-                iInd.Set(x - width / 2, iInd.Second() + bSize + 5);
+                iInd.Set(x - width / 2, iInd.Second() - bSize - 5);
 
             tileSelect[i]->Update();
         }
@@ -213,12 +211,29 @@ public:
             layerCollidable_input->Render();
     }
 
-    Level* LevelData() {
+    Level* LevelData()
+    {
         return levelData;
     }
+
+    void WriteObject(std::ostream& out) const override
+    {
+        levelData->Serialize(out);
+    }
+    void ReadObject(std::istream& in) override {
+        if (levelData != nullptr) {
+            delete levelData;
+        }
+
+        levelData = new Level("");
+        levelData->Deserialize(in);
+        delete lr;
+        lr = new LevelRenderer(levelData);
+    }
+
 protected:
     LevelRenderer* lr;
-    Level* levelData;
+    Level* levelData = nullptr;
 
     // Editor vars
     GEC::Vector2<float, float> m_pos;
@@ -234,5 +249,6 @@ protected:
 
     GEC::UI::Elements::Checkbox* layerCollidable_input = nullptr;
 };
+
 
 #endif

@@ -1,7 +1,29 @@
-# GlutSTBMiniAudio-Template
+# Game Engine Concepts
 
-## Setup
+## About
+This project was created as part of a Kent State University class.  The goal of the class was to make a game from scratch using the GLUT window library.  The game is created in raw C++ and uses OpenGL for graphics, Glut creates the window and the rendering context for the application.
 
+The assignment was broken into 4 parts:
+
+- #### Assignment1
+    Create a basic player that moves around the screen and throw some shapes on the screen.
+    ![](docs/images/Assignment1_GAME_DEMO.png "Assignment1")
+
+- #### Assignment2
+    Create a simple level where the player has gravity, collision, and collectables.  The game must also have a goal to reach.
+    ![](docs/images/Assignment2_GAME_DEMO.png "Assignment2")
+
+- #### Assignment3
+    Create an editor for the game. It must allow any user to modify the level, or create one as they choose.  They would be able to test the level and return back to make any changes they wish.
+    ![](docs/images/Assignment3_GAME_DEMO.png "Assignment3")
+
+- #### Assignment4
+    Finally, using everything that has been done, create a final game that can save to a file and be loaded by any user.
+
+
+
+## Building the Game
+This information is taken directly from **[arizotaz/GlutGameTemplate](https://github.com/arizotaz/GlutGameTemplate)**
 ### For Windows
 1. Install Visual Studio <br>
 Make sure you have installed Visual Studio, not Visual Studio Code, you need the MSVC Compiler installed which is bundled and accessible with Standard Visual Studio
@@ -51,5 +73,5 @@ cmake .; make;
 ```
 The binary should be in the root of the project after it is installed so run 
 ```
-./GSM_TEMPLATE
+./Assignment4
 ```

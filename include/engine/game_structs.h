@@ -6,9 +6,12 @@
 #include <map>
 #include <variant>
 #include <vector>
+#include <functional>
 
 // Remove this later
 #include <engine/renderobjects.h>
+
+#include <engine/serialization.h>
 
 namespace GEC {
 namespace Game {
@@ -65,73 +68,20 @@ namespace Game {
         // Deconstructor
         ~Scene();
 
+        /**
+         * Serialize the scene to a file
+         */
+        void Serialize(std::ostream& out) const;
+
+        /**
+         * Take a serialized file and extract the scene objects
+         */
+        void Deserialize(std::istream& in);
+
     private:
+        const int serializeVersion = 0;
         std::vector<GameObject*> objects;
     };
-    class PropertyList {
-    public:
-        /**
-         * Property List Default Constructor
-         */
-        PropertyList();
-
-        /**
-         * Sets the value of the key to an integer
-         */
-        void SetInt(std::string key, int value);
-        /**
-         * Sets the value of the key to a boolean
-         */
-        void SetBool(std::string key, float value);
-        /**
-         * Sets the value of the key to a float
-         */
-        void SetFloat(std::string key, float value);
-        /**
-         * Sets the value of the key to a string
-         */
-        void SetString(std::string key, float value);
-
-        /**
-         * Returns the integer value of the key
-         */
-        int GetInt(std::string key);
-        /**
-         * Returns the boolean value of the key
-         */
-        bool GetBool(std::string key);
-        /**
-         * Returns the float value of the key
-         */
-        float GetFloat(std::string key);
-        /**
-         * Returns the string value of the key
-         */
-        std::string GetString(std::string key);
-        /**
-         * Returns the raw value of the object
-         */
-        std::variant<bool, int, float, std::string> GetValue(std::string key);
-
-        /**
-         * Returns the type as a readable string
-         */
-        std::string GetType(std::string key);
-
-        /**
-         * Returns a vector with all keys in the list
-         */
-        std::vector<std::string> GetKeys();
-
-        /**
-         * Removes a key from the list
-         */
-        bool RemoveEntry(std::string key);
-
-    private:
-        std::map<std::string, std::variant<bool, int, float, std::string>> properties;
-    };
-
     /**
      * Main GameObject Base Class
      * Only for internal use, as it's a pure virtual
@@ -144,7 +94,6 @@ namespace Game {
         GameObject(std::string identifier)
             : typeIdentifier(identifier.c_str())
         {
-            pList = new PropertyList();
             position = new GEC::Vector2<float, float>(0, 0);
             rotation = new GEC::Vector2<float, float>(0, 0);
             scale = new GEC::Vector2<float, float>(1, 1);
@@ -153,9 +102,6 @@ namespace Game {
         GameObject(const GameObject& other)
         {
             typeIdentifier = other.typeIdentifier;
-
-            // Deep copy
-            pList = other.pList ? new PropertyList(*other.pList) : nullptr;
 
             position = other.position ? new GEC::Vector2<float, float>(*other.position) : nullptr;
             rotation = other.rotation ? new GEC::Vector2<float, float>(*other.rotation) : nullptr;
@@ -254,11 +200,13 @@ namespace Game {
         virtual void RenderPropertiesPanel(float x, float y, float width, float height) { }
 
         friend class Scene;
+        friend GameObject* DeserializeGameObject(std::istream& in);
+
+        virtual void Serialize(std::ostream& out) const final;
+        virtual void WriteObject(std::ostream& out) const = 0;
+        virtual void ReadObject(std::istream& in) = 0;
 
     protected:
-        const char* typeIdentifier;
-        PropertyList* pList = nullptr;
-
         GEC::Vector2<float, float>* position;
         GEC::Vector2<float, float>* rotation;
         GEC::Vector2<float, float>* scale;
@@ -268,10 +216,35 @@ namespace Game {
         bool persistent = false;
 
     private:
+        std::string typeIdentifier;
         void RunChildStart();
         void RunChildUpdate();
         void RunChildDraw();
     };
+
+    class GameObjectFactory {
+    public:
+        using Creator = std::function<GameObject*()>;
+
+        static void Register(const std::string& type, Creator creator);
+        static GameObject* Create(const std::string& type);
+
+    private:
+        static std::unordered_map<std::string, Creator>& Registry();
+    };
+
+    template <typename T>
+    class GameObjectRegistrar {
+    public:
+        GameObjectRegistrar(const std::string& type)
+        {
+            GameObjectFactory::Register(type, []() -> GameObject* {
+                return new T();
+            });
+        }
+    };
+
+    GameObject* DeserializeGameObject(std::istream& in);
 }
 }
 

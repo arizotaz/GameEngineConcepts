@@ -1,3 +1,4 @@
+#include <engine/serialization.h>
 #include <game/level.h>
 #include <iostream>
 #include <math.h>
@@ -25,7 +26,7 @@ Level::Level(const Level& other)
 
     // Deep copy tiles
     int size = width * height * layers;
-    tiles = new int[size];
+    tiles = new char[size];
     for (int i = 0; i < size; ++i) {
         tiles[i] = other.tiles[i];
     }
@@ -67,7 +68,7 @@ Level& Level::operator=(const Level& other)
 
     // Copy tiles
     int size = width * height * layers;
-    tiles = new int[size];
+    tiles = new char[size];
     for (int i = 0; i < size; ++i) {
         tiles[i] = other.tiles[i];
     }
@@ -85,14 +86,8 @@ Level* Level::Clone() const
     return new Level(*this);
 }
 
-
-
-
-
-
 Level::~Level()
 {
-delete[] name;
     std::cout << "[Level] Removing Level " << name << std::endl;
 
     for (int i = layers - 1; i >= 0; --i) {
@@ -112,7 +107,7 @@ void Level::Init(int width, int height, int layers)
     this->layers = layers;
 
     int s = width * height * layers;
-    tiles = new int[s];
+    tiles = new char[s];
     for (int i = 0; i < s; ++i)
         tiles[i] = 0;
     layerData = new Level_Layer*[layers];
@@ -124,35 +119,38 @@ void Level::Init(int width, int height, int layers)
     layerData[0]->zDepth = -4.0f;
     layerData[1]->zDepth = 1.0f;
 
-    for (int x = 0; x < width; ++x) {
-        SetTile(1, x, 0, 1);
-        SetTile(1, x, 1, 1);
-    }
+    // Create small default platform
+    for (int x = 0; x < 2; ++x)
+        for (int y = 0; y < 2; ++y)
+            SetTile(1, x, y, 1);
 
-    for (int x = 6; x < width; ++x) {
-        for (int y = 0; y < 8; ++y) {
-            SetTile(3, x, y, 0);
-        }
-    }
+    // for (int x = 0; x < width; ++x) {
+    //     SetTile(1, x, 0, 1);
+    //     SetTile(1, x, 1, 1);
+    // }
 
-    SetTile(2, 8, 5, 1);
-    SetTile(2, 9, 5, 1);
-    SetTile(1, 10, 4, 1);
-    SetTile(1, 10, 5, 1);
-    SetTile(1, 11, 4, 1);
-    SetTile(1, 11, 5, 1);
-    SetTile(2, 12, 4, 1);
-    SetTile(2, 13, 4, 1);
-    SetTile(2, 14, 4, 1);
-    SetTile(2, 15, 4, 1);
-    SetTile(1, 16, 4, 1);
+    // for (int x = 6; x < width; ++x) {
+    //     for (int y = 0; y < 8; ++y) {
+    //         SetTile(3, x, y, 0);
+    //     }
+    // }
 
+    // SetTile(2, 8, 5, 1);
+    // SetTile(2, 9, 5, 1);
+    // SetTile(1, 10, 4, 1);
+    // SetTile(1, 10, 5, 1);
+    // SetTile(1, 11, 4, 1);
+    // SetTile(1, 11, 5, 1);
+    // SetTile(2, 12, 4, 1);
+    // SetTile(2, 13, 4, 1);
+    // SetTile(2, 14, 4, 1);
+    // SetTile(2, 15, 4, 1);
+    // SetTile(1, 16, 4, 1);
 
-    for (int i = 2; i < 8; ++i) {
-        SetTile(1, 20, i, 1);
-        SetTile(1, 21, i, 1);
-
-    }
+    // for (int i = 2; i < 8; ++i) {
+    //     SetTile(1, 20, i, 1);
+    //     SetTile(1, 21, i, 1);
+    // }
 }
 
 int Level::GetTile(int index) const
@@ -186,7 +184,7 @@ bool Level::SetTile(int tileID, int x, int y, int layer)
     int i = XYIndex(x, y, layer);
     if (!SetTile(tileID, i))
         return false;
-    return GetTile(x, y,layer) == tileID;
+    return GetTile(x, y, layer) == tileID;
 }
 
 int Level::XYIndex(int x, int y, int layer) const
@@ -226,4 +224,47 @@ int Level::Layers() const
 Level_Layer* Level::GetLayerData(int i)
 {
     return this->layerData[i];
+}
+
+void Level::Serialize(std::ostream& out) const
+{
+    // Write level properties
+    GEC::Serial::WriteString(out, this->name);
+    GEC::Serial::Write(out, width);
+    GEC::Serial::Write(out, height);
+    GEC::Serial::Write(out, layers);
+
+    // Write tile data
+    int size = width * height * layers;
+    for (int i = 0; i < size; ++i)
+        GEC::Serial::Write(out, tiles[i]);
+
+    // Write layers
+    for (int i = 0; i < layers; i++) {
+        GEC::Serial::Write(out, layerData[i]->zDepth);
+        GEC::Serial::Write(out, layerData[i]->collidable);
+    }
+}
+void Level::Deserialize(std::istream& in)
+{
+    std::string nameStr;
+    GEC::Serial::ReadString(in, nameStr);
+    name = nameStr.c_str();
+
+    GEC::Serial::Read(in, width);
+    GEC::Serial::Read(in, height);
+    GEC::Serial::Read(in, layers);
+
+    int size = width * height * layers;
+    tiles = new char[size];
+
+    for (int i = 0; i < size; ++i)
+        GEC::Serial::Read(in, tiles[i]);
+
+    layerData = new Level_Layer*[layers];
+    for (int i = 0; i < layers; i++) {
+        layerData[i] = new Level_Layer();
+        GEC::Serial::Read(in, layerData[i]->zDepth);
+        GEC::Serial::Read(in, layerData[i]->collidable);
+    }
 }
