@@ -11,3 +11,5 @@ out/
 .vs/
 resources/game_runner*
 grader - README.txt
+built_game.zip
+compiled_editor.zip
