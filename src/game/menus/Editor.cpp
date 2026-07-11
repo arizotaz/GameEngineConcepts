@@ -302,6 +302,8 @@ void EditorMenu::BuildApplication()
     std::ofstream outFile(outputLocation + "manifest");
     if (outFile.is_open()) {
         outFile << "gamedata=./game.dat" << std::endl;
+        outFile.close();
+        std::cout << "Saved the compiled game to " << outputLocation << std::endl;
     } else {
         std::cerr << "Error: Could not open the file for writing." << std::endl;
     }
